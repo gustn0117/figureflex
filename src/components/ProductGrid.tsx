@@ -131,7 +131,6 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
                   {/* Prices */}
                   <p className="text-xs text-gray-400 line-through">{p.basePrice.toLocaleString()}원</p>
                   <p className="text-[15px] font-bold text-gray-900 mt-0.5">{myPrice.toLocaleString()}원</p>
-                  <p className="text-[11px] text-gray-500 mt-1">{grade} 최적가 : <span className="font-semibold text-red-500">{myPrice.toLocaleString()}원</span></p>
                 </div>
               </Link>
             );

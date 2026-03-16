@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import ProductImage from '@/components/ProductImage';
-import type { UserGrade } from '@/types';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -97,23 +96,6 @@ export default function ProductDetailPage() {
               <p className="text-xs text-gray-500 mt-1">{grade} 등급 적용가</p>
             </div>
 
-            {/* Grade table */}
-            <div className="border border-gray-100 rounded-lg overflow-hidden mb-5">
-              <table className="w-full text-sm">
-                <thead><tr className="bg-gray-50"><th className="text-left px-4 py-2 text-xs text-gray-400 font-semibold">등급</th><th className="text-right px-4 py-2 text-xs text-gray-400 font-semibold">단가</th></tr></thead>
-                <tbody>
-                  {(['VVIP', 'VIP', 'GOLD', 'SILVER'] as UserGrade[]).map(g => (
-                    <tr key={g} className={g === grade ? 'bg-gray-900/5' : ''}>
-                      <td className="px-4 py-2.5">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold badge-${g.toLowerCase()}`}>{g}</span>
-                        {g === grade && <span className="text-[10px] text-gray-900 ml-2 font-semibold">내 등급</span>}
-                      </td>
-                      <td className="text-right px-4 py-2.5 font-semibold text-gray-700">{product.prices[g].toLocaleString()}원</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
 
             {/* Info grid */}
             <div className="grid grid-cols-2 gap-2.5 text-xs mb-5">
