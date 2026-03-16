@@ -37,7 +37,7 @@ export default function CartPage() {
           <p className="text-gray-400 text-sm mb-4">장바구니가 비어있습니다.</p>
           <button
             onClick={() => router.push('/dashboard/figures')}
-            className="text-sm text-primary hover:underline"
+            className="text-sm text-gray-900 hover:underline"
           >
             상품 둘러보기
           </button>
@@ -110,11 +110,11 @@ export default function CartPage() {
           <div className="bg-white rounded-2xl border border-gray-100 p-6 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400 mb-1">{grade} 등급 적용가 기준</p>
-              <p className="text-2xl font-extrabold text-secondary">{totalAmount.toLocaleString()}원</p>
+              <p className="text-2xl font-extrabold text-gray-900">{totalAmount.toLocaleString()}원</p>
             </div>
             <button
               onClick={handleOrder}
-              className="bg-primary text-white px-10 py-3.5 rounded-xl font-semibold text-sm hover:bg-primary-dark transition-all flex items-center gap-2 shadow-lg shadow-primary/25 active:scale-[0.98]"
+              className="bg-gray-900 text-white px-10 py-3.5 rounded-xl font-semibold text-sm hover:bg-black transition-all flex items-center gap-2 shadow-lg shadow-black/10 active:scale-[0.98]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />

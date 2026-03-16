@@ -15,25 +15,25 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-xl p-5 border border-gray-100">
           <p className="text-xs text-gray-400 mb-1">전체 회원</p>
-          <p className="text-2xl font-bold text-primary">{users.filter(u => u.role === 'member').length}</p>
+          <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'member').length}</p>
           {pendingUsers.length > 0 && (
             <p className="text-[10px] text-orange-500 mt-1">승인 대기 {pendingUsers.length}명</p>
           )}
         </div>
         <div className="bg-white rounded-xl p-5 border border-gray-100">
           <p className="text-xs text-gray-400 mb-1">등록 상품</p>
-          <p className="text-2xl font-bold text-primary">{products.length}</p>
+          <p className="text-2xl font-bold text-gray-900">{products.length}</p>
         </div>
         <div className="bg-white rounded-xl p-5 border border-gray-100">
           <p className="text-xs text-gray-400 mb-1">전체 주문</p>
-          <p className="text-2xl font-bold text-primary">{orders.length}건</p>
+          <p className="text-2xl font-bold text-gray-900">{orders.length}건</p>
           {pendingOrders.length > 0 && (
             <p className="text-[10px] text-orange-500 mt-1">처리 대기 {pendingOrders.length}건</p>
           )}
         </div>
         <div className="bg-white rounded-xl p-5 border border-gray-100">
           <p className="text-xs text-gray-400 mb-1">총 매출</p>
-          <p className="text-2xl font-bold text-primary">{totalRevenue.toLocaleString()}원</p>
+          <p className="text-2xl font-bold text-gray-900">{totalRevenue.toLocaleString()}원</p>
         </div>
       </div>
 

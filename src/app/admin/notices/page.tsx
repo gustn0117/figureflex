@@ -39,7 +39,7 @@ export default function AdminNoticesPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-gray-800">공지사항 관리</h2>
         <button onClick={() => { resetForm(); setShowForm(!showForm); }}
-          className="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary/90">
+          className="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-black">
           {showForm ? '취소' : '공지 등록'}
         </button>
       </div>
@@ -50,19 +50,19 @@ export default function AdminNoticesPage() {
             <div>
               <label className="block text-xs text-gray-500 mb-1">제목 *</label>
               <input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" required />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" required />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">내용 *</label>
               <textarea value={form.content} onChange={e => setForm({...form, content: e.target.value})}
-                rows={4} className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" required />
+                rows={4} className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 resize-none" required />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.isImportant} onChange={e => setForm({...form, isImportant: e.target.checked})}
                 className="rounded" />
               <span className="text-sm text-gray-600">중요 공지</span>
             </label>
-            <button type="submit" className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90">
+            <button type="submit" className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-black">
               {editId ? '수정' : '등록'}
             </button>
           </form>

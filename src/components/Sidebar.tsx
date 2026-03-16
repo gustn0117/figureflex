@@ -34,11 +34,11 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-50">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
+          <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">F</span>
           </div>
           <div>
-            <h1 className="text-sm font-bold text-primary leading-tight">피규어플렉스</h1>
+            <h1 className="text-sm font-bold text-gray-900 leading-tight">피규어플렉스</h1>
             <p className="text-[10px] text-gray-400">FigureFlex</p>
           </div>
         </Link>
@@ -68,7 +68,7 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-all ${
                 isActive
-                  ? 'bg-primary/5 text-primary font-medium'
+                  ? 'bg-gray-900/5 text-gray-900 font-medium'
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -88,7 +88,7 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-all ${
                 isActive
-                  ? 'bg-primary/5 text-primary font-medium'
+                  ? 'bg-gray-900/5 text-gray-900 font-medium'
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >

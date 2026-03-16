@@ -49,11 +49,11 @@ export default function AdminInquiriesPage() {
                       onChange={e => setReplyText(e.target.value)}
                       rows={3}
                       placeholder="답변을 입력하세요..."
-                      className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 resize-none"
                     />
                     <div className="flex gap-2">
                       <button onClick={() => handleReply(inq.id)}
-                        className="bg-primary text-white px-4 py-2 rounded-xl text-xs hover:bg-primary/90">답변 등록</button>
+                        className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs hover:bg-black">답변 등록</button>
                       <button onClick={() => { setReplyId(null); setReplyText(''); }}
                         className="text-xs text-gray-400 hover:text-gray-600">취소</button>
                     </div>
@@ -61,7 +61,7 @@ export default function AdminInquiriesPage() {
                 ) : (
                   <button
                     onClick={() => setReplyId(inq.id)}
-                    className="text-xs bg-primary text-white px-4 py-2 rounded-xl hover:bg-primary/90"
+                    className="text-xs bg-gray-900 text-white px-4 py-2 rounded-xl hover:bg-black"
                   >
                     답변하기
                   </button>

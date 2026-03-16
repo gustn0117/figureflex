@@ -58,14 +58,14 @@ export default function RegisterPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-secondary mb-2">가입 신청 완료</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">가입 신청 완료</h2>
           <p className="text-gray-500 text-sm mb-6 leading-relaxed">
             관리자 승인 후 로그인이 가능합니다.<br />
             승인까지 영업일 기준 1~2일 소요됩니다.
           </p>
           <button
             onClick={() => router.push('/')}
-            className="bg-primary text-white px-8 py-3 rounded-xl text-sm font-semibold hover:bg-primary-dark transition-all shadow-lg shadow-primary/25"
+            className="bg-gray-900 text-white px-8 py-3 rounded-xl text-sm font-semibold hover:bg-black transition-all shadow-lg shadow-black/10"
           >
             로그인 페이지로 이동
           </button>
@@ -78,13 +78,13 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white py-12 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 rounded-full translate-y-1/2 -translate-x-1/3" />
 
       <div className="w-full max-w-lg px-6 relative z-10">
         <div className="text-center mb-6">
           <img src="/logo.jpg" alt="피규어플렉스" className="w-24 mx-auto mb-2 object-contain" style={{ mixBlendMode: 'multiply' }} />
-          <h1 className="text-xl font-bold text-secondary">회원가입 신청</h1>
+          <h1 className="text-xl font-bold text-gray-900">회원가입 신청</h1>
           <p className="text-xs text-gray-400 mt-1">관리자 승인 후 이용 가능합니다</p>
         </div>
 
@@ -129,7 +129,7 @@ export default function RegisterPage() {
               <div className="col-span-2">
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">사업자등록증 첨부</label>
                 <div className="flex items-center gap-3">
-                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary/40 transition-colors bg-gray-50">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-gray-900/40 transition-colors bg-gray-50">
                     <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
@@ -148,13 +148,13 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary-dark transition-all text-sm shadow-lg shadow-primary/25">
+            <button type="submit" className="w-full bg-gray-900 text-white py-3 rounded-xl font-semibold hover:bg-black transition-all text-sm shadow-lg shadow-black/10">
               가입 신청
             </button>
           </form>
 
           <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-            <button onClick={() => router.push('/')} className="text-sm text-gray-400 hover:text-primary transition-colors font-medium">
+            <button onClick={() => router.push('/')} className="text-sm text-gray-400 hover:text-gray-900 transition-colors font-medium">
               로그인 페이지로 돌아가기
             </button>
           </div>

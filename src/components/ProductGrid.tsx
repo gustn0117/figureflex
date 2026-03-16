@@ -42,7 +42,7 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-secondary">{title}</h2>
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
           <p className="text-xs text-gray-400 mt-0.5">{filtered.length}개 상품</p>
         </div>
       </div>
@@ -52,7 +52,7 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
           <button
             onClick={() => setActiveSubCat(null)}
             className={`text-[13px] px-4 py-2 rounded-full font-semibold transition-all ${
-              !activeSubCat ? 'bg-primary text-white shadow-sm shadow-primary/20' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'
+              !activeSubCat ? 'bg-gray-900 text-white shadow-sm shadow-black/10' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'
             }`}
           >
             전체
@@ -62,7 +62,7 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
               key={sc.id}
               onClick={() => setActiveSubCat(sc.id)}
               className={`text-[13px] px-4 py-2 rounded-full font-semibold transition-all ${
-                activeSubCat === sc.id ? 'bg-primary text-white shadow-sm shadow-primary/20' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'
+                activeSubCat === sc.id ? 'bg-gray-900 text-white shadow-sm shadow-black/10' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'
               }`}
             >
               {sc.name}
@@ -110,13 +110,13 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
                     <span className="absolute top-2.5 left-2.5 bg-blue-500 text-white text-[10px] px-2.5 py-0.5 rounded-lg font-semibold">출시예정</span>
                   )}
                   {status === 'sale' && discountPercent > 0 && (
-                    <span className="absolute top-2.5 left-2.5 bg-highlight text-white text-[11px] px-2 py-0.5 rounded-lg font-bold">{discountPercent}%</span>
+                    <span className="absolute top-2.5 left-2.5 bg-accent text-white text-[11px] px-2 py-0.5 rounded-lg font-bold">{discountPercent}%</span>
                   )}
                 </div>
                 <div className="p-4">
                   <p className="text-[13px] text-gray-800 font-medium mb-2.5 line-clamp-2 leading-snug min-h-[36px]">{p.name}</p>
                   <div className="flex items-end gap-2">
-                    <p className="text-[15px] font-bold text-secondary">{p.prices[grade].toLocaleString()}원</p>
+                    <p className="text-[15px] font-bold text-gray-900">{p.prices[grade].toLocaleString()}원</p>
                     <p className="text-xs text-gray-400 line-through mb-px">{p.basePrice.toLocaleString()}원</p>
                   </div>
                   <div className="flex items-center gap-1.5 mt-2.5">

@@ -21,13 +21,13 @@ export default function AdminMembersPage() {
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setTab('all')}
-          className={`text-xs px-3 py-1.5 rounded-full ${tab === 'all' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'}`}
+          className={`text-xs px-3 py-1.5 rounded-full ${tab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
         >
           전체 ({members.length})
         </button>
         <button
           onClick={() => setTab('pending')}
-          className={`text-xs px-3 py-1.5 rounded-full ${tab === 'pending' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'}`}
+          className={`text-xs px-3 py-1.5 rounded-full ${tab === 'pending' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
         >
           승인대기 ({members.filter(u => u.status === 'pending').length})
         </button>

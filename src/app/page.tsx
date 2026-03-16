@@ -38,8 +38,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 rounded-full translate-y-1/2 -translate-x-1/3" />
 
       <div className="w-full max-w-sm px-6 relative z-10">
         {/* Logo */}
@@ -55,7 +55,7 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl shadow-black/5 border border-gray-100 p-7">
-          <h2 className="text-lg font-bold text-secondary mb-5">로그인</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-5">로그인</h2>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">이메일</label>
@@ -91,7 +91,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary-dark active:scale-[0.98] transition-all text-sm shadow-lg shadow-primary/25"
+              className="w-full bg-gray-900 text-white py-3 rounded-xl font-semibold hover:bg-black active:scale-[0.98] transition-all text-sm shadow-lg shadow-black/10"
             >
               로그인
             </button>
@@ -100,7 +100,7 @@ export default function LoginPage() {
           <div className="mt-5 pt-4 border-t border-gray-100 text-center">
             <button
               onClick={() => router.push('/register')}
-              className="text-sm text-gray-400 hover:text-primary transition-colors font-medium"
+              className="text-sm text-gray-400 hover:text-gray-900 transition-colors font-medium"
             >
               회원가입 신청
             </button>

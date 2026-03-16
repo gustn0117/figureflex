@@ -66,7 +66,7 @@ export default function AdminProductsPage() {
         <h2 className="text-xl font-bold text-gray-800">상품 관리</h2>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
-          className="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary/90"
+          className="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-black"
         >
           {showForm ? '취소' : '상품 등록'}
         </button>
@@ -79,17 +79,17 @@ export default function AdminProductsPage() {
             <div className="col-span-2">
               <label className="block text-xs text-gray-500 mb-1">상품명 *</label>
               <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" required />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" required />
             </div>
             <div className="col-span-2">
               <label className="block text-xs text-gray-500 mb-1">설명</label>
               <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})}
-                rows={2} className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" />
+                rows={2} className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 resize-none" />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">대분류 *</label>
               <select value={form.categoryId} onChange={e => setForm({...form, categoryId: e.target.value, subCategoryId: ''})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20" required>
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/20" required>
                 <option value="">선택</option>
                 {productCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -97,7 +97,7 @@ export default function AdminProductsPage() {
             <div>
               <label className="block text-xs text-gray-500 mb-1">중분류</label>
               <select value={form.subCategoryId} onChange={e => setForm({...form, subCategoryId: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/20">
                 <option value="">없음</option>
                 {filteredSubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -105,36 +105,36 @@ export default function AdminProductsPage() {
             <div>
               <label className="block text-xs text-gray-500 mb-1">기본가 (원) *</label>
               <input type="number" value={form.basePrice} onChange={e => setForm({...form, basePrice: Number(e.target.value)})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" required />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" required />
               <p className="text-[10px] text-gray-400 mt-1">VVIP:{Math.round(form.basePrice*0.7).toLocaleString()} / VIP:{Math.round(form.basePrice*0.8).toLocaleString()} / GOLD:{Math.round(form.basePrice*0.9).toLocaleString()} / SILVER:{Math.round(form.basePrice*0.95).toLocaleString()}</p>
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">재고</label>
               <input type="number" value={form.stock} onChange={e => setForm({...form, stock: Number(e.target.value)})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">최소 주문수량</label>
               <input type="number" value={form.minQuantity} onChange={e => setForm({...form, minQuantity: Number(e.target.value)})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">최대 주문수량</label>
               <input type="number" value={form.maxQuantity} onChange={e => setForm({...form, maxQuantity: Number(e.target.value)})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">판매 시작일 *</label>
               <input type="date" value={form.saleStartDate} onChange={e => setForm({...form, saleStartDate: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" required />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" required />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">판매 종료일 *</label>
               <input type="date" value={form.saleEndDate} onChange={e => setForm({...form, saleEndDate: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" required />
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20" required />
             </div>
             <div className="col-span-2">
-              <button type="submit" className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90">
+              <button type="submit" className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-black">
                 {editId ? '수정' : '등록'}
               </button>
             </div>

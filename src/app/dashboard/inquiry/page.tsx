@@ -48,7 +48,7 @@ export default function InquiryPage() {
           className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
             showForm
               ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              : 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/25'
+              : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-black/10'
           }`}
         >
           {showForm ? (
@@ -80,7 +80,7 @@ export default function InquiryPage() {
                 type="text"
                 value={form.title}
                 onChange={e => setForm({ ...form, title: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900"
                 placeholder="문의 제목을 입력하세요"
                 required
               />
@@ -91,14 +91,14 @@ export default function InquiryPage() {
                 value={form.content}
                 onChange={e => setForm({ ...form, content: e.target.value })}
                 rows={5}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 resize-none"
                 placeholder="문의 내용을 입력하세요"
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1.5">사진 첨부</label>
-              <label className="flex items-center justify-center gap-2 px-4 py-4 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary/40 transition-colors">
+              <label className="flex items-center justify-center gap-2 px-4 py-4 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-gray-900/40 transition-colors">
                 <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
@@ -113,7 +113,7 @@ export default function InquiryPage() {
                 <img src={imagePreview} alt="첨부 이미지" className="mt-3 max-h-40 rounded-xl border" />
               )}
             </div>
-            <button type="submit" className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90 transition-all">
+            <button type="submit" className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-black transition-all">
               등록
             </button>
           </form>

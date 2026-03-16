@@ -129,7 +129,7 @@ export default function OrdersPage() {
 
                 <div className="flex items-center justify-end gap-4 px-5 py-4 bg-gray-50/50 border-t border-gray-50">
                   <span className="text-sm text-gray-500">총 결제금액</span>
-                  <span className="text-lg font-extrabold text-secondary">{order.finalAmount.toLocaleString()}원</span>
+                  <span className="text-lg font-extrabold text-gray-900">{order.finalAmount.toLocaleString()}원</span>
                 </div>
               </div>
             );
