@@ -1,30 +1,8 @@
 'use client';
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
-
-const categoryIcons: Record<string, JSX.Element> = {
-  'cat-ichiban': <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>,
-  'cat-figure': <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z" /><rect x="8" y="8" width="8" height="10" rx="1" /><path d="M10 18v4M14 18v4" /></svg>,
-  'cat-gacha': <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="8" /></svg>,
-  'cat-goods': <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12v10H4V12" /><rect x="2" y="7" width="20" height="5" rx="1" /><path d="M12 22V7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></svg>,
-};
-
-const categoryBg: Record<string, string> = {
-  'cat-ichiban': 'from-amber-400 to-orange-500',
-  'cat-figure': 'from-indigo-400 to-violet-500',
-  'cat-gacha': 'from-pink-400 to-rose-500',
-  'cat-goods': 'from-emerald-400 to-teal-500',
-};
-
-function ProductIcon({ categoryId }: { categoryId: string }) {
-  return (
-    <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${categoryBg[categoryId] || categoryBg['cat-goods']} opacity-10`}>
-      <div className="scale-[4] opacity-50">
-        {categoryIcons[categoryId] || categoryIcons['cat-goods']}
-      </div>
-    </div>
-  );
-}
+import ProductImage from '@/components/ProductImage';
+import { categoryIcons } from '@/components/ProductImage';
 
 export default function DashboardHome() {
   const { currentUser, notices, products, orders } = useStore();
@@ -119,12 +97,7 @@ export default function DashboardHome() {
                 className="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group"
               >
                 <div className="aspect-[4/3] relative overflow-hidden bg-gray-50">
-                  <ProductIcon categoryId={p.categoryId} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${categoryBg[p.categoryId]} flex items-center justify-center text-white shadow-lg`}>
-                      {categoryIcons[p.categoryId]}
-                    </div>
-                  </div>
+                  <ProductImage imageUrl={p.imageUrl} categoryId={p.categoryId} alt={p.name} />
                   {discountPercent > 0 && (
                     <span className="absolute top-2.5 left-2.5 bg-accent text-white text-[11px] px-2 py-0.5 rounded-lg font-bold">{discountPercent}%</span>
                   )}
