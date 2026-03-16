@@ -4,28 +4,67 @@ import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
 
 export default function DashboardHome() {
-  const { currentUser, notices, products, orders } = useStore();
+  const { currentUser, notices, products, orders, cart } = useStore();
 
   const recentNotices = notices.slice(0, 3);
   const saleProducts = products.filter(p => p.status === 'sale');
   const myOrders = orders.filter(o => o.userId === currentUser?.id);
   const grade = currentUser?.grade || 'SILVER';
+  const totalSpent = myOrders.reduce((s, o) => s + o.finalAmount, 0);
 
   return (
     <div>
+      {/* Welcome banner */}
+      <div className="bg-gray-900 rounded-xl p-6 mb-8 flex items-center justify-between">
+        <div>
+          <p className="text-gray-400 text-xs mb-1">{currentUser?.grade} 등급</p>
+          <h1 className="text-white text-xl font-bold">{currentUser?.company}님, 안녕하세요</h1>
+        </div>
+        <div className="flex gap-8 text-white text-right">
+          <div>
+            <p className="text-gray-400 text-[11px]">주문</p>
+            <p className="text-lg font-bold">{myOrders.length}건</p>
+          </div>
+          <div>
+            <p className="text-gray-400 text-[11px]">총 주문액</p>
+            <p className="text-lg font-bold">{totalSpent.toLocaleString()}원</p>
+          </div>
+          <div>
+            <p className="text-gray-400 text-[11px]">장바구니</p>
+            <p className="text-lg font-bold">{cart.length}건</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick categories */}
+      <div className="grid grid-cols-4 gap-3 mb-8">
+        {[
+          { label: '일번상', href: '/dashboard/ichiban', desc: '제일복권 / 이치방쿠지' },
+          { label: '피규어', href: '/dashboard/figures', desc: '반다이 / 후류 / 세가' },
+          { label: '가챠', href: '/dashboard/gacha', desc: '가샤폰 / 캡슐토이' },
+          { label: '굿즈', href: '/dashboard/goods', desc: '아크릴 / 키링 / 기타' },
+        ].map(cat => (
+          <Link key={cat.href} href={cat.href}
+            className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-400 transition-colors group">
+            <p className="text-sm font-semibold text-gray-900 mb-1 group-hover:text-black">{cat.label}</p>
+            <p className="text-[11px] text-gray-400">{cat.desc}</p>
+          </Link>
+        ))}
+      </div>
+
       {/* Notices */}
       {recentNotices.length > 0 && (
-        <div className="mb-10 pb-8 border-b border-gray-100">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white border border-gray-200 rounded-xl mb-8">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
             <h2 className="text-sm font-semibold text-gray-900">공지사항</h2>
-            <Link href="/dashboard/notices" className="text-xs text-gray-400 hover:text-gray-900">더보기</Link>
+            <Link href="/dashboard/notices" className="text-[11px] text-gray-400 hover:text-gray-900">더보기</Link>
           </div>
-          <div className="space-y-2">
+          <div className="divide-y divide-gray-50">
             {recentNotices.map(n => (
-              <div key={n.id} className="flex items-center gap-3">
-                {n.isImportant && <span className="text-[10px] bg-gray-900 text-white px-1.5 py-0.5 rounded font-medium">중요</span>}
+              <div key={n.id} className="flex items-center gap-3 px-5 py-3">
+                {n.isImportant && <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded font-medium shrink-0">N</span>}
                 <span className="text-sm text-gray-600 flex-1 truncate">{n.title}</span>
-                <span className="text-[11px] text-gray-400">{n.createdAt}</span>
+                <span className="text-[11px] text-gray-400 shrink-0">{n.createdAt}</span>
               </div>
             ))}
           </div>
@@ -37,30 +76,34 @@ export default function DashboardHome() {
         <div>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-sm font-semibold text-gray-900">판매중 상품</h2>
-            <span className="text-xs text-gray-400">{saleProducts.length}개</span>
+            <span className="text-[11px] text-gray-400">{saleProducts.length}개</span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7">
             {saleProducts.map(p => {
               const discountPercent = Math.round((1 - p.prices[grade] / p.basePrice) * 100);
               return (
                 <Link key={p.id} href={`/dashboard/product/${p.id}`} className="group">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3 border border-gray-100">
                     <ProductImage imageUrl={p.imageUrl} categoryId={p.categoryId} alt={p.name} />
                   </div>
                   <p className="text-[13px] text-gray-600 mb-1.5 line-clamp-2 leading-snug group-hover:text-gray-900">{p.name}</p>
                   <div className="flex items-baseline gap-1.5">
-                    {discountPercent > 0 && <span className="text-sm font-bold text-red-500">{discountPercent}%</span>}
-                    <span className="text-sm font-bold text-gray-900">{p.prices[grade].toLocaleString()}원</span>
+                    {discountPercent > 0 && <span className="text-[13px] font-bold text-red-500">{discountPercent}%</span>}
+                    <span className="text-[14px] font-bold text-gray-900">{p.prices[grade].toLocaleString()}원</span>
                   </div>
-                  {discountPercent > 0 && <p className="text-xs text-gray-400 line-through">{p.basePrice.toLocaleString()}원</p>}
+                  {discountPercent > 0 && <p className="text-[11px] text-gray-400 line-through mt-0.5">{p.basePrice.toLocaleString()}원</p>}
                 </Link>
               );
             })}
           </div>
         </div>
       ) : (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-sm">등록된 상품이 없습니다.</p>
+        <div className="text-center py-16 bg-white border border-gray-200 rounded-xl">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto text-gray-300 mb-3">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          <p className="text-gray-400 text-sm mb-1">아직 등록된 상품이 없습니다</p>
+          <p className="text-[11px] text-gray-300">관리자가 상품을 등록하면 여기에 표시됩니다</p>
         </div>
       )}
     </div>

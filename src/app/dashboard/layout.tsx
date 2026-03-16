@@ -15,15 +15,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!currentUser) return null;
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-[#f7f7f8] flex flex-col">
       <Header />
-      <main className="max-w-6xl mx-auto px-5 py-8">
+      <main className="max-w-6xl mx-auto px-5 py-8 flex-1 w-full">
         {children}
       </main>
-      <footer className="border-t border-gray-100 mt-16">
-        <div className="max-w-6xl mx-auto px-5 py-8 text-xs text-gray-400">
-          <p className="font-medium text-gray-500 mb-1">피규어플렉스 FigureFlex</p>
-          <p>피규어/가챠/굿즈 도매 전용 주문 플랫폼</p>
+      <footer className="border-t border-gray-200 bg-white">
+        <div className="max-w-6xl mx-auto px-5 py-6 flex items-center justify-between text-xs text-gray-400">
+          <div>
+            <p className="font-medium text-gray-500">피규어플렉스</p>
+            <p className="mt-0.5">도매 전용 주문 플랫폼</p>
+          </div>
+          <p>FigureFlex</p>
         </div>
       </footer>
     </div>
