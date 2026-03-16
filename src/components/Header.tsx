@@ -1,0 +1,270 @@
+'use client';
+import { usePathname, useRouter } from 'next/navigation';
+import { useStore } from '@/store/useStore';
+import { useState, useRef, useEffect } from 'react';
+
+const navItems = [
+  {
+    label: '공지사항',
+    href: '/dashboard/notices',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </svg>
+    ),
+  },
+  {
+    label: '일번상',
+    href: '/dashboard/ichiban',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    ),
+  },
+  {
+    label: '피규어',
+    href: '/dashboard/figures',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z" />
+        <rect x="8" y="8" width="8" height="10" rx="1" />
+        <path d="M10 18v4M14 18v4" />
+      </svg>
+    ),
+  },
+  {
+    label: '가챠',
+    href: '/dashboard/gacha',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="12" r="4" />
+        <line x1="12" y1="2" x2="12" y2="8" />
+      </svg>
+    ),
+  },
+  {
+    label: '굿즈',
+    href: '/dashboard/goods',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 12v10H4V12" />
+        <rect x="2" y="7" width="20" height="5" rx="1" />
+        <path d="M12 22V7" />
+        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+      </svg>
+    ),
+  },
+  {
+    label: '문의',
+    href: '/dashboard/inquiry',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+  },
+];
+
+const gradeColors: Record<string, string> = {
+  VVIP: 'bg-amber-500 text-white',
+  VIP: 'bg-gray-400 text-white',
+  GOLD: 'bg-yellow-600 text-white',
+  SILVER: 'bg-gray-300 text-gray-700',
+};
+
+export default function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { currentUser, logout, cart } = useStore();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  if (!currentUser) return null;
+
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  return (
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2.5 shrink-0"
+          >
+            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">F</span>
+            </div>
+            <span className="text-lg font-bold text-primary hidden sm:block">피규어플렉스</span>
+          </button>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => router.push(item.href)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-primary text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Right Section */}
+          <div className="flex items-center gap-2">
+            {/* Cart */}
+            <button
+              onClick={() => router.push('/dashboard/cart')}
+              className={`relative p-2 rounded-lg transition-all ${
+                pathname === '/dashboard/cart'
+                  ? 'bg-primary text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-highlight text-white text-xs rounded-full flex items-center justify-center font-medium">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+
+            {/* Orders */}
+            <button
+              onClick={() => router.push('/dashboard/orders')}
+              className={`p-2 rounded-lg transition-all ${
+                pathname === '/dashboard/orders'
+                  ? 'bg-primary text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" />
+                <path d="M9 14l2 2 4-4" />
+              </svg>
+            </button>
+
+            {/* User Menu */}
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-lg hover:bg-gray-100 transition-all"
+              >
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-medium text-gray-900 leading-tight">{currentUser.company}</p>
+                  <p className="text-xs text-gray-400">{currentUser.name}</p>
+                </div>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded ${gradeColors[currentUser.grade]}`}>
+                  {currentUser.grade}
+                </span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                  <div className="px-4 py-3 border-b border-gray-100 sm:hidden">
+                    <p className="text-sm font-medium text-gray-900">{currentUser.company}</p>
+                    <p className="text-xs text-gray-400">{currentUser.name}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      router.push('/');
+                    }}
+                    className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                      <polyline points="16 17 21 12 16 7" />
+                      <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    로그아웃
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {mobileMenuOpen ? (
+                  <>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Nav */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-gray-100 bg-white">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => {
+                    router.push(item.href);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-primary text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}

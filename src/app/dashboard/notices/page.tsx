@@ -7,7 +7,7 @@ export default function NoticesPage() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <div className="max-w-4xl">
+    <div>
       <h2 className="text-xl font-bold text-gray-800 mb-6">공지사항</h2>
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -18,12 +18,12 @@ export default function NoticesPage() {
               className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
             >
               {n.isImportant && (
-                <span className="text-[10px] bg-highlight text-white px-2 py-0.5 rounded-full flex-shrink-0">중요</span>
+                <span className="text-[10px] bg-highlight text-white px-2 py-0.5 rounded-full flex-shrink-0 font-medium">중요</span>
               )}
-              <span className="text-sm text-gray-700 flex-1">{n.title}</span>
+              <span className="text-sm text-gray-700 flex-1 font-medium">{n.title}</span>
               <span className="text-xs text-gray-400 flex-shrink-0">{n.createdAt}</span>
               <svg
-                className={`w-4 h-4 text-gray-400 transition-transform ${openId === n.id ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${openId === n.id ? 'rotate-180' : ''}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
