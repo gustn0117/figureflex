@@ -121,6 +121,10 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-03-01',
     saleEndDate: '2026-04-15',
     status: 'sale',
+    detailContent: '',
+    images: [],
+    origin: '일본',
+    manufacturer: '반다이',
     createdAt: '2026-02-20',
   },
   {
@@ -138,6 +142,10 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-03-10',
     saleEndDate: '2026-04-30',
     status: 'sale',
+    detailContent: '',
+    images: [],
+    origin: '일본',
+    manufacturer: '반다이',
     createdAt: '2026-03-01',
   },
   {
@@ -155,6 +163,7 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-03-01',
     saleEndDate: '2026-05-01',
     status: 'sale',
+    detailContent: '', images: [], origin: '일본', manufacturer: '반다이',
     createdAt: '2026-02-25',
   },
   {
@@ -172,6 +181,7 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-02-15',
     saleEndDate: '2026-03-31',
     status: 'sale',
+    detailContent: '', images: [], origin: '일본', manufacturer: '후류',
     createdAt: '2026-02-10',
   },
   {
@@ -189,6 +199,7 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-01-01',
     saleEndDate: '2026-03-10',
     status: 'expired',
+    detailContent: '', images: [], origin: '일본', manufacturer: '세가',
     createdAt: '2025-12-20',
   },
   {
@@ -206,6 +217,7 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-03-01',
     saleEndDate: '2026-06-01',
     status: 'sale',
+    detailContent: '', images: [], origin: '일본', manufacturer: '반다이',
     createdAt: '2026-02-28',
   },
   {
@@ -223,6 +235,7 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-03-15',
     saleEndDate: '2026-05-15',
     status: 'sale',
+    detailContent: '', images: [], origin: '일본', manufacturer: '일반',
     createdAt: '2026-03-05',
   },
   {
@@ -240,6 +253,7 @@ export const MOCK_PRODUCTS: Product[] = [
     saleStartDate: '2026-03-01',
     saleEndDate: '2026-04-30',
     status: 'sale',
+    detailContent: '', images: [], origin: '일본', manufacturer: '반다이',
     createdAt: '2026-02-20',
   },
 ];

@@ -1,7 +1,7 @@
 export type UserGrade = 'VVIP' | 'VIP' | 'GOLD' | 'SILVER';
 export type UserRole = 'admin' | 'member';
 export type UserStatus = 'pending' | 'approved' | 'rejected';
-export type MemberType = 'chain' | 'external'; // 체인점 / 외부업체
+export type MemberType = 'chain' | 'external';
 
 export interface User {
   id: string;
@@ -34,7 +34,9 @@ export interface Product {
   id: string;
   name: string;
   description: string;
+  detailContent: string;
   imageUrl: string;
+  images: string[];
   categoryId: string;
   subCategoryId: string;
   basePrice: number;
@@ -45,6 +47,8 @@ export interface Product {
   saleStartDate: string;
   saleEndDate: string;
   status: ProductStatus;
+  origin: string;
+  manufacturer: string;
   createdAt: string;
 }
 
