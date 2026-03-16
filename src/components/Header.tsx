@@ -37,10 +37,10 @@ const navItems = [
 ];
 
 const gradeColors: Record<string, string> = {
-  VVIP: 'bg-gradient-to-r from-amber-400 to-orange-500 text-white',
-  VIP: 'bg-gradient-to-r from-slate-400 to-slate-500 text-white',
-  GOLD: 'bg-gradient-to-r from-yellow-500 to-amber-600 text-white',
-  SILVER: 'bg-gradient-to-r from-gray-300 to-gray-400 text-white',
+  VVIP: 'bg-gray-900 text-white',
+  VIP: 'bg-gray-700 text-white',
+  GOLD: 'bg-gray-500 text-white',
+  SILVER: 'bg-gray-400 text-white',
 };
 
 export default function Header() {
@@ -146,7 +146,7 @@ export default function Header() {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-full hover:bg-gray-100 transition-all"
               >
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">{currentUser.company.charAt(0)}</span>
                 </div>
                 <div className="text-right hidden sm:block">

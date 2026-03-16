@@ -16,10 +16,10 @@ body {
 ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-.badge-vvip { background: linear-gradient(135deg, #FFD700, #FFA500); color: #fff; font-weight: 600; }
-.badge-vip { background: linear-gradient(135deg, #94a3b8, #64748b); color: #fff; font-weight: 600; }
-.badge-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 600; }
-.badge-silver { background: linear-gradient(135deg, #cbd5e1, #94a3b8); color: #fff; font-weight: 600; }
+.badge-vvip { background: #111; color: #fff; font-weight: 600; }
+.badge-vip { background: #374151; color: #fff; font-weight: 600; }
+.badge-gold { background: #6b7280; color: #fff; font-weight: 600; }
+.badge-silver { background: #9ca3af; color: #fff; font-weight: 600; }
 
 input:focus, select:focus, textarea:focus {
   border-color: #E8930C !important;

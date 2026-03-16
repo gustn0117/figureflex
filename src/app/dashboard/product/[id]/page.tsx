@@ -69,7 +69,7 @@ export default function ProductDetailPage() {
               <div className="flex gap-2 p-3 overflow-x-auto">
                 {allImages.map((img, idx) => (
                   <button key={idx} onClick={() => setSelectedImage(idx)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${selectedImage === idx ? 'border-accent' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                    className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${selectedImage === idx ? 'border-gray-900' : 'border-transparent opacity-60 hover:opacity-100'}`}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -97,13 +97,13 @@ export default function ProductDetailPage() {
             )}
 
             {/* Price */}
-            <div className="bg-accent/5 rounded-xl p-5 mb-5 border border-accent/10">
+            <div className="bg-gray-50 rounded-xl p-5 mb-5">
               <div className="flex items-end gap-3 mb-1">
-                {discountPercent > 0 && <span className="text-accent text-xl font-extrabold">{discountPercent}%</span>}
+                {discountPercent > 0 && <span className="text-red-500 text-lg font-bold">{discountPercent}%</span>}
                 <span className="text-2xl font-extrabold text-gray-900">{myPrice.toLocaleString()}원</span>
               </div>
               <p className="text-sm text-gray-400 line-through">{product.basePrice.toLocaleString()}원</p>
-              <p className="text-xs text-gray-900 font-semibold mt-1">{grade} 등급 적용가</p>
+              <p className="text-xs text-gray-500 mt-1">{grade} 등급 적용가</p>
             </div>
 
             {/* Grade table */}
