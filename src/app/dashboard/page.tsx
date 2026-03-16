@@ -1,16 +1,25 @@
 'use client';
+import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
 
 export default function DashboardHome() {
-  const { currentUser, notices, products, orders, cart } = useStore();
+  const { currentUser, notices, products, orders, cart, addToCart } = useStore();
+  const [addedId, setAddedId] = useState<string | null>(null);
 
   const recentNotices = notices.slice(0, 3);
   const saleProducts = products.filter(p => p.status === 'sale');
   const myOrders = orders.filter(o => o.userId === currentUser?.id);
   const grade = currentUser?.grade || 'SILVER';
   const totalSpent = myOrders.reduce((s, o) => s + o.finalAmount, 0);
+
+  const handleQuickCart = (e: React.MouseEvent, p: any) => {
+    e.preventDefault(); e.stopPropagation();
+    addToCart(p.id, p.minQuantity);
+    setAddedId(p.id);
+    setTimeout(() => setAddedId(null), 1500);
+  };
 
   return (
     <div>
@@ -21,32 +30,23 @@ export default function DashboardHome() {
           <h1 className="text-white text-xl font-bold">{currentUser?.company}님, 안녕하세요</h1>
         </div>
         <div className="flex gap-8 text-white text-right">
-          <div>
-            <p className="text-gray-400 text-[11px]">주문</p>
-            <p className="text-lg font-bold">{myOrders.length}건</p>
-          </div>
-          <div>
-            <p className="text-gray-400 text-[11px]">총 주문액</p>
-            <p className="text-lg font-bold">{totalSpent.toLocaleString()}원</p>
-          </div>
-          <div>
-            <p className="text-gray-400 text-[11px]">장바구니</p>
-            <p className="text-lg font-bold">{cart.length}건</p>
-          </div>
+          <div><p className="text-gray-400 text-[11px]">주문</p><p className="text-lg font-bold">{myOrders.length}건</p></div>
+          <div><p className="text-gray-400 text-[11px]">총 주문액</p><p className="text-lg font-bold">{totalSpent.toLocaleString()}원</p></div>
+          <div><p className="text-gray-400 text-[11px]">장바구니</p><p className="text-lg font-bold">{cart.length}건</p></div>
         </div>
       </div>
 
       {/* Quick categories */}
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
-          { label: '일번상', href: '/dashboard/ichiban', desc: '제일복권 / 이치방쿠지' },
+          { label: '일번상', href: '/dashboard/ichiban', desc: '이치방쿠지 / 기타' },
           { label: '피규어', href: '/dashboard/figures', desc: '반다이 / 후류 / 세가' },
-          { label: '가챠', href: '/dashboard/gacha', desc: '가샤폰 / 캡슐토이' },
-          { label: '굿즈', href: '/dashboard/goods', desc: '아크릴 / 키링 / 기타' },
+          { label: '가챠', href: '/dashboard/gacha', desc: '반다이 / 일반' },
+          { label: '굿즈', href: '/dashboard/goods', desc: '아크릴 / 기타' },
         ].map(cat => (
           <Link key={cat.href} href={cat.href}
             className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-400 transition-colors group">
-            <p className="text-sm font-semibold text-gray-900 mb-1 group-hover:text-black">{cat.label}</p>
+            <p className="text-sm font-semibold text-gray-900 mb-1">{cat.label}</p>
             <p className="text-[11px] text-gray-400">{cat.desc}</p>
           </Link>
         ))}
@@ -78,20 +78,31 @@ export default function DashboardHome() {
             <h2 className="text-sm font-semibold text-gray-900">판매중 상품</h2>
             <span className="text-[11px] text-gray-400">{saleProducts.length}개</span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6">
             {saleProducts.map(p => {
-              const discountPercent = Math.round((1 - p.prices[grade] / p.basePrice) * 100);
+              const myPrice = p.prices[grade];
               return (
-                <Link key={p.id} href={`/dashboard/product/${p.id}`} className="group">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3 border border-gray-100">
+                <Link key={p.id} href={`/dashboard/product/${p.id}`}
+                  className="group bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-gray-300 transition-all">
+                  <div className="aspect-square relative overflow-hidden bg-gray-50">
                     <ProductImage imageUrl={p.imageUrl} categoryId={p.categoryId} alt={p.name} />
+                    <div className="absolute bottom-2 right-2">
+                      <button onClick={(e) => handleQuickCart(e, p)}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-all ${addedId === p.id ? 'bg-green-500 text-white' : 'bg-white text-gray-500 hover:bg-gray-900 hover:text-white'}`}>
+                        {addedId === p.id
+                          ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                          : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                        }
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-[13px] text-gray-600 mb-1.5 line-clamp-2 leading-snug group-hover:text-gray-900">{p.name}</p>
-                  <div className="flex items-baseline gap-1.5">
-                    {discountPercent > 0 && <span className="text-[13px] font-bold text-red-500">{discountPercent}%</span>}
-                    <span className="text-[14px] font-bold text-gray-900">{p.prices[grade].toLocaleString()}원</span>
+                  <div className="p-3">
+                    <p className="text-[10px] text-gray-400 mb-1.5">~{p.saleEndDate} 마감</p>
+                    <p className="text-[13px] text-gray-700 mb-2 line-clamp-2 leading-snug min-h-[36px] group-hover:text-gray-900">{p.name}</p>
+                    <p className="text-xs text-gray-400 line-through">{p.basePrice.toLocaleString()}원</p>
+                    <p className="text-[15px] font-bold text-gray-900 mt-0.5">{myPrice.toLocaleString()}원</p>
+                    <p className="text-[11px] text-gray-500 mt-1">{grade} 최적가 : <span className="font-semibold text-red-500">{myPrice.toLocaleString()}원</span></p>
                   </div>
-                  {discountPercent > 0 && <p className="text-[11px] text-gray-400 line-through mt-0.5">{p.basePrice.toLocaleString()}원</p>}
                 </Link>
               );
             })}
