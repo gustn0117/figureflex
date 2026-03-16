@@ -63,7 +63,7 @@ export default function OrdersPage() {
       <h2 className="text-xl font-bold text-gray-800 mb-6">주문내역</h2>
 
       {myOrders.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-300 mb-4">
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
             <rect x="8" y="2" width="8" height="4" rx="1" />
@@ -75,7 +75,7 @@ export default function OrdersPage() {
           {myOrders.map(order => {
             const st = statusMap[order.status] || statusMap.pending;
             return (
-              <div key={order.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div key={order.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 bg-gray-50/50">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-mono text-gray-400">#{order.id}</span>
@@ -129,7 +129,7 @@ export default function OrdersPage() {
 
                 <div className="flex items-center justify-end gap-4 px-5 py-4 bg-gray-50/50 border-t border-gray-50">
                   <span className="text-sm text-gray-500">총 결제금액</span>
-                  <span className="text-lg font-bold text-primary">{order.finalAmount.toLocaleString()}원</span>
+                  <span className="text-lg font-extrabold text-secondary">{order.finalAmount.toLocaleString()}원</span>
                 </div>
               </div>
             );

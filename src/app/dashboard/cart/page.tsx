@@ -28,7 +28,7 @@ export default function CartPage() {
       <h2 className="text-xl font-bold text-gray-800 mb-6">장바구니</h2>
 
       {cart.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-300 mb-4">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
             <line x1="3" y1="6" x2="21" y2="6" />
@@ -44,7 +44,7 @@ export default function CartPage() {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden mb-4">
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 text-xs text-gray-500">
@@ -107,14 +107,14 @@ export default function CartPage() {
           </div>
 
           {/* Total */}
-          <div className="bg-white rounded-xl border border-gray-100 p-6 flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400 mb-1">{grade} 등급 적용가 기준</p>
-              <p className="text-2xl font-bold text-primary">{totalAmount.toLocaleString()}원</p>
+              <p className="text-2xl font-extrabold text-secondary">{totalAmount.toLocaleString()}원</p>
             </div>
             <button
               onClick={handleOrder}
-              className="bg-primary text-white px-10 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all flex items-center gap-2"
+              className="bg-primary text-white px-10 py-3.5 rounded-xl font-semibold text-sm hover:bg-primary-dark transition-all flex items-center gap-2 shadow-lg shadow-primary/25 active:scale-[0.98]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />

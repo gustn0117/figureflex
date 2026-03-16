@@ -48,7 +48,7 @@ export default function InquiryPage() {
           className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
             showForm
               ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              : 'bg-primary text-white hover:bg-primary/90'
+              : 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/25'
           }`}
         >
           {showForm ? (
@@ -72,7 +72,7 @@ export default function InquiryPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1.5">제목</label>
@@ -120,7 +120,7 @@ export default function InquiryPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         {myInquiries.length === 0 ? (
           <div className="p-16 text-center">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-300 mb-4">

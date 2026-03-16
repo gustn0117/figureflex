@@ -36,58 +36,71 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="w-full max-w-md px-6">
+    <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+
+      <div className="w-full max-w-sm px-6 relative z-10">
         {/* Logo */}
-        <div className="text-center mb-10">
-          <img src="/logo.jpg" alt="피규어플렉스" className="w-32 h-32 mx-auto mb-2 object-contain" />
-          <p className="text-sm text-gray-400 mt-1">FigureFlex Wholesale</p>
+        <div className="text-center mb-8">
+          <img
+            src="/logo.jpg"
+            alt="피규어플렉스"
+            className="w-40 mx-auto mb-1 object-contain rounded-2xl"
+            style={{ mixBlendMode: 'multiply' }}
+          />
+          <p className="text-xs text-gray-400 tracking-wider uppercase">Wholesale Platform</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-          <form onSubmit={handleLogin} className="space-y-5">
+        <div className="bg-white rounded-2xl shadow-xl shadow-black/5 border border-gray-100 p-7">
+          <h2 className="text-lg font-bold text-secondary mb-5">로그인</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">이메일</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">이메일</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:bg-white transition-all"
                 placeholder="이메일을 입력하세요"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">비밀번호</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:bg-white transition-all"
                 placeholder="비밀번호를 입력하세요"
                 required
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100">
+              <div className="flex items-center gap-2 bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                  <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
                 {error}
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-primary/90 transition-all text-sm"
+              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary-dark active:scale-[0.98] transition-all text-sm shadow-lg shadow-primary/25"
             >
               로그인
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-5 pt-4 border-t border-gray-100 text-center">
             <button
               onClick={() => router.push('/register')}
-              className="text-sm text-gray-400 hover:text-primary transition-colors"
+              className="text-sm text-gray-400 hover:text-primary transition-colors font-medium"
             >
               회원가입 신청
             </button>
@@ -95,12 +108,12 @@ export default function LoginPage() {
         </div>
 
         {/* Demo info */}
-        <div className="mt-6 bg-white/60 rounded-xl p-4 border border-gray-100">
-          <p className="text-xs text-gray-400 text-center mb-2">테스트 계정</p>
-          <div className="text-xs text-gray-500 space-y-1">
-            <p><span className="text-gray-400">관리자:</span> admin@figureflex.com / admin1234</p>
-            <p><span className="text-gray-400">체인점:</span> chain@test.com / test1234</p>
-            <p><span className="text-gray-400">외부업체:</span> external@test.com / test1234</p>
+        <div className="mt-5 bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <p className="text-[10px] text-gray-400 text-center mb-2 uppercase tracking-widest font-semibold">Demo Accounts</p>
+          <div className="text-xs text-gray-500 space-y-1.5">
+            <div className="flex justify-between"><span className="text-gray-400">관리자</span><span className="font-mono text-[11px]">admin@figureflex.com / admin1234</span></div>
+            <div className="flex justify-between"><span className="text-gray-400">체인점</span><span className="font-mono text-[11px]">chain@test.com / test1234</span></div>
+            <div className="flex justify-between"><span className="text-gray-400">외부업체</span><span className="font-mono text-[11px]">external@test.com / test1234</span></div>
           </div>
         </div>
       </div>

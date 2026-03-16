@@ -10,7 +10,7 @@ export default function NoticesPage() {
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-6">공지사항</h2>
 
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         {notices.map(n => (
           <div key={n.id} className="border-b border-gray-50 last:border-0">
             <button
