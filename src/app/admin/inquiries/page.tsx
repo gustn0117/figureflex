@@ -6,6 +6,7 @@ export default function AdminInquiriesPage() {
   const { inquiries, replyInquiry } = useStore();
   const [replyId, setReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [filter, setFilter] = useState<'all' | 'unanswered'>('all');
 
   const handleReply = (id: string) => {
     if (!replyText.trim()) return;
@@ -14,63 +15,116 @@ export default function AdminInquiriesPage() {
     setReplyText('');
   };
 
+  const unansweredCount = inquiries.filter(i => !i.reply).length;
+  const filtered = filter === 'unanswered' ? inquiries.filter(i => !i.reply) : inquiries;
+
   return (
     <div className="max-w-4xl">
-      <h2 className="text-xl font-bold text-gray-800 mb-6">문의사항 관리</h2>
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-gray-900">문의사항 관리</h2>
+        <p className="text-sm text-gray-400 mt-1">회원 문의 답변 관리</p>
+      </div>
 
-      <div className="space-y-3">
-        {inquiries.map(inq => (
-          <div key={inq.id} className="bg-white rounded-xl border border-gray-100 p-5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className={`text-[10px] px-2 py-0.5 rounded-full ${inq.reply ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
-                {inq.reply ? '답변완료' : '미답변'}
-              </span>
-              <span className="text-sm font-medium">{inq.title}</span>
-              <span className="text-xs text-gray-400 ml-auto">{inq.userName} | {inq.createdAt}</span>
-            </div>
+      {/* Filter */}
+      <div className="flex gap-2 mb-5">
+        <button
+          onClick={() => setFilter('all')}
+          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all ${filter === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}
+        >
+          전체 <span className="ml-1 text-xs opacity-70">{inquiries.length}</span>
+        </button>
+        <button
+          onClick={() => setFilter('unanswered')}
+          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${filter === 'unanswered' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}
+        >
+          미답변
+          {unansweredCount > 0 && (
+            <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${filter === 'unanswered' ? 'bg-white text-gray-900' : 'bg-red-500 text-white'}`}>
+              {unansweredCount}
+            </span>
+          )}
+        </button>
+      </div>
 
-            <p className="text-sm text-gray-600 mb-3">{inq.content}</p>
-
-            {inq.imageUrl && (
-              <img src={inq.imageUrl} alt="첨부" className="max-h-40 rounded-lg border mb-3" />
-            )}
-
-            {inq.reply ? (
-              <div className="bg-blue-50 rounded-lg p-3">
-                <p className="text-xs text-blue-500 font-medium mb-1">답변 ({inq.repliedAt})</p>
-                <p className="text-sm text-gray-700">{inq.reply}</p>
+      {filtered.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-gray-100 py-16 text-center text-gray-400 text-sm">
+          {filter === 'unanswered' ? '미답변 문의가 없습니다.' : '문의사항이 없습니다.'}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(inq => (
+            <div key={inq.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-50">
+                <span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium flex-shrink-0 ${inq.reply ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+                  {inq.reply ? '답변완료' : '미답변'}
+                </span>
+                <p className="text-sm font-semibold text-gray-800 flex-1 min-w-0">{inq.title}</p>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-xs text-gray-500">{inq.userName}</p>
+                  <p className="text-[11px] text-gray-400">{inq.createdAt}</p>
+                </div>
               </div>
-            ) : (
-              <>
-                {replyId === inq.id ? (
-                  <div className="space-y-2">
-                    <textarea
-                      value={replyText}
-                      onChange={e => setReplyText(e.target.value)}
-                      rows={3}
-                      placeholder="답변을 입력하세요..."
-                      className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 resize-none"
-                    />
-                    <div className="flex gap-2">
-                      <button onClick={() => handleReply(inq.id)}
-                        className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs hover:bg-black">답변 등록</button>
-                      <button onClick={() => { setReplyId(null); setReplyText(''); }}
-                        className="text-xs text-gray-400 hover:text-gray-600">취소</button>
+
+              {/* Content */}
+              <div className="px-5 py-4">
+                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{inq.content}</p>
+                {inq.imageUrl && (
+                  <img src={inq.imageUrl} alt="첨부" className="max-h-48 rounded-xl border border-gray-100 mt-3 object-contain" />
+                )}
+              </div>
+
+              {/* Reply */}
+              <div className="px-5 pb-4">
+                {inq.reply ? (
+                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-blue-500">
+                        <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+                      </svg>
+                      <p className="text-xs font-semibold text-blue-600">관리자 답변 · {inq.repliedAt}</p>
                     </div>
+                    <p className="text-sm text-gray-700 leading-relaxed">{inq.reply}</p>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => setReplyId(inq.id)}
-                    className="text-xs bg-gray-900 text-white px-4 py-2 rounded-xl hover:bg-black"
-                  >
-                    답변하기
-                  </button>
+                  replyId === inq.id ? (
+                    <div className="space-y-2">
+                      <textarea
+                        value={replyText}
+                        onChange={e => setReplyText(e.target.value)}
+                        rows={3}
+                        placeholder="답변을 입력하세요..."
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent resize-none"
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={() => handleReply(inq.id)}
+                          className="bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-black transition-colors">
+                          답변 등록
+                        </button>
+                        <button onClick={() => { setReplyId(null); setReplyText(''); }}
+                          className="text-sm text-gray-400 hover:text-gray-600 px-3">
+                          취소
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => { setReplyId(inq.id); setReplyText(''); }}
+                      className="flex items-center gap-2 text-sm text-gray-500 border border-gray-200 px-4 py-2 rounded-xl hover:border-gray-400 hover:text-gray-800 transition-all"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+                      </svg>
+                      답변하기
+                    </button>
+                  )
                 )}
-              </>
-            )}
-          </div>
-        ))}
-      </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
