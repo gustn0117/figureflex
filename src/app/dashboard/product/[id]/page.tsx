@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import ProductImage from '@/components/ProductImage';
+import type { UserGrade } from '@/types';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
