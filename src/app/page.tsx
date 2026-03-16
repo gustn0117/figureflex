@@ -25,11 +25,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left - branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 items-center justify-center p-12">
-        <div className="max-w-md">
-          <img src="/logo.jpg" alt="" className="w-32 mb-8 brightness-0 invert opacity-90" />
-          <h2 className="text-3xl font-bold text-white mb-3">피규어플렉스</h2>
-          <p className="text-gray-400 leading-relaxed">피규어, 가챠, 굿즈 도매 전용 주문 플랫폼. 등급별 할인가로 편리하게 주문하세요.</p>
+      <div className="hidden lg:flex lg:w-1/2 bg-[#FFF8F0] items-center justify-center p-12">
+        <div className="max-w-sm text-center">
+          <img src="/logo.jpg" alt="" className="w-48 mx-auto mb-6" />
+          <p className="text-gray-500 leading-relaxed text-sm">피규어, 가챠, 굿즈 도매 전용 주문 플랫폼.<br/>등급별 할인가로 편리하게 주문하세요.</p>
         </div>
       </div>
 
