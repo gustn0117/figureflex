@@ -2,5 +2,5 @@ services:
   app:
     build: .
     ports:
-      - "${PORT:-3000}:3000"
+      - "3040:3000"
     restart: unless-stopped
