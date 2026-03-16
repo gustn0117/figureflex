@@ -14,108 +14,71 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, logout, cart } = useStore();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, []);
 
   if (!currentUser) return null;
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <header className="bg-white sticky top-0 z-50">
-      {/* Top bar */}
-      <div className="border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-5 flex items-center justify-between h-8">
-          <div />
-          <div className="flex items-center gap-4 text-[11px] text-gray-400">
-            <button onClick={() => router.push('/dashboard/notices')} className="hover:text-gray-900">공지사항</button>
-            <button onClick={() => router.push('/dashboard/inquiry')} className="hover:text-gray-900">문의하기</button>
-            <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-900">마이페이지</button>
-            <button onClick={() => { logout(); router.push('/'); }} className="hover:text-gray-900">로그아웃</button>
-          </div>
+    <header className="bg-white sticky top-0 z-50 shadow-[0_1px_0_0_#e5e7eb]">
+      <div className="max-w-6xl mx-auto px-5">
+        {/* Top utility */}
+        <div className="flex items-center justify-end gap-4 h-8 text-[11px] text-gray-400 border-b border-gray-100">
+          <button onClick={() => router.push('/dashboard/notices')} className="hover:text-gray-700">공지사항</button>
+          <span className="text-gray-200">|</span>
+          <button onClick={() => router.push('/dashboard/inquiry')} className="hover:text-gray-700">문의</button>
+          <span className="text-gray-200">|</span>
+          <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-700">{currentUser.company}</button>
+          <span className="text-gray-200">|</span>
+          <button onClick={() => { logout(); router.push('/'); }} className="hover:text-gray-700">로그아웃</button>
         </div>
-      </div>
 
-      {/* Main header */}
-      <div className="border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-5 flex items-center justify-between h-16">
-          {/* Logo */}
-          <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2.5 shrink-0">
-            <img src="/logo.jpg" alt="피규어플렉스" className="h-10 w-auto" style={{ mixBlendMode: 'multiply' }} />
-            <span className="text-lg font-bold text-gray-900 hidden sm:block">피규어플렉스</span>
+        {/* Main bar */}
+        <div className="flex items-center justify-between h-16">
+          <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2">
+            <img src="/logo.jpg" alt="" className="h-9 w-auto" style={{ mixBlendMode: 'multiply' }} />
+            <span className="text-[17px] font-bold text-gray-900 tracking-tight">피규어플렉스</span>
           </button>
 
-          {/* Search / Right icons */}
-          <div className="flex items-center gap-4">
-            {/* Cart */}
-            <button onClick={() => router.push('/dashboard/cart')} className="relative text-gray-500 hover:text-gray-900 transition-colors">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold px-1">{cartCount}</span>
-              )}
+          <div className="flex items-center gap-3">
+            <button onClick={() => router.push('/dashboard/cart')} className="relative text-gray-500 hover:text-gray-900 p-1">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+              {cartCount > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gray-900 text-white text-[10px] rounded-full flex items-center justify-center font-bold px-1">{cartCount}</span>}
             </button>
-
-            {/* My page */}
-            <button onClick={() => router.push('/dashboard/mypage')} className="text-gray-500 hover:text-gray-900 transition-colors">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-              </svg>
+            <button onClick={() => router.push('/dashboard/mypage')} className="text-gray-500 hover:text-gray-900 p-1">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
             </button>
-
-            {/* Mobile toggle */}
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-gray-500">
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-gray-500 p-1">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                {mobileOpen
-                  ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                  : <><line x1="3" y1="7" x2="21" y2="7" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="17" x2="21" y2="17" /></>
-                }
+                {mobileOpen ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></> : <><line x1="3" y1="7" x2="21" y2="7" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="17" x2="21" y2="17" /></>}
               </svg>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Category nav */}
-      <div className="border-b border-gray-100 hidden md:block">
-        <div className="max-w-6xl mx-auto px-5">
-          <nav className="flex items-center gap-0">
-            {navItems.map(item => (
-              <button key={item.href} onClick={() => router.push(item.href)}
-                className={`px-5 py-3 text-sm transition-colors relative ${
-                  pathname === item.href
-                    ? 'text-gray-900 font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-gray-900'
-                    : 'text-gray-500 hover:text-gray-900'
-                }`}>
-                {item.label}
-              </button>
-            ))}
-          </nav>
-        </div>
+        {/* Category nav - desktop */}
+        <nav className="hidden md:flex items-center gap-0 -mb-px">
+          {navItems.map(item => (
+            <button key={item.href} onClick={() => router.push(item.href)}
+              className={`px-4 py-3 text-[13px] font-medium border-b-2 transition-colors ${
+                pathname === item.href ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-700'
+              }`}>
+              {item.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* Mobile nav */}
       {mobileOpen && (
-        <div className="md:hidden border-b border-gray-200 bg-white">
-          <div className="max-w-6xl mx-auto px-5 py-3 space-y-1">
+        <div className="md:hidden bg-white border-t border-gray-100">
+          <div className="max-w-6xl mx-auto px-5 py-2">
             {navItems.map(item => (
               <button key={item.href} onClick={() => { router.push(item.href); setMobileOpen(false); }}
-                className={`block w-full text-left px-3 py-2 text-sm rounded ${pathname === item.href ? 'text-gray-900 font-medium bg-gray-50' : 'text-gray-500'}`}>
+                className={`block w-full text-left px-3 py-2.5 text-sm rounded ${pathname === item.href ? 'text-gray-900 font-medium bg-gray-50' : 'text-gray-500'}`}>
                 {item.label}
               </button>
             ))}
-            <div className="border-t border-gray-100 pt-2 mt-2">
-              <button onClick={() => { router.push('/dashboard/notices'); setMobileOpen(false); }} className="block w-full text-left px-3 py-2 text-sm text-gray-500">공지사항</button>
-              <button onClick={() => { router.push('/dashboard/inquiry'); setMobileOpen(false); }} className="block w-full text-left px-3 py-2 text-sm text-gray-500">문의하기</button>
-              <button onClick={() => { router.push('/dashboard/mypage'); setMobileOpen(false); }} className="block w-full text-left px-3 py-2 text-sm text-gray-500">마이페이지</button>
-            </div>
           </div>
         </div>
       )}

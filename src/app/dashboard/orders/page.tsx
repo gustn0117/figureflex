@@ -5,43 +5,24 @@ function exportToPDF(order: any) {
   import('jspdf').then(({ default: jsPDF }) => {
     import('jspdf-autotable').then(() => {
       const doc = new jsPDF();
-      doc.setFontSize(18);
-      doc.text('FigureFlex Order', 14, 22);
+      doc.setFontSize(18); doc.text('FigureFlex Order', 14, 22);
       doc.setFontSize(10);
-      doc.text(`Order ID: ${order.id}`, 14, 35);
-      doc.text(`Date: ${order.createdAt}`, 14, 42);
-      doc.text(`Customer: ${order.userName}`, 14, 49);
-      doc.text(`Status: ${order.status}`, 14, 56);
-      const tableData = order.items.map((item: any, idx: number) => [
-        idx + 1, item.productName, item.quantity,
-        item.unitPrice.toLocaleString(), item.totalPrice.toLocaleString(),
-      ]);
-      (doc as any).autoTable({
-        startY: 65,
-        head: [['#', 'Product', 'Qty', 'Unit Price', 'Total']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [26, 26, 46] },
-      });
-      const finalY = (doc as any).lastAutoTable.finalY || 100;
-      doc.setFontSize(12);
-      doc.text(`Total: ${order.finalAmount.toLocaleString()} KRW`, 14, finalY + 15);
+      doc.text(`Order: ${order.id}`, 14, 35); doc.text(`Date: ${order.createdAt}`, 14, 42);
+      const data = order.items.map((i: any, idx: number) => [idx+1, i.productName, i.quantity, i.unitPrice.toLocaleString(), i.totalPrice.toLocaleString()]);
+      (doc as any).autoTable({ startY: 50, head: [['#','Product','Qty','Price','Total']], body: data, theme: 'grid', headStyles: { fillColor: [17,17,17] } });
+      const y = (doc as any).lastAutoTable.finalY || 100;
+      doc.setFontSize(12); doc.text(`Total: ${order.finalAmount.toLocaleString()} KRW`, 14, y + 15);
       doc.save(`order_${order.id}.pdf`);
     });
   });
 }
 
 function exportToExcel(order: any) {
-  import('xlsx').then((XLSX) => {
-    const data = order.items.map((item: any, idx: number) => ({
-      '번호': idx + 1, '상품명': item.productName, '수량': item.quantity,
-      '단가': item.unitPrice, '합계': item.totalPrice,
-    }));
-    data.push({ '번호': '', '상품명': '', '수량': '', '단가': '총합계', '합계': order.finalAmount });
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Order');
-    XLSX.writeFile(wb, `order_${order.id}.xlsx`);
+  import('xlsx').then(XLSX => {
+    const data = order.items.map((i: any, idx: number) => ({ '#': idx+1, '상품명': i.productName, '수량': i.quantity, '단가': i.unitPrice, '합계': i.totalPrice }));
+    data.push({ '#': '', '상품명': '', '수량': '', '단가': '총합계', '합계': order.finalAmount });
+    const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Order'); XLSX.writeFile(wb, `order_${order.id}.xlsx`);
   });
 }
 
@@ -59,15 +40,11 @@ export default function OrdersPage() {
   const myOrders = orders.filter(o => o.userId === currentUser?.id);
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-6">주문내역</h2>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-xl font-bold text-gray-900 mb-6">주문내역</h1>
 
       {myOrders.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-300 mb-4">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-            <rect x="8" y="2" width="8" height="4" rx="1" />
-          </svg>
+        <div className="text-center py-20">
           <p className="text-gray-400 text-sm">주문 내역이 없습니다.</p>
         </div>
       ) : (
@@ -75,61 +52,31 @@ export default function OrdersPage() {
           {myOrders.map(order => {
             const st = statusMap[order.status] || statusMap.pending;
             return (
-              <div key={order.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 bg-gray-50/50">
+              <div key={order.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 bg-gray-50 text-sm">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono text-gray-400">#{order.id}</span>
-                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium ${st.color}`}>{st.label}</span>
+                    <span className="text-gray-400 font-mono text-xs">#{order.id}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${st.color}`}>{st.label}</span>
                     <span className="text-xs text-gray-400">{order.createdAt}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => exportToPDF(order)}
-                      className="flex items-center gap-1 text-xs bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                      </svg>
-                      PDF
-                    </button>
-                    <button
-                      onClick={() => exportToExcel(order)}
-                      className="flex items-center gap-1 text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                      </svg>
-                      Excel
-                    </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => exportToPDF(order)} className="text-[11px] text-gray-500 hover:text-gray-900">PDF</button>
+                    <button onClick={() => exportToExcel(order)} className="text-[11px] text-gray-500 hover:text-gray-900">Excel</button>
                   </div>
                 </div>
-
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-xs text-gray-400">
-                      <th className="text-left px-5 py-2.5 font-medium">상품명</th>
-                      <th className="text-center px-3 py-2.5 font-medium">수량</th>
-                      <th className="text-right px-3 py-2.5 font-medium">단가</th>
-                      <th className="text-right px-5 py-2.5 font-medium">합계</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.items.map((item, idx) => (
-                      <tr key={idx} className="border-t border-gray-50">
-                        <td className="px-5 py-3 text-gray-700">{item.productName}</td>
-                        <td className="text-center px-3 py-3">{item.quantity}</td>
-                        <td className="text-right px-3 py-3">{item.unitPrice.toLocaleString()}원</td>
-                        <td className="text-right px-5 py-3 font-medium">{item.totalPrice.toLocaleString()}원</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div className="flex items-center justify-end gap-4 px-5 py-4 bg-gray-50/50 border-t border-gray-50">
-                  <span className="text-sm text-gray-500">총 결제금액</span>
-                  <span className="text-lg font-extrabold text-gray-900">{order.finalAmount.toLocaleString()}원</span>
+                <div className="divide-y divide-gray-50">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between px-5 py-3 text-sm">
+                      <span className="text-gray-700 flex-1">{item.productName}</span>
+                      <span className="text-gray-400 w-16 text-center">{item.quantity}개</span>
+                      <span className="text-gray-500 w-24 text-right">{item.unitPrice.toLocaleString()}원</span>
+                      <span className="font-medium text-gray-900 w-28 text-right">{item.totalPrice.toLocaleString()}원</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-end px-5 py-3 bg-gray-50 gap-3">
+                  <span className="text-sm text-gray-400">합계</span>
+                  <span className="text-base font-bold text-gray-900">{order.finalAmount.toLocaleString()}원</span>
                 </div>
               </div>
             );

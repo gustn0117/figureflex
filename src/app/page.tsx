@@ -14,86 +14,61 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     const pendingUser = users.find(u => u.email === email && u.password === password && u.status === 'pending');
-    if (pendingUser) {
-      setError('관리자 승인 대기 중입니다. 승인 후 로그인 가능합니다.');
-      return;
-    }
+    if (pendingUser) { setError('관리자 승인 대기 중입니다.'); return; }
     const rejectedUser = users.find(u => u.email === email && u.password === password && u.status === 'rejected');
-    if (rejectedUser) {
-      setError('가입이 거부되었습니다. 관리자에게 문의하세요.');
-      return;
-    }
+    if (rejectedUser) { setError('가입이 거부되었습니다. 관리자에게 문의하세요.'); return; }
     const user = login(email, password);
-    if (user) {
-      if (user.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
-    } else {
-      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
-    }
+    if (user) { router.push(user.role === 'admin' ? '/admin' : '/dashboard'); }
+    else { setError('이메일 또는 비밀번호가 올바르지 않습니다.'); }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="w-full max-w-sm px-6">
-        {/* Logo */}
-        <div className="text-center mb-10">
-          <img src="/logo.jpg" alt="피규어플렉스" className="w-36 mx-auto mb-2 object-contain" style={{ mixBlendMode: 'multiply' }} />
+    <div className="min-h-screen flex">
+      {/* Left - branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 items-center justify-center p-12">
+        <div className="max-w-md">
+          <img src="/logo.jpg" alt="" className="w-32 mb-8 brightness-0 invert opacity-90" />
+          <h2 className="text-3xl font-bold text-white mb-3">피규어플렉스</h2>
+          <p className="text-gray-400 leading-relaxed">피규어, 가챠, 굿즈 도매 전용 주문 플랫폼. 등급별 할인가로 편리하게 주문하세요.</p>
         </div>
+      </div>
 
-        {/* Login Form */}
-        <div>
-          <form onSubmit={handleLogin} className="space-y-4">
+      {/* Right - form */}
+      <div className="flex-1 flex items-center justify-center p-6 bg-white">
+        <div className="w-full max-w-sm">
+          <div className="lg:hidden mb-10">
+            <img src="/logo.jpg" alt="피규어플렉스" className="h-12 mb-3" style={{ mixBlendMode: 'multiply' }} />
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">로그인</h1>
+          <p className="text-sm text-gray-400 mb-8">계정 정보를 입력해주세요</p>
+
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="w-full px-0 py-3 border-b border-gray-200 text-sm focus:outline-none focus:border-gray-900 transition-colors"
-                placeholder="이메일"
-                required
-              />
+              <label className="block text-xs text-gray-500 mb-1.5 font-medium">이메일</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm placeholder:text-gray-400" placeholder="email@example.com" required />
             </div>
             <div>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full px-0 py-3 border-b border-gray-200 text-sm focus:outline-none focus:border-gray-900 transition-colors"
-                placeholder="비밀번호"
-                required
-              />
+              <label className="block text-xs text-gray-500 mb-1.5 font-medium">비밀번호</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm placeholder:text-gray-400" placeholder="비밀번호 입력" required />
             </div>
 
-            {error && (
-              <div className="flex items-center gap-2 bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-                {error}
-              </div>
-            )}
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
-            <button type="submit"
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-black transition-colors text-sm mt-2">
+            <button type="submit" className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-black transition-colors">
               로그인
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button onClick={() => router.push('/register')}
-              className="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-              회원가입 신청
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-[11px] text-gray-300 space-x-3">
-            <span>admin@figureflex.com / admin1234</span>
+          <p className="mt-6 text-center text-sm text-gray-400">
+            계정이 없으신가요? <button onClick={() => router.push('/register')} className="text-gray-900 font-medium hover:underline">회원가입</button>
           </p>
+
+          <div className="mt-10 pt-6 border-t border-gray-100 text-[11px] text-gray-300 text-center">
+            admin@figureflex.com / admin1234
+          </div>
         </div>
       </div>
     </div>

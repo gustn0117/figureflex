@@ -43,12 +43,9 @@ export default function ProductDetailPage() {
 
   return (
     <div>
-      <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-900 transition-colors mb-5 font-medium">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-        {category?.name}{subCategory ? ` / ${subCategory.name}` : ''}
-      </button>
+      <button onClick={() => router.back()} className="text-sm text-gray-400 hover:text-gray-900 transition-colors mb-6 inline-block">&larr; {category?.name}{subCategory ? ` / ${subCategory.name}` : ''}</button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
           {/* Images */}
           <div>
             <div className="aspect-square relative overflow-hidden bg-gray-100 rounded-lg">
@@ -91,7 +88,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* Price */}
-            <div className="bg-gray-50 rounded-xl p-5 mb-5">
+            <div className="border border-gray-200 rounded-lg p-5 mb-5">
               <div className="flex items-end gap-3 mb-1">
                 {discountPercent > 0 && <span className="text-red-500 text-lg font-bold">{discountPercent}%</span>}
                 <span className="text-2xl font-extrabold text-gray-900">{myPrice.toLocaleString()}원</span>
@@ -101,7 +98,7 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Grade table */}
-            <div className="border border-gray-100 rounded-xl overflow-hidden mb-5">
+            <div className="border border-gray-100 rounded-lg overflow-hidden mb-5">
               <table className="w-full text-sm">
                 <thead><tr className="bg-gray-50"><th className="text-left px-4 py-2 text-xs text-gray-400 font-semibold">등급</th><th className="text-right px-4 py-2 text-xs text-gray-400 font-semibold">단가</th></tr></thead>
                 <tbody>
@@ -126,7 +123,7 @@ export default function ProductDetailPage() {
                 { label: '판매기간', value: `${product.saleStartDate} ~ ${product.saleEndDate}` },
                 { label: '재고', value: `${product.stock}개` },
               ].map((info, i) => (
-                <div key={i} className="bg-gray-50 rounded-xl p-3">
+                <div key={i} className="bg-gray-50 rounded-lg p-3">
                   <p className="text-gray-400 mb-0.5 font-medium">{info.label}</p>
                   <p className="font-semibold text-gray-700">{info.value}</p>
                 </div>
@@ -138,7 +135,7 @@ export default function ProductDetailPage() {
               <div className="mt-auto border-t border-gray-100 pt-5">
                 <div className="flex items-center gap-3 mb-4">
                   <label className="text-sm text-gray-600 font-semibold">수량</label>
-                  <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                     <button onClick={() => setQuantity(Math.max(product.minQuantity, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     </button>
@@ -151,14 +148,14 @@ export default function ProductDetailPage() {
                   <span className="text-xs text-gray-400">({product.minQuantity}~{product.maxQuantity})</span>
                 </div>
 
-                <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-xl px-4 py-3">
+                <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-lg px-4 py-3">
                   <span className="text-sm text-gray-500 font-medium">총 상품금액</span>
                   <span className="text-xl font-extrabold text-gray-900">{(myPrice * quantity).toLocaleString()}원</span>
                 </div>
 
                 <button onClick={handleAddToCart}
                   disabled={quantity < product.minQuantity || quantity > product.maxQuantity}
-                  className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
+                  className={`w-full py-3.5 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
                     added ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-black/10'
                   } disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none active:scale-[0.98]`}>
                   {added ? (
