@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --border-color: #e0e0e0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #999; }
+
+/* Status badges */
+.badge-vvip { background: linear-gradient(135deg, #FFD700, #FFA500); color: #333; }
+.badge-vip { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #333; }
+.badge-gold { background: linear-gradient(135deg, #DAA520, #B8860B); color: #fff; }
+.badge-silver { background: linear-gradient(135deg, #C0C0C0, #808080); color: #fff; }
+
+.badge-sale { background: #22c55e; color: #fff; }
+.badge-expired { background: #ef4444; color: #fff; }

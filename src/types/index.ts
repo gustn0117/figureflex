@@ -1,0 +1,97 @@
+export type UserGrade = 'VVIP' | 'VIP' | 'GOLD' | 'SILVER';
+export type UserRole = 'admin' | 'member';
+export type UserStatus = 'pending' | 'approved' | 'rejected';
+export type MemberType = 'chain' | 'external'; // 체인점 / 외부업체
+
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  name: string;
+  company: string;
+  phone: string;
+  role: UserRole;
+  grade: UserGrade;
+  memberType: MemberType;
+  status: UserStatus;
+  referralCode: string;
+  referredBy: string;
+  photoUrl: string;
+  createdAt: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+  order: number;
+}
+
+export type ProductStatus = 'sale' | 'expired' | 'upcoming';
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  categoryId: string;
+  subCategoryId: string;
+  basePrice: number;
+  prices: Record<UserGrade, number>;
+  minQuantity: number;
+  maxQuantity: number;
+  stock: number;
+  saleStartDate: string;
+  saleEndDate: string;
+  status: ProductStatus;
+  createdAt: string;
+}
+
+export interface CartItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'shipped' | 'completed' | 'cancelled';
+
+export interface Order {
+  id: string;
+  userId: string;
+  userName: string;
+  items: OrderItem[];
+  totalAmount: number;
+  discountRate: number;
+  finalAmount: number;
+  status: OrderStatus;
+  createdAt: string;
+  paidAmount: number;
+}
+
+export interface Notice {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  isImportant: boolean;
+}
+
+export interface Inquiry {
+  id: string;
+  userId: string;
+  userName: string;
+  title: string;
+  content: string;
+  imageUrl: string;
+  reply: string;
+  createdAt: string;
+  repliedAt: string;
+}

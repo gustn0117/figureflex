@@ -1,0 +1,2 @@
+이 폴더에 상품 이미지를 넣으세요.
+/images/sample-ichiban.jpg 등의 파일이 필요합니다.
