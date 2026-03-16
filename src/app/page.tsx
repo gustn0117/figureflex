@@ -40,10 +40,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md px-6">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl mb-4 shadow-lg">
-            <span className="text-3xl font-bold text-white">F</span>
-          </div>
-          <h1 className="text-3xl font-bold text-primary tracking-tight">피규어플렉스</h1>
+          <img src="/logo.jpg" alt="피규어플렉스" className="w-32 h-32 mx-auto mb-2 object-contain" />
           <p className="text-sm text-gray-400 mt-1">FigureFlex Wholesale</p>
         </div>
 

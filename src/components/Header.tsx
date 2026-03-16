@@ -105,12 +105,9 @@ export default function Header() {
           {/* Logo */}
           <button
             onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2.5 shrink-0"
+            className="flex items-center gap-2 shrink-0"
           >
-            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">F</span>
-            </div>
-            <span className="text-lg font-bold text-primary hidden sm:block">피규어플렉스</span>
+            <img src="/logo.jpg" alt="피규어플렉스" className="h-9 w-auto object-contain" />
           </button>
 
           {/* Desktop Nav */}
