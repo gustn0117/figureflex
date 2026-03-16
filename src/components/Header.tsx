@@ -4,44 +4,13 @@ import { useStore } from '@/store/useStore';
 import { useState, useRef, useEffect } from 'react';
 
 const navItems = [
-  {
-    label: '공지사항',
-    href: '/dashboard/notices',
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>,
-  },
-  {
-    label: '일번상',
-    href: '/dashboard/ichiban',
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>,
-  },
-  {
-    label: '피규어',
-    href: '/dashboard/figures',
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z" /><rect x="8" y="8" width="8" height="10" rx="1" /><path d="M10 18v4M14 18v4" /></svg>,
-  },
-  {
-    label: '가챠',
-    href: '/dashboard/gacha',
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="8" /></svg>,
-  },
-  {
-    label: '굿즈',
-    href: '/dashboard/goods',
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12v10H4V12" /><rect x="2" y="7" width="20" height="5" rx="1" /><path d="M12 22V7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></svg>,
-  },
-  {
-    label: '문의',
-    href: '/dashboard/inquiry',
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>,
-  },
+  { label: '공지', href: '/dashboard/notices' },
+  { label: '일번상', href: '/dashboard/ichiban' },
+  { label: '피규어', href: '/dashboard/figures' },
+  { label: '가챠', href: '/dashboard/gacha' },
+  { label: '굿즈', href: '/dashboard/goods' },
+  { label: '문의', href: '/dashboard/inquiry' },
 ];
-
-const gradeColors: Record<string, string> = {
-  VVIP: 'bg-gray-900 text-white',
-  VIP: 'bg-gray-700 text-white',
-  GOLD: 'bg-gray-500 text-white',
-  SILVER: 'bg-gray-400 text-white',
-};
 
 export default function Header() {
   const pathname = usePathname();
@@ -52,172 +21,105 @@ export default function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   if (!currentUser) return null;
-
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <header className="bg-white/80 backdrop-blur-xl border-b border-gray-200/60 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
+    <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-5">
+        <div className="flex items-center h-14">
           {/* Logo */}
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 shrink-0"
-          >
-            <img src="/logo.jpg" alt="피규어플렉스" className="h-8 w-auto object-contain" style={{ mixBlendMode: 'multiply' }} />
+          <button onClick={() => router.push('/dashboard')} className="shrink-0 mr-8">
+            <img src="/logo.jpg" alt="피규어플렉스" className="h-7 w-auto" style={{ mixBlendMode: 'multiply' }} />
           </button>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-0.5">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <button
-                  key={item.href}
-                  onClick={() => router.push(item.href)}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
-                    isActive
-                      ? 'bg-gray-900 text-white shadow-sm shadow-black/10'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
-              );
-            })}
+          {/* Nav */}
+          <nav className="hidden md:flex items-center gap-1 flex-1">
+            {navItems.map(item => (
+              <button key={item.href} onClick={() => router.push(item.href)}
+                className={`px-3 py-1.5 text-[13px] rounded-md transition-colors ${
+                  pathname === item.href ? 'text-gray-900 font-semibold bg-gray-100' : 'text-gray-500 hover:text-gray-900'
+                }`}>
+                {item.label}
+              </button>
+            ))}
           </nav>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-1.5">
+          {/* Right */}
+          <div className="flex items-center gap-3 ml-auto">
             {/* Cart */}
-            <button
-              onClick={() => router.push('/dashboard/cart')}
-              className={`relative p-2 rounded-full transition-all ${
-                pathname === '/dashboard/cart'
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
+            <button onClick={() => router.push('/dashboard/cart')}
+              className={`relative p-1.5 rounded-md transition-colors ${pathname === '/dashboard/cart' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-900'}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 min-w-[18px] bg-highlight text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none px-1">
-                  {cartCount}
-                </span>
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold px-1">{cartCount}</span>
               )}
             </button>
 
             {/* Orders */}
-            <button
-              onClick={() => router.push('/dashboard/orders')}
-              className={`p-2 rounded-full transition-all ${
-                pathname === '/dashboard/orders'
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                <rect x="8" y="2" width="8" height="4" rx="1" />
-                <path d="M9 14l2 2 4-4" />
+            <button onClick={() => router.push('/dashboard/orders')}
+              className={`p-1.5 rounded-md transition-colors ${pathname === '/dashboard/orders' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-900'}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" />
               </svg>
             </button>
 
-            {/* Divider */}
-            <div className="w-px h-6 bg-gray-200 mx-1 hidden sm:block" />
+            <div className="w-px h-5 bg-gray-200 hidden sm:block" />
 
-            {/* User Menu */}
+            {/* User */}
             <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-full hover:bg-gray-100 transition-all"
-              >
-                <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">{currentUser.company.charAt(0)}</span>
-                </div>
-                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-semibold text-gray-900 leading-tight">{currentUser.company}</p>
-                </div>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${gradeColors[currentUser.grade]}`}>
-                  {currentUser.grade}
-                </span>
+              <button onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                <span className="hidden sm:inline text-[13px]">{currentUser.company}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
               </button>
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl shadow-black/10 border border-gray-100 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-semibold text-gray-900">{currentUser.company}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{currentUser.name} / {currentUser.email}</p>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <div className="px-3 py-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">{currentUser.company}</p>
+                    <p className="text-[11px] text-gray-400">{currentUser.name} / {currentUser.grade}</p>
                   </div>
-                  <div className="p-1">
-                    <button
-                      onClick={() => {
-                        logout();
-                        router.push('/');
-                      }}
-                      className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
-                      </svg>
-                      로그아웃
-                    </button>
-                  </div>
+                  <button onClick={() => { logout(); router.push('/'); }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                    로그아웃
+                  </button>
                 </div>
               )}
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-full text-gray-500 hover:bg-gray-100"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {mobileMenuOpen ? (
-                  <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                ) : (
-                  <><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="18" x2="20" y2="18" /></>
-                )}
+            {/* Mobile toggle */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-1.5 text-gray-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {mobileMenuOpen
+                  ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+                  : <><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></>
+                }
               </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Nav */}
+      {/* Mobile */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur-xl">
-          <div className="max-w-7xl mx-auto px-4 py-2 space-y-0.5">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <button
-                  key={item.href}
-                  onClick={() => { router.push(item.href); setMobileMenuOpen(false); }}
-                  className={`flex items-center gap-2.5 w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
-              );
-            })}
+        <div className="md:hidden border-t border-gray-100 bg-white">
+          <div className="max-w-6xl mx-auto px-5 py-2">
+            {navItems.map(item => (
+              <button key={item.href} onClick={() => { router.push(item.href); setMobileMenuOpen(false); }}
+                className={`block w-full text-left px-3 py-2.5 text-sm rounded-md ${pathname === item.href ? 'text-gray-900 font-medium bg-gray-50' : 'text-gray-500'}`}>
+                {item.label}
+              </button>
+            ))}
           </div>
         </div>
       )}

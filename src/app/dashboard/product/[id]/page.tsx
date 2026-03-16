@@ -48,11 +48,10 @@ export default function ProductDetailPage() {
         {category?.name}{subCategory ? ` / ${subCategory.name}` : ''}
       </button>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Images */}
           <div>
-            <div className="aspect-square relative overflow-hidden bg-gray-50">
+            <div className="aspect-square relative overflow-hidden bg-gray-100 rounded-lg">
               {allImages.length > 0 ? (
                 <img src={allImages[selectedImage] || allImages[0]} alt={product.name} className="w-full h-full object-contain" />
               ) : (
@@ -66,10 +65,10 @@ export default function ProductDetailPage() {
             </div>
             {/* Thumbnails */}
             {allImages.length > 1 && (
-              <div className="flex gap-2 p-3 overflow-x-auto">
+              <div className="flex gap-2 mt-3 overflow-x-auto">
                 {allImages.map((img, idx) => (
                   <button key={idx} onClick={() => setSelectedImage(idx)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${selectedImage === idx ? 'border-gray-900' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                    className={`w-16 h-16 rounded-md overflow-hidden shrink-0 border-2 transition-all ${selectedImage === idx ? 'border-gray-900' : 'border-gray-200 opacity-60 hover:opacity-100'}`}>
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -78,13 +77,8 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Info */}
-          <div className="p-7 flex flex-col">
-            {/* Category badge */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">{category?.name}</span>
-              {subCategory && <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">{subCategory.name}</span>}
-            </div>
-
+          <div className="flex flex-col">
+            <p className="text-xs text-gray-400 mb-2">{category?.name}{subCategory ? ` / ${subCategory.name}` : ''}</p>
             <h1 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h1>
             {product.description && <p className="text-sm text-gray-500 mb-4 leading-relaxed">{product.description}</p>}
 
@@ -176,34 +170,23 @@ export default function ProductDetailPage() {
               </div>
             )}
           </div>
-        </div>
       </div>
 
       {/* Detail Content */}
       {product.detailContent && (
-        <div className="bg-white rounded-2xl border border-gray-100 mt-6 p-7">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
-            </svg>
-            상세 정보
-          </h2>
+        <div className="mt-10 pt-10 border-t border-gray-100">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">상세 정보</h2>
           <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{product.detailContent}</div>
         </div>
       )}
 
       {/* Sub Images Gallery */}
       {product.images && product.images.length > 0 && product.images.some(img => img && !img.startsWith('/images/')) && (
-        <div className="bg-white rounded-2xl border border-gray-100 mt-6 p-7">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
-            </svg>
-            상품 이미지
-          </h2>
+        <div className="mt-10 pt-10 border-t border-gray-100">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">상품 이미지</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {product.images.filter(img => img && !img.startsWith('/images/')).map((img, idx) => (
-              <div key={idx} className="aspect-square rounded-xl overflow-hidden bg-gray-50">
+              <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                 <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-contain" />
               </div>
             ))}
