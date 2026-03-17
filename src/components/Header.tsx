@@ -4,7 +4,7 @@ import { useStore } from '@/store/useStore';
 import { useState, useRef, useEffect } from 'react';
 
 const navItems = [
-  { label: '일번상', href: '/dashboard/ichiban' },
+  { label: '제일복권', href: '/dashboard/ichiban' },
   { label: '피규어', href: '/dashboard/figures' },
   { label: '가챠', href: '/dashboard/gacha' },
   { label: '굿즈', href: '/dashboard/goods' },
@@ -23,33 +23,35 @@ export default function Header() {
     <header className="bg-white sticky top-0 z-50 shadow-[0_1px_0_0_#e5e7eb]">
       <div className="max-w-6xl mx-auto px-5">
         {/* Top utility */}
-        <div className="flex items-center justify-end gap-4 h-8 text-[11px] text-gray-400 border-b border-gray-100">
-          <button onClick={() => router.push('/dashboard/notices')} className="hover:text-gray-700">공지사항</button>
+        <div className="flex items-center justify-end gap-5 h-10 text-[12px] text-gray-400 border-b border-gray-100">
+          <button onClick={() => router.push('/dashboard/notices')} className="hover:text-gray-700 transition-colors">공지사항</button>
           <span className="text-gray-200">|</span>
-          <button onClick={() => router.push('/dashboard/inquiry')} className="hover:text-gray-700">문의</button>
+          <button onClick={() => router.push('/dashboard/inquiry')} className="hover:text-gray-700 transition-colors">문의사항</button>
           <span className="text-gray-200">|</span>
-          <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-700">{currentUser.company}</button>
+          <button onClick={() => router.push('/dashboard/orders')} className="hover:text-gray-700 transition-colors">주문내역</button>
           <span className="text-gray-200">|</span>
-          <button onClick={() => { logout(); router.push('/'); }} className="hover:text-gray-700">로그아웃</button>
+          <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-700 transition-colors font-medium text-gray-500">내정보</button>
+          <span className="text-gray-200">|</span>
+          <button onClick={() => { logout(); router.push('/'); }} className="hover:text-gray-700 transition-colors">로그아웃</button>
         </div>
 
         {/* Main bar */}
-        <div className="flex items-center justify-between h-16">
-          <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2">
-            <img src="/logo.jpg" alt="" className="h-9 w-auto" style={{ mixBlendMode: 'multiply' }} />
-            <span className="text-[17px] font-bold text-gray-900 tracking-tight">피규어플렉스</span>
+        <div className="flex items-center justify-between h-20">
+          <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2.5">
+            <img src="/logo.jpg" alt="" className="h-12 w-auto" style={{ mixBlendMode: 'multiply' }} />
+            <span className="text-[20px] font-bold text-gray-900 tracking-tight">피규어플렉스</span>
           </button>
 
-          <div className="flex items-center gap-3">
-            <button onClick={() => router.push('/dashboard/cart')} className="relative text-gray-500 hover:text-gray-900 p-1">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-              {cartCount > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gray-900 text-white text-[10px] rounded-full flex items-center justify-center font-bold px-1">{cartCount}</span>}
+          <div className="flex items-center gap-4">
+            <button onClick={() => router.push('/dashboard/cart')} className="relative text-gray-500 hover:text-gray-900 p-1.5">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+              {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-[20px] bg-gray-900 text-white text-[10px] rounded-full flex items-center justify-center font-bold px-1">{cartCount}</span>}
             </button>
-            <button onClick={() => router.push('/dashboard/mypage')} className="text-gray-500 hover:text-gray-900 p-1">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+            <button onClick={() => router.push('/dashboard/mypage')} className="text-gray-500 hover:text-gray-900 p-1.5">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
             </button>
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-gray-500 p-1">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-gray-500 p-1.5">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 {mobileOpen ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></> : <><line x1="3" y1="7" x2="21" y2="7" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="17" x2="21" y2="17" /></>}
               </svg>
             </button>
@@ -60,7 +62,7 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-0 -mb-px">
           {navItems.map(item => (
             <button key={item.href} onClick={() => router.push(item.href)}
-              className={`px-4 py-3 text-[13px] font-medium border-b-2 transition-colors ${
+              className={`px-5 py-4 text-[14px] font-medium border-b-2 transition-colors ${
                 pathname === item.href ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-700'
               }`}>
               {item.label}
