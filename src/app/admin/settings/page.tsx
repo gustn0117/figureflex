@@ -82,7 +82,7 @@ export default function AdminSettingsPage() {
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mt-4">
         <p className="text-sm font-semibold text-amber-800 mb-2">안내</p>
         <ul className="text-xs text-amber-700 space-y-1 list-disc list-inside">
-          <li>여기서 설정한 할인율은 상품 등록 시 "자동계산" 버튼에만 적용됩니다.</li>
+          <li>여기서 설정한 할인율은 상품 등록 시 &ldquo;자동계산&rdquo; 버튼에만 적용됩니다.</li>
           <li>각 상품의 등급별 가격은 상품 등록/수정 시 개별 조정 가능합니다.</li>
           <li>기존 등록된 상품 가격은 변경되지 않습니다.</li>
         </ul>
