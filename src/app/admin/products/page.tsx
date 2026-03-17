@@ -88,7 +88,7 @@ function DateRangePicker({ startDate, endDate, onChangeStart, onChangeEnd }: {
 }
 
 export default function AdminProductsPage() {
-  const { products, categories, subCategories, gradeDiscounts, addProduct, updateProduct, deleteProduct, deleteProducts, toggleSoldout } = useStore();
+  const { products, categories, subCategories, addProduct, updateProduct, deleteProduct, deleteProducts, toggleSoldout } = useStore();
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState('');
@@ -107,16 +107,6 @@ export default function AdminProductsPage() {
 
   // Filtered products
   const filteredProducts = catFilter === 'all' ? products : products.filter(p => p.categoryId === catFilter);
-
-  const autoCalcPrices = (base: number) => {
-    setGradePrices({
-      VVIP: Math.round(base * (1 - (gradeDiscounts.VVIP || 0))),
-      VIP: Math.round(base * (1 - (gradeDiscounts.VIP || 0))),
-      GOLD: Math.round(base * (1 - (gradeDiscounts.GOLD || 0))),
-      SILVER: Math.round(base * (1 - (gradeDiscounts.SILVER || 0))),
-      '일반': Math.round(base * (1 - (gradeDiscounts['일반'] || 0))),
-    });
-  };
 
   const resetForm = () => {
     setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
@@ -227,13 +217,7 @@ export default function AdminProductsPage() {
 
             {/* Price */}
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-gray-700">가격 설정</p>
-                <button type="button" onClick={() => form.basePrice > 0 && autoCalcPrices(form.basePrice)} disabled={!form.basePrice}
-                  className="text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg px-3 py-1.5 disabled:opacity-40 hover:border-gray-400 transition-colors">
-                  기본가 기준 자동계산
-                </button>
-              </div>
+              <p className="text-sm font-semibold text-gray-700 mb-3">가격 설정</p>
               <div className="mb-4">
                 <label className="block text-xs text-gray-500 mb-1">기본가 (정가) *</label>
                 <div className="relative">
@@ -242,11 +226,10 @@ export default function AdminProductsPage() {
                 </div>
               </div>
               <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 mb-3 font-medium">등급별 가격 <span className="text-gray-400 font-normal">(직접 입력 또는 자동계산)</span></p>
+                <p className="text-xs text-gray-500 mb-3 font-medium">등급별 가격</p>
                 <div className="grid grid-cols-2 gap-3">
                   {GRADES.map(g => <PriceInput key={g.key} label={g.label} value={gradePrices[g.key]} onChange={v => setGradePrices(prev => ({ ...prev, [g.key]: v }))} colorCls={g.color} />)}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-3">현재 할인율: VVIP {((gradeDiscounts.VVIP||0)*100).toFixed(0)}% · VIP {((gradeDiscounts.VIP||0)*100).toFixed(0)}% · GOLD {((gradeDiscounts.GOLD||0)*100).toFixed(0)}% · SILVER {((gradeDiscounts.SILVER||0)*100).toFixed(0)}%</p>
               </div>
             </div>
 
