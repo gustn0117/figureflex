@@ -97,7 +97,7 @@ export default function AdminProductsPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [form, setForm] = useState({
     name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '',
-    basePrice: 0, minQuantity: 1, maxQuantity: 100, stock: 100,
+    basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100,
     saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '',
   });
 
@@ -117,13 +117,13 @@ export default function AdminProductsPage() {
   };
 
   const resetForm = () => {
-    setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
+    setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
     setGradePrices({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0 });
     setMainImage(''); setSubImages([]); setEditId(null); setShowForm(false);
   };
 
   const handleEdit = (p: Product) => {
-    setForm({ name: p.name, description: p.description, detailContent: p.detailContent || '', categoryId: p.categoryId, subCategoryId: p.subCategoryId, basePrice: p.basePrice, minQuantity: p.minQuantity, maxQuantity: p.maxQuantity, stock: p.stock, saleStartDate: p.saleStartDate, saleEndDate: p.saleEndDate, origin: p.origin || '', manufacturer: p.manufacturer || '' });
+    setForm({ name: p.name, description: p.description, detailContent: p.detailContent || '', categoryId: p.categoryId, subCategoryId: p.subCategoryId, basePrice: p.basePrice, minQuantity: p.minQuantity, maxQuantity: p.maxQuantity, quantityStep: p.quantityStep || 1, stock: p.stock, saleStartDate: p.saleStartDate, saleEndDate: p.saleEndDate, origin: p.origin || '', manufacturer: p.manufacturer || '' });
     setGradePrices(p.prices || { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0 });
     setMainImage(p.imageUrl || ''); setSubImages(p.images || []); setEditId(p.id); setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -251,8 +251,15 @@ export default function AdminProductsPage() {
             {/* Quantity */}
             <div>
               <p className="text-sm font-semibold text-gray-700 mb-3">수량 / 재고</p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <div><label className="block text-xs text-gray-500 mb-1">재고</label><input type="number" value={form.stock||''} onChange={e => setForm({...form, stock: Number(e.target.value)})} className={inputCls} min={0} /></div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">주문 단위 <span className="text-gray-400">(스텝)</span></label>
+                  <input type="number" value={form.quantityStep||''} onChange={e => setForm({...form, quantityStep: Number(e.target.value)})} className={inputCls} min={1} placeholder="1" />
+                  {form.quantityStep > 1 && <p className="text-[11px] text-blue-500 mt-1">{form.quantityStep}개 단위로 주문 가능</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-xs text-gray-500 mb-1">최소 주문</label><input type="number" value={form.minQuantity||''} onChange={e => setForm({...form, minQuantity: Number(e.target.value)})} className={inputCls} min={1} /></div>
                 <div><label className="block text-xs text-gray-500 mb-1">최대 주문</label><input type="number" value={form.maxQuantity||''} onChange={e => setForm({...form, maxQuantity: Number(e.target.value)})} className={inputCls} min={1} /></div>
               </div>

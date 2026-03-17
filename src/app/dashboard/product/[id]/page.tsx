@@ -119,16 +119,19 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <label className="text-sm text-gray-600 font-semibold">수량</label>
                   <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                    <button onClick={() => setQuantity(Math.max(product.minQuantity, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
+                    <button onClick={() => setQuantity(Math.max(product.minQuantity, quantity - (product.quantityStep || 1)))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     </button>
-                    <input type="number" value={quantity} onChange={e => setQuantity(Number(e.target.value))} min={product.minQuantity} max={product.maxQuantity}
+                    <input type="number" value={quantity} onChange={e => setQuantity(Number(e.target.value))} min={product.minQuantity} max={product.maxQuantity} step={product.quantityStep || 1}
                       className="w-14 h-10 text-center text-sm border-x border-gray-200 focus:outline-none font-semibold" />
-                    <button onClick={() => setQuantity(Math.min(product.maxQuantity, quantity + 1))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
+                    <button onClick={() => setQuantity(Math.min(product.maxQuantity, quantity + (product.quantityStep || 1)))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     </button>
                   </div>
-                  <span className="text-xs text-gray-400">({product.minQuantity}~{product.maxQuantity})</span>
+                  <span className="text-xs text-gray-400">
+                    ({product.minQuantity}~{product.maxQuantity}
+                    {(product.quantityStep || 1) > 1 ? ` · ${product.quantityStep}개 단위` : ''})
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-lg px-4 py-3">

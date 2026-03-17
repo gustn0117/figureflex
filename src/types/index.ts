@@ -43,6 +43,7 @@ export interface Product {
   prices: Record<UserGrade, number>;
   minQuantity: number;
   maxQuantity: number;
+  quantityStep?: number;
   stock: number;
   saleStartDate: string;
   saleEndDate: string;
