@@ -17,14 +17,14 @@ export default function AdminMembersPage() {
   const { users, approveUser, rejectUser, updateUserGrade, updateUser, deleteUser } = useStore();
   const [tab, setTab] = useState<'all' | 'pending'>('all');
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', memberType: 'chain' as MemberType });
+  const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', address: '', memberType: 'chain' as MemberType });
 
   const members = users.filter(u => u.role === 'member');
   const pendingCount = members.filter(u => u.status === 'pending').length;
   const filtered = tab === 'pending' ? members.filter(u => u.status === 'pending') : members;
 
   const openEdit = (u: User) => {
-    setEditForm({ name: u.name, company: u.company, phone: u.phone, email: u.email, memberType: u.memberType });
+    setEditForm({ name: u.name, company: u.company, phone: u.phone, email: u.email, address: u.address || '', memberType: u.memberType });
     setEditUser(u);
   };
 
@@ -69,6 +69,10 @@ export default function AdminMembersPage() {
               <div>
                 <label className="block text-xs text-gray-500 mb-1">이메일</label>
                 <input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} className={inputCls} />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">사업지 주소</label>
+                <input value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className={inputCls} />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">유형</label>

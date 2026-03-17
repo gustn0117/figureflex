@@ -7,7 +7,7 @@ import type { MemberType, UserGrade } from '@/types';
 export default function RegisterPage() {
   const router = useRouter();
   const { register, users } = useStore();
-  const [form, setForm] = useState({ email: '', password: '', passwordConfirm: '', name: '', company: '', phone: '', memberType: 'external' as MemberType, referredBy: '', photoFile: null as File | null });
+  const [form, setForm] = useState({ email: '', password: '', passwordConfirm: '', name: '', company: '', phone: '', address: '', memberType: 'external' as MemberType, referredBy: '', photoFile: null as File | null });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [photoPreview, setPhotoPreview] = useState('');
@@ -22,9 +22,10 @@ export default function RegisterPage() {
     e.preventDefault(); setError('');
     if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
     if (form.password.length < 6) { setError('비밀번호는 6자 이상이어야 합니다.'); return; }
-    if (!form.referredBy.trim()) { setError('추천인 코드를 입력해주세요.'); return; }
-    if (!users.find(u => u.referralCode === form.referredBy.trim())) { setError('유효하지 않은 추천인 코드입니다.'); return; }
-    const ok = register({ email: form.email, password: form.password, name: form.name, company: form.company, phone: form.phone, role: 'member', grade: '일반' as UserGrade, memberType: form.memberType, referredBy: form.referredBy, photoUrl: photoPreview });
+    if (form.referredBy.trim() && !users.find(u => u.referralCode === form.referredBy.trim())) {
+      setError('유효하지 않은 추천인 코드입니다.'); return;
+    }
+    const ok = register({ email: form.email, password: form.password, name: form.name, company: form.company, phone: form.phone, address: form.address, role: 'member', grade: '일반' as UserGrade, memberType: form.memberType, referredBy: form.referredBy, photoUrl: photoPreview });
     if (ok) setSuccess(true); else setError('이미 등록된 이메일입니다.');
   };
 
@@ -78,8 +79,12 @@ export default function RegisterPage() {
               </select></div>
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-medium">추천인 코드</label>
-            <input type="text" name="referredBy" value={form.referredBy} onChange={handleChange} className={inputCls} required />
+            <label className="block text-xs text-gray-500 mb-1.5 font-medium">사업지 주소</label>
+            <input type="text" name="address" value={form.address} onChange={handleChange} className={inputCls} placeholder="사업장 주소를 입력하세요" required />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1.5 font-medium">추천인 코드 <span className="text-gray-400 font-normal">(선택)</span></label>
+            <input type="text" name="referredBy" value={form.referredBy} onChange={handleChange} className={inputCls} placeholder="있는 경우에만 입력" />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1.5 font-medium">사업자등록증</label>

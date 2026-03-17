@@ -241,7 +241,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'figureflex-store',
-      version: 3,
+      version: 4,
     }
   )
 );

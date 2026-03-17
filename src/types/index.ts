@@ -10,6 +10,7 @@ export interface User {
   name: string;
   company: string;
   phone: string;
+  address: string;
   role: UserRole;
   grade: UserGrade;
   memberType: MemberType;
