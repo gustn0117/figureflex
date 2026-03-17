@@ -88,7 +88,7 @@ function DateRangePicker({ startDate, endDate, onChangeStart, onChangeEnd }: {
 }
 
 export default function AdminProductsPage() {
-  const { products, categories, subCategories, addProduct, updateProduct, deleteProduct, deleteProducts, toggleSoldout } = useStore();
+  const { products, categories, subCategories, gradeDiscounts, addProduct, updateProduct, deleteProduct, deleteProducts, toggleSoldout } = useStore();
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState('');
@@ -107,6 +107,14 @@ export default function AdminProductsPage() {
 
   // Filtered products
   const filteredProducts = catFilter === 'all' ? products : products.filter(p => p.categoryId === catFilter);
+
+  const calcFromBase = (base: number) => ({
+    VVIP:   Math.round(base * (1 - (gradeDiscounts.VVIP   || 0))),
+    VIP:    Math.round(base * (1 - (gradeDiscounts.VIP    || 0))),
+    GOLD:   Math.round(base * (1 - (gradeDiscounts.GOLD   || 0))),
+    SILVER: Math.round(base * (1 - (gradeDiscounts.SILVER || 0))),
+    '일반': Math.round(base * (1 - (gradeDiscounts['일반'] || 0))),
+  });
 
   const resetForm = () => {
     setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
@@ -221,15 +229,23 @@ export default function AdminProductsPage() {
               <div className="mb-4">
                 <label className="block text-xs text-gray-500 mb-1">기본가 (정가) *</label>
                 <div className="relative">
-                  <input type="text" inputMode="numeric" value={form.basePrice > 0 ? fmt(form.basePrice) : ''} onChange={e => setForm({...form, basePrice: parse(e.target.value)})} className={`${inputCls} pr-8 text-right`} required placeholder="0" />
+                  <input type="text" inputMode="numeric" value={form.basePrice > 0 ? fmt(form.basePrice) : ''}
+                    onChange={e => {
+                      const base = parse(e.target.value);
+                      setForm({...form, basePrice: base});
+                      if (base > 0) setGradePrices(calcFromBase(base));
+                    }}
+                    className={`${inputCls} pr-8 text-right`} required placeholder="0" />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">원</span>
                 </div>
+                <p className="text-[11px] text-gray-400 mt-1">입력 시 등급설정 할인율 기준으로 등급별 가격이 자동 계산됩니다.</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 mb-3 font-medium">등급별 가격</p>
+                <p className="text-xs text-gray-500 mb-3 font-medium">등급별 가격 <span className="text-gray-400 font-normal">(직접 수정 가능)</span></p>
                 <div className="grid grid-cols-2 gap-3">
                   {GRADES.map(g => <PriceInput key={g.key} label={g.label} value={gradePrices[g.key]} onChange={v => setGradePrices(prev => ({ ...prev, [g.key]: v }))} colorCls={g.color} />)}
                 </div>
+                <p className="text-[11px] text-gray-400 mt-3">현재 할인율: VVIP {((gradeDiscounts.VVIP||0)*100).toFixed(0)}% · VIP {((gradeDiscounts.VIP||0)*100).toFixed(0)}% · GOLD {((gradeDiscounts.GOLD||0)*100).toFixed(0)}% · SILVER {((gradeDiscounts.SILVER||0)*100).toFixed(0)}% · 일반 {((gradeDiscounts['일반']||0)*100).toFixed(0)}%</p>
               </div>
             </div>
 

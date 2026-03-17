@@ -45,7 +45,8 @@ export const SUB_CATEGORIES: Category[] = [
   // 가챠
   { id: 'sub-gacha-1', name: '반다이', slug: 'gacha-bandai', parentId: 'cat-gacha', order: 1 },
   { id: 'sub-gacha-2', name: '일반', slug: 'gacha-general', parentId: 'cat-gacha', order: 2 },
-  // 굿즈 - 하위 없음 (자유 추가)
+  // 굿즈
+  { id: 'sub-goods-1', name: '일반', slug: 'goods-general', parentId: 'cat-goods', order: 1 },
 ];
 
 export const MOCK_USERS: User[] = [
