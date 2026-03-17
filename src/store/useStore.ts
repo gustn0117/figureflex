@@ -189,7 +189,8 @@ export const useStore = create<AppState>()(
         const discountRate = GRADE_DISCOUNTS[user.grade] || 0;
         const items = state.cart.map(ci => {
           const product = state.products.find(p => p.id === ci.productId)!;
-          const unitPrice = product.prices[user.grade] || product.basePrice;
+          const discount = state.gradeDiscounts[user.grade] || 0;
+          const unitPrice = Math.round(product.basePrice * (1 - discount));
           return {
             productId: ci.productId,
             productName: product.name,

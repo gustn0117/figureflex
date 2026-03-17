@@ -8,7 +8,7 @@ import type { UserGrade } from '@/types';
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { products, currentUser, addToCart, categories, subCategories } = useStore();
+  const { products, currentUser, addToCart, categories, subCategories, gradeDiscounts } = useStore();
   const product = products.find(p => p.id === id);
   const [quantity, setQuantity] = useState(product?.minQuantity || 1);
   const [added, setAdded] = useState(false);
@@ -24,7 +24,7 @@ export default function ProductDetailPage() {
   }
 
   const grade: UserGrade = currentUser.grade;
-  const myPrice = product.prices[grade];
+  const myPrice = Math.round(product.basePrice * (1 - (gradeDiscounts[grade] || 0)));
   const today = new Date().toISOString().split('T')[0];
   const isExpired = product.saleEndDate < today;
   const category = categories.find(c => c.id === product.categoryId);

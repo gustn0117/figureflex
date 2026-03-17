@@ -14,29 +14,6 @@ const GRADES: { key: UserGrade; label: string; color: string }[] = [
 const fmt = (n: number) => n > 0 ? n.toLocaleString('ko-KR') : '';
 const parse = (s: string) => { const n = Number(s.replace(/,/g, '')); return isNaN(n) ? 0 : n; };
 
-function PriceInput({ label, value, onChange, colorCls }: {
-  label: string; value: number; onChange: (v: number) => void; colorCls?: string;
-}) {
-  const [display, setDisplay] = useState(value > 0 ? fmt(value) : '');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9]/g, '');
-    setDisplay(raw ? Number(raw).toLocaleString('ko-KR') : '');
-    onChange(raw ? Number(raw) : 0);
-  };
-  return (
-    <div className="flex-1">
-      <label className={`block text-[11px] font-semibold mb-1 px-2 py-0.5 rounded-md w-fit ${colorCls || 'text-gray-500 bg-gray-100'}`}>{label}</label>
-      <div className="relative">
-        <input type="text" inputMode="numeric" value={display} onChange={handleChange}
-          onBlur={() => setDisplay(value > 0 ? fmt(value) : '')}
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent bg-white text-right pr-8"
-          placeholder="0" />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">원</span>
-      </div>
-    </div>
-  );
-}
-
 function DateRangePicker({ startDate, endDate, onChangeStart, onChangeEnd }: {
   startDate: string; endDate: string;
   onChangeStart: (d: string) => void; onChangeEnd: (d: string) => void;
@@ -93,7 +70,6 @@ export default function AdminProductsPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState('');
   const [subImages, setSubImages] = useState<string[]>([]);
-  const [gradePrices, setGradePrices] = useState<Record<UserGrade, number>>({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 });
   const [catFilter, setCatFilter] = useState<string>('all');
   const [selected, setSelected] = useState<string[]>([]);
   const [form, setForm] = useState({
@@ -108,23 +84,16 @@ export default function AdminProductsPage() {
   // Filtered products
   const filteredProducts = catFilter === 'all' ? products : products.filter(p => p.categoryId === catFilter);
 
-  const calcFromBase = (base: number) => ({
-    VVIP:   Math.round(base * (1 - (gradeDiscounts.VVIP   || 0))),
-    VIP:    Math.round(base * (1 - (gradeDiscounts.VIP    || 0))),
-    GOLD:   Math.round(base * (1 - (gradeDiscounts.GOLD   || 0))),
-    SILVER: Math.round(base * (1 - (gradeDiscounts.SILVER || 0))),
-    '일반': Math.round(base * (1 - (gradeDiscounts['일반'] || 0))),
-  });
+  const calcPrice = (base: number, grade: UserGrade) =>
+    base > 0 ? Math.round(base * (1 - (gradeDiscounts[grade] || 0))) : 0;
 
   const resetForm = () => {
     setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
-    setGradePrices({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 });
     setMainImage(''); setSubImages([]); setEditId(null); setShowForm(false);
   };
 
   const handleEdit = (p: Product) => {
     setForm({ name: p.name, description: p.description, detailContent: p.detailContent || '', categoryId: p.categoryId, subCategoryId: p.subCategoryId, basePrice: p.basePrice, minQuantity: p.minQuantity, maxQuantity: p.maxQuantity, quantityStep: p.quantityStep || 1, stock: p.stock, saleStartDate: p.saleStartDate, saleEndDate: p.saleEndDate, origin: p.origin || '', manufacturer: p.manufacturer || '' });
-    setGradePrices(p.prices || { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 });
     setMainImage(p.imageUrl || ''); setSubImages(p.images || []); setEditId(p.id); setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -140,7 +109,8 @@ export default function AdminProductsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const productData = { ...form, prices: gradePrices, imageUrl: mainImage, images: subImages, status: 'sale' as const };
+    const prices = { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 } as Record<UserGrade, number>;
+    const productData = { ...form, prices, imageUrl: mainImage, images: subImages, status: 'sale' as const };
     if (editId) { updateProduct(editId, productData); } else { addProduct({ id: `prod-${Date.now()}`, ...productData, createdAt: new Date().toISOString().split('T')[0] }); }
     resetForm();
   };
@@ -226,27 +196,31 @@ export default function AdminProductsPage() {
             {/* Price */}
             <div>
               <p className="text-sm font-semibold text-gray-700 mb-3">가격 설정</p>
-              <div className="mb-4">
+              <div className="mb-3">
                 <label className="block text-xs text-gray-500 mb-1">기본가 (정가) *</label>
                 <div className="relative">
                   <input type="text" inputMode="numeric" value={form.basePrice > 0 ? fmt(form.basePrice) : ''}
-                    onChange={e => {
-                      const base = parse(e.target.value);
-                      setForm({...form, basePrice: base});
-                      if (base > 0) setGradePrices(calcFromBase(base));
-                    }}
+                    onChange={e => setForm({...form, basePrice: parse(e.target.value)})}
                     className={`${inputCls} pr-8 text-right`} required placeholder="0" />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">원</span>
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">입력 시 등급설정 할인율 기준으로 등급별 가격이 자동 계산됩니다.</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <p className="text-xs text-gray-500 mb-3 font-medium">등급별 가격 <span className="text-gray-400 font-normal">(직접 수정 가능)</span></p>
-                <div className="grid grid-cols-2 gap-3">
-                  {GRADES.map(g => <PriceInput key={g.key} label={g.label} value={gradePrices[g.key]} onChange={v => setGradePrices(prev => ({ ...prev, [g.key]: v }))} colorCls={g.color} />)}
+              {form.basePrice > 0 && (
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <p className="text-xs text-gray-500 mb-3 font-medium">등급별 적용가 <span className="text-gray-400 font-normal">(등급설정 할인율 기준 미리보기)</span></p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {GRADES.map(g => (
+                      <div key={g.key} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-gray-100">
+                        <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded ${g.color}`}>{g.label}</span>
+                        <div className="text-right">
+                          <span className="text-sm font-semibold text-gray-800">{calcPrice(form.basePrice, g.key).toLocaleString()}원</span>
+                          {gradeDiscounts[g.key] > 0 && <span className="text-[11px] text-red-500 ml-1">{((gradeDiscounts[g.key]||0)*100).toFixed(0)}%</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-[11px] text-gray-400 mt-3">현재 할인율: VVIP {((gradeDiscounts.VVIP||0)*100).toFixed(0)}% · VIP {((gradeDiscounts.VIP||0)*100).toFixed(0)}% · GOLD {((gradeDiscounts.GOLD||0)*100).toFixed(0)}% · SILVER {((gradeDiscounts.SILVER||0)*100).toFixed(0)}% · 일반 {((gradeDiscounts['일반']||0)*100).toFixed(0)}%</p>
-              </div>
+              )}
             </div>
 
             {/* Quantity */}
@@ -358,7 +332,7 @@ export default function AdminProductsPage() {
                       {GRADES.map(g => (
                         <div key={g.key} className="flex items-center justify-between gap-2">
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${g.color}`}>{g.label}</span>
-                          <span className="text-gray-600">{(p.prices?.[g.key]||0).toLocaleString()}원</span>
+                          <span className="text-gray-600">{calcPrice(p.basePrice, g.key).toLocaleString()}원</span>
                         </div>
                       ))}
                     </div>
