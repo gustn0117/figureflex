@@ -7,6 +7,7 @@ export default function AdminInquiriesPage() {
   const [replyId, setReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [filter, setFilter] = useState<'all' | 'unanswered'>('all');
+  const [userFilter, setUserFilter] = useState<string>('all');
 
   const handleReply = (id: string) => {
     if (!replyText.trim()) return;
@@ -15,8 +16,13 @@ export default function AdminInquiriesPage() {
     setReplyText('');
   };
 
+  // Unique users who submitted inquiries
+  const uniqueUsers = Array.from(new Map(inquiries.map(i => [i.userId, { id: i.userId, name: i.userName }])).values());
+
   const unansweredCount = inquiries.filter(i => !i.reply).length;
-  const filtered = filter === 'unanswered' ? inquiries.filter(i => !i.reply) : inquiries;
+  const filtered = inquiries
+    .filter(i => filter === 'unanswered' ? !i.reply : true)
+    .filter(i => userFilter === 'all' ? true : i.userId === userFilter);
 
   return (
     <div className="max-w-4xl">
@@ -26,17 +32,13 @@ export default function AdminInquiriesPage() {
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2 mb-5">
-        <button
-          onClick={() => setFilter('all')}
-          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all ${filter === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}
-        >
+      <div className="flex flex-wrap gap-2 mb-5">
+        <button onClick={() => setFilter('all')}
+          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all ${filter === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}>
           전체 <span className="ml-1 text-xs opacity-70">{inquiries.length}</span>
         </button>
-        <button
-          onClick={() => setFilter('unanswered')}
-          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${filter === 'unanswered' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}
-        >
+        <button onClick={() => setFilter('unanswered')}
+          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${filter === 'unanswered' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}>
           미답변
           {unansweredCount > 0 && (
             <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${filter === 'unanswered' ? 'bg-white text-gray-900' : 'bg-red-500 text-white'}`}>
@@ -44,6 +46,25 @@ export default function AdminInquiriesPage() {
             </span>
           )}
         </button>
+
+        {/* Divider */}
+        {uniqueUsers.length > 0 && <div className="w-px bg-gray-200 mx-1 self-stretch" />}
+
+        {/* User filter */}
+        {uniqueUsers.length > 0 && (
+          <>
+            <button onClick={() => setUserFilter('all')}
+              className={`text-sm px-4 py-2 rounded-xl font-medium transition-all border ${userFilter === 'all' ? 'bg-gray-100 text-gray-800 border-gray-200' : 'bg-white text-gray-400 border-gray-200 hover:border-gray-400'}`}>
+              전체 업체
+            </button>
+            {uniqueUsers.map(u => (
+              <button key={u.id} onClick={() => setUserFilter(u.id)}
+                className={`text-sm px-4 py-2 rounded-xl font-medium transition-all border ${userFilter === u.id ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'}`}>
+                {u.name}
+              </button>
+            ))}
+          </>
+        )}
       </div>
 
       {filtered.length === 0 ? (
