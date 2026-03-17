@@ -17,14 +17,15 @@ export default function AdminMembersPage() {
   const { users, approveUser, rejectUser, updateUserGrade, updateUser, deleteUser } = useStore();
   const [tab, setTab] = useState<'all' | 'pending'>('all');
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', address: '', memberType: 'chain' as MemberType });
+  const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', address: '', memberType: 'chain' as MemberType, referralCode: '' });
+  const [approvalUser, setApprovalUser] = useState<User | null>(null);
 
   const members = users.filter(u => u.role === 'member');
   const pendingCount = members.filter(u => u.status === 'pending').length;
   const filtered = tab === 'pending' ? members.filter(u => u.status === 'pending') : members;
 
   const openEdit = (u: User) => {
-    setEditForm({ name: u.name, company: u.company, phone: u.phone, email: u.email, address: u.address || '', memberType: u.memberType });
+    setEditForm({ name: u.name, company: u.company, phone: u.phone, email: u.email, address: u.address || '', memberType: u.memberType, referralCode: u.referralCode || '' });
     setEditUser(u);
   };
 
@@ -48,11 +49,84 @@ export default function AdminMembersPage() {
         <p className="text-sm text-gray-400 mt-1">회원 승인, 수정, 탈퇴 처리</p>
       </div>
 
+      {/* Approval confirmation modal */}
+      {approvalUser && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="font-bold text-gray-900 text-lg mb-1">회원 승인 확인</h3>
+            <p className="text-sm text-gray-400 mb-5">아래 업체 정보를 확인 후 승인 여부를 결정해주세요.</p>
+            <div className="space-y-3 mb-5">
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-1">업체명</p>
+                  <p className="font-semibold text-gray-800">{approvalUser.company}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-1">담당자</p>
+                  <p className="font-semibold text-gray-800">{approvalUser.name}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-1">연락처</p>
+                  <p className="font-semibold text-gray-800">{approvalUser.phone}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-1">이메일</p>
+                  <p className="font-semibold text-gray-800 break-all">{approvalUser.email}</p>
+                </div>
+              </div>
+              {approvalUser.address && (
+                <div className="bg-gray-50 rounded-xl p-3 text-sm">
+                  <p className="text-xs text-gray-400 mb-1">사업지 주소</p>
+                  <p className="font-semibold text-gray-800">{approvalUser.address}</p>
+                </div>
+              )}
+              {approvalUser.referredBy && (
+                <div className="bg-gray-50 rounded-xl p-3 text-sm">
+                  <p className="text-xs text-gray-400 mb-1">추천인 코드</p>
+                  <p className="font-semibold text-gray-800">{approvalUser.referredBy}</p>
+                </div>
+              )}
+              {/* Business registration photo */}
+              {approvalUser.photoUrl && (
+                <div>
+                  <p className="text-xs text-gray-400 mb-2">사업자등록증</p>
+                  <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                    <img src={approvalUser.photoUrl} alt="사업자등록증" className="w-full object-contain max-h-64" />
+                  </div>
+                </div>
+              )}
+              {!approvalUser.photoUrl && (
+                <div className="bg-amber-50 rounded-xl p-3 text-sm text-amber-600 text-center">
+                  사업자등록증 미첨부
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { approveUser(approvalUser.id); setApprovalUser(null); }}
+                className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-black">승인</button>
+              <button onClick={() => { rejectUser(approvalUser.id); setApprovalUser(null); }}
+                className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600">거부</button>
+              <button onClick={() => setApprovalUser(null)}
+                className="px-4 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm hover:bg-gray-50">닫기</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit modal */}
       {editUser && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-gray-900 mb-5">회원 정보 수정</h3>
+            {/* Business registration photo */}
+            {editUser.photoUrl && (
+              <div className="mb-4">
+                <p className="text-xs text-gray-500 mb-2">사업자등록증</p>
+                <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                  <img src={editUser.photoUrl} alt="사업자등록증" className="w-full object-contain max-h-48" />
+                </div>
+              </div>
+            )}
             <div className="space-y-3">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">업체명</label>
@@ -73,6 +147,10 @@ export default function AdminMembersPage() {
               <div>
                 <label className="block text-xs text-gray-500 mb-1">사업지 주소</label>
                 <input value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className={inputCls} />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">추천인 코드 (본인 코드)</label>
+                <input value={editForm.referralCode} onChange={e => setEditForm({...editForm, referralCode: e.target.value})} className={inputCls} placeholder="예: REFABC123" />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">유형</label>
@@ -159,12 +237,8 @@ export default function AdminMembersPage() {
                   <td className="text-center px-3 py-3.5">
                     <div className="flex items-center justify-center gap-1">
                       {u.status === 'pending' && (
-                        <>
-                          <button onClick={() => approveUser(u.id)}
-                            className="text-[10px] bg-gray-900 text-white px-2.5 py-1.5 rounded-lg hover:bg-black font-medium">승인</button>
-                          <button onClick={() => rejectUser(u.id)}
-                            className="text-[10px] bg-white text-red-500 border border-red-200 px-2.5 py-1.5 rounded-lg hover:bg-red-50 font-medium">거부</button>
-                        </>
+                        <button onClick={() => setApprovalUser(u)}
+                          className="text-[10px] bg-gray-900 text-white px-2.5 py-1.5 rounded-lg hover:bg-black font-medium">승인/거부</button>
                       )}
                       <button onClick={() => openEdit(u)}
                         className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-1.5 rounded-lg hover:bg-blue-100 font-medium">수정</button>
