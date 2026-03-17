@@ -50,35 +50,35 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-[460px] bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
+    <aside className="w-[300px] bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
       {/* Brand */}
-      <div className="px-7 py-6 border-b border-gray-100">
-        <Link href="/admin" className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="피규어플렉스" className="h-12 w-auto object-contain" style={{ mixBlendMode: 'multiply' }} />
+      <div className="px-5 py-4 border-b border-gray-100">
+        <Link href="/admin" className="flex items-center gap-2.5">
+          <img src="/logo.jpg" alt="피규어플렉스" className="h-10 w-auto object-contain" style={{ mixBlendMode: 'multiply' }} />
           <div>
-            <p className="text-[22px] font-bold text-gray-900 leading-none">피규어플렉스</p>
-            <p className="text-[14px] text-gray-400 mt-1 tracking-wider font-medium">ADMIN</p>
+            <p className="text-[18px] font-bold text-gray-900 leading-none">피규어플렉스</p>
+            <p className="text-[12px] text-gray-400 mt-1 tracking-wider font-medium">ADMIN</p>
           </div>
         </Link>
       </div>
 
       {/* Admin info */}
       {currentUser && (
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-[16px] font-bold">{currentUser.name[0]}</span>
+        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-[14px] font-bold">{currentUser.name[0]}</span>
             </div>
             <div className="min-w-0">
-              <p className="text-[16px] font-semibold text-gray-800 truncate">{currentUser.name}</p>
-              <p className="text-[13px] text-gray-400 truncate">{currentUser.email}</p>
+              <p className="text-[14px] font-semibold text-gray-800 truncate">{currentUser.name}</p>
+              <p className="text-[12px] text-gray-400 truncate">{currentUser.email}</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Nav */}
-      <nav className="flex-1 px-4 py-4 overflow-y-auto space-y-1">
+      <nav className="flex-1 px-3 py-3 overflow-y-auto space-y-0.5">
         {menuItems.map(item => {
           const isActive = item.href === '/admin'
             ? pathname === '/admin'
@@ -88,7 +88,7 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-[16px] transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] transition-all ${
                 isActive
                   ? 'bg-gray-900 text-white font-medium'
                   : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'
@@ -97,7 +97,7 @@ export default function AdminSidebar() {
               <span className={isActive ? 'text-white' : 'text-gray-400'}>{item.icon}</span>
               <span className="flex-1">{item.name}</span>
               {badgeCount > 0 && (
-                <span className={`text-[13px] font-bold px-2 py-0.5 rounded-full min-w-[22px] text-center ${
+                <span className={`text-[12px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center ${
                   isActive ? 'bg-white text-gray-900' : 'bg-red-500 text-white'
                 }`}>
                   {badgeCount}
@@ -109,10 +109,10 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="px-4 py-4 border-t border-gray-100">
+      <div className="px-3 py-3 border-t border-gray-100">
         <button
           onClick={() => { logout(); router.push('/'); }}
-          className="flex items-center gap-3.5 w-full px-5 py-3.5 rounded-xl text-[16px] text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-all"
+          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-[15px] text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-all"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
