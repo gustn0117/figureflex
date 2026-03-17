@@ -8,30 +8,41 @@ const GRADES: { key: UserGrade; label: string; color: string; bg: string }[] = [
   { key: 'VIP',    label: 'VIP',    color: 'text-blue-700',   bg: 'bg-blue-50 border-blue-200' },
   { key: 'GOLD',   label: 'GOLD',   color: 'text-yellow-700', bg: 'bg-yellow-50 border-yellow-200' },
   { key: 'SILVER', label: 'SILVER', color: 'text-gray-700',   bg: 'bg-gray-50 border-gray-200' },
+  { key: '일반',   label: '일반',   color: 'text-slate-600',  bg: 'bg-slate-50 border-slate-200' },
 ];
 
 export default function AdminSettingsPage() {
-  const { gradeDiscounts, updateGradeDiscount } = useStore();
-  const [saved, setSaved] = useState(false);
+  const { gradeDiscounts, updateGradeDiscount, depositRates, updateDepositRate } = useStore();
+  const [savedDiscount, setSavedDiscount] = useState(false);
+  const [savedDeposit, setSavedDeposit] = useState(false);
   const [localRates, setLocalRates] = useState<Record<string, number>>({ ...gradeDiscounts });
+  const [localDeposit, setLocalDeposit] = useState<Record<string, number>>({ ...depositRates });
 
-  const handleSave = () => {
+  const handleSaveDiscount = () => {
     Object.entries(localRates).forEach(([grade, rate]) => updateGradeDiscount(grade, rate));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setSavedDiscount(true);
+    setTimeout(() => setSavedDiscount(false), 2000);
+  };
+
+  const handleSaveDeposit = () => {
+    Object.entries(localDeposit).forEach(([grade, rate]) => updateDepositRate(grade, rate));
+    setSavedDeposit(true);
+    setTimeout(() => setSavedDeposit(false), 2000);
   };
 
   const exampleBase = 50000;
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl space-y-6">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900">등급 설정</h2>
-        <p className="text-sm text-gray-400 mt-1">등급별 기본 할인율을 설정합니다. 상품 등록 시 자동계산에 적용됩니다.</p>
+        <p className="text-sm text-gray-400 mt-1">등급별 할인율 및 계약금 비율을 설정합니다.</p>
       </div>
 
+      {/* 할인율 */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <p className="text-sm font-semibold text-gray-700 mb-5">등급별 할인율</p>
+        <p className="text-sm font-semibold text-gray-700 mb-1">등급별 할인율</p>
+        <p className="text-xs text-gray-400 mb-5">상품 등록 시 자동계산에 적용됩니다.</p>
 
         <div className="space-y-4">
           {GRADES.map(g => {
@@ -46,17 +57,13 @@ export default function AdminSettingsPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <input
-                    type="range"
-                    min={0} max={50} step={1}
+                  <input type="range" min={0} max={50} step={1}
                     value={Math.round(rate * 100)}
                     onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Number(e.target.value) / 100 }))}
                     className="flex-1 h-2 accent-gray-900 cursor-pointer"
                   />
                   <div className="flex items-center gap-1 w-24">
-                    <input
-                      type="number"
-                      min={0} max={50} step={1}
+                    <input type="number" min={0} max={50} step={1}
                       value={Math.round(rate * 100)}
                       onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Math.min(50, Math.max(0, Number(e.target.value))) / 100 }))}
                       className="w-16 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-gray-900/20 bg-white"
@@ -70,21 +77,71 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-3">
-          <button onClick={handleSave}
-            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${saved ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>
-            {saved ? '저장됨 ✓' : '저장하기'}
+          <button onClick={handleSaveDiscount}
+            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${savedDiscount ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>
+            {savedDiscount ? '저장됨 ✓' : '저장하기'}
           </button>
           <p className="text-xs text-gray-400">저장 후 상품 등록 시 자동계산에 반영됩니다.</p>
         </div>
       </div>
 
-      {/* Info */}
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mt-4">
+      {/* 계약금 비율 */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <p className="text-sm font-semibold text-gray-700 mb-1">등급별 계약금 비율</p>
+        <p className="text-xs text-gray-400 mb-5">주문 시 카드결제 계약금 비율입니다. 잔금은 계좌이체로 진행됩니다.</p>
+
+        <div className="space-y-4">
+          {GRADES.map(g => {
+            const rate = localDeposit[g.key] ?? 1;
+            const depositAmt = Math.round(exampleBase * rate);
+            const balanceAmt = exampleBase - depositAmt;
+            return (
+              <div key={g.key} className={`rounded-xl border p-4 ${g.bg}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-sm font-bold ${g.color}`}>{g.label}</span>
+                  <div className="text-xs text-gray-500 text-right">
+                    <span>계약금 <span className="font-semibold text-gray-800">{depositAmt.toLocaleString()}원</span></span>
+                    {balanceAmt > 0 && <span className="ml-2">잔금 <span className="font-semibold text-gray-800">{balanceAmt.toLocaleString()}원</span></span>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input type="range" min={1} max={100} step={1}
+                    value={Math.round(rate * 100)}
+                    onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Number(e.target.value) / 100 }))}
+                    className="flex-1 h-2 accent-gray-900 cursor-pointer"
+                  />
+                  <div className="flex items-center gap-1 w-24">
+                    <input type="number" min={1} max={100} step={1}
+                      value={Math.round(rate * 100)}
+                      onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Math.min(100, Math.max(1, Number(e.target.value))) / 100 }))}
+                      className="w-16 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-gray-900/20 bg-white"
+                    />
+                    <span className="text-sm font-medium text-gray-600">%</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-400 mt-2">
+                  {rate >= 1 ? '전액 카드결제 (계좌이체 없음)' : `카드 ${Math.round(rate * 100)}% + 계좌이체 ${Math.round((1 - rate) * 100)}%`}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-3">
+          <button onClick={handleSaveDeposit}
+            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${savedDeposit ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>
+            {savedDeposit ? '저장됨 ✓' : '저장하기'}
+          </button>
+          <p className="text-xs text-gray-400">신규 주문부터 적용됩니다.</p>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
         <p className="text-sm font-semibold text-amber-800 mb-2">안내</p>
         <ul className="text-xs text-amber-700 space-y-1 list-disc list-inside">
-          <li>여기서 설정한 할인율은 상품 등록 시 &ldquo;자동계산&rdquo; 버튼에만 적용됩니다.</li>
-          <li>각 상품의 등급별 가격은 상품 등록/수정 시 개별 조정 가능합니다.</li>
-          <li>기존 등록된 상품 가격은 변경되지 않습니다.</li>
+          <li>할인율은 상품 등록 시 &ldquo;자동계산&rdquo; 버튼에만 적용됩니다.</li>
+          <li>계약금 비율 변경은 기존 주문에 소급 적용되지 않습니다.</li>
+          <li>일반 등급은 전액 카드결제가 기본값입니다.</li>
         </ul>
       </div>
     </div>

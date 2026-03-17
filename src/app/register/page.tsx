@@ -24,7 +24,7 @@ export default function RegisterPage() {
     if (form.password.length < 6) { setError('비밀번호는 6자 이상이어야 합니다.'); return; }
     if (!form.referredBy.trim()) { setError('추천인 코드를 입력해주세요.'); return; }
     if (!users.find(u => u.referralCode === form.referredBy.trim())) { setError('유효하지 않은 추천인 코드입니다.'); return; }
-    const ok = register({ email: form.email, password: form.password, name: form.name, company: form.company, phone: form.phone, role: 'member', grade: 'SILVER' as UserGrade, memberType: form.memberType, referredBy: form.referredBy, photoUrl: photoPreview });
+    const ok = register({ email: form.email, password: form.password, name: form.name, company: form.company, phone: form.phone, role: 'member', grade: '일반' as UserGrade, memberType: form.memberType, referredBy: form.referredBy, photoUrl: photoPreview });
     if (ok) setSuccess(true); else setError('이미 등록된 이메일입니다.');
   };
 

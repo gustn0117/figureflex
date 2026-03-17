@@ -1,4 +1,4 @@
-export type UserGrade = 'VVIP' | 'VIP' | 'GOLD' | 'SILVER';
+export type UserGrade = 'VVIP' | 'VIP' | 'GOLD' | 'SILVER' | '일반';
 export type UserRole = 'admin' | 'member';
 export type UserStatus = 'pending' | 'approved' | 'rejected';
 export type MemberType = 'chain' | 'external';
@@ -72,10 +72,12 @@ export interface Order {
   id: string;
   userId: string;
   userName: string;
+  userGrade: UserGrade;
   items: OrderItem[];
   totalAmount: number;
   discountRate: number;
   finalAmount: number;
+  depositAmount: number;
   status: OrderStatus;
   createdAt: string;
   paidAmount: number;

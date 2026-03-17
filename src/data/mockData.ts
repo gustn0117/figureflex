@@ -5,6 +5,7 @@ export const GRADE_DISCOUNTS: Record<string, number> = {
   VIP: 0.20,
   GOLD: 0.10,
   SILVER: 0.05,
+  '일반': 0,
 };
 
 export const GRADE_LABELS: Record<string, string> = {
@@ -12,6 +13,15 @@ export const GRADE_LABELS: Record<string, string> = {
   VIP: 'VIP (20%)',
   GOLD: 'GOLD (10%)',
   SILVER: 'SILVER (5%)',
+  '일반': '일반 (0%)',
+};
+
+export const DEPOSIT_RATES: Record<string, number> = {
+  VVIP: 0.10,
+  VIP: 0.15,
+  GOLD: 0.15,
+  SILVER: 0.20,
+  '일반': 1.00,
 };
 
 export const MAIN_CATEGORIES: Category[] = [
@@ -63,7 +73,7 @@ export const MOCK_USERS: User[] = [
     company: '체인스토어A',
     phone: '010-1111-1111',
     role: 'member',
-    grade: 'VIP',
+    grade: '일반',
     memberType: 'chain',
     status: 'approved',
     referralCode: 'CHAIN001',
@@ -79,7 +89,7 @@ export const MOCK_USERS: User[] = [
     company: '외부유통B',
     phone: '010-2222-2222',
     role: 'member',
-    grade: 'GOLD',
+    grade: '일반',
     memberType: 'external',
     status: 'approved',
     referralCode: 'EXT001',
@@ -95,7 +105,7 @@ export const MOCK_USERS: User[] = [
     company: '대기중',
     phone: '010-3333-3333',
     role: 'member',
-    grade: 'SILVER',
+    grade: '일반',
     memberType: 'external',
     status: 'pending',
     referralCode: 'PEND001',

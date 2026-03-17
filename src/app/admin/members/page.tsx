@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import type { User, UserGrade, MemberType } from '@/types';
 
-const gradeOptions: UserGrade[] = ['VVIP', 'VIP', 'GOLD', 'SILVER'];
+const gradeOptions: UserGrade[] = ['VVIP', 'VIP', 'GOLD', 'SILVER', '일반'];
 
 const gradeBadge: Record<UserGrade, string> = {
   VVIP: 'bg-purple-100 text-purple-700',
   VIP: 'bg-blue-100 text-blue-700',
   GOLD: 'bg-yellow-100 text-yellow-700',
   SILVER: 'bg-gray-100 text-gray-600',
+  '일반': 'bg-slate-100 text-slate-600',
 };
 
 export default function AdminMembersPage() {

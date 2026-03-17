@@ -16,15 +16,22 @@ const statusMap = Object.fromEntries(statusFlow.map(s => [s.value, s]));
 type SortKey = 'date' | 'company' | 'amount';
 
 function exportCSV(orders: Order[]) {
-  const header = ['주문번호', '주문자', '상품수', '금액', '상태', '주문일'];
-  const rows = orders.map(o => [
-    o.id,
-    o.userName,
-    String(o.items.length),
-    String(o.finalAmount),
-    statusMap[o.status]?.label || o.status,
-    o.createdAt,
-  ]);
+  const header = ['주문번호', '주문자', '등급', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
+  const rows = orders.map(o => {
+    const deposit = o.depositAmount ?? o.finalAmount;
+    const balance = o.finalAmount - deposit;
+    return [
+      o.id,
+      o.userName,
+      o.userGrade || '-',
+      String(o.items.length),
+      String(o.finalAmount),
+      String(deposit),
+      String(balance),
+      statusMap[o.status]?.label || o.status,
+      o.createdAt,
+    ];
+  });
   const csv = [header, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -34,15 +41,22 @@ function exportCSV(orders: Order[]) {
 }
 
 function exportPDF(orders: Order[]) {
-  const rows = orders.map(o => `
+  const rows = orders.map(o => {
+    const deposit = o.depositAmount ?? o.finalAmount;
+    const balance = o.finalAmount - deposit;
+    return `
     <tr>
       <td>${o.id}</td>
       <td>${o.userName}</td>
+      <td style="text-align:center">${o.userGrade || '-'}</td>
       <td style="text-align:center">${o.items.length}개</td>
       <td style="text-align:right">${o.finalAmount.toLocaleString()}원</td>
+      <td style="text-align:right;color:#2563eb">${deposit.toLocaleString()}원</td>
+      <td style="text-align:right;color:#16a34a">${balance > 0 ? balance.toLocaleString() + '원' : '-'}</td>
       <td style="text-align:center">${statusMap[o.status]?.label || o.status}</td>
       <td style="text-align:center">${o.createdAt}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>주문목록</title>
@@ -57,7 +71,7 @@ function exportPDF(orders: Order[]) {
     <h2>피규어플렉스 주문목록</h2>
     <p>출력일: ${new Date().toLocaleDateString('ko-KR')} / 총 ${orders.length}건</p>
     <table><thead><tr>
-      <th>주문번호</th><th>주문자</th><th>상품수</th><th>금액</th><th>상태</th><th>주문일</th>
+      <th>주문번호</th><th>주문자</th><th>등급</th><th>상품수</th><th>총금액</th><th>계약금(카드)</th><th>잔금(계좌)</th><th>상태</th><th>주문일</th>
     </tr></thead><tbody>${rows}</tbody></table>
     </body></html>`;
 
@@ -108,7 +122,6 @@ export default function AdminOrdersPage() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        {/* Sort */}
         <div className="flex gap-1.5 bg-gray-100 rounded-xl p-1">
           {([['date', '날짜순'], ['company', '업체순'], ['amount', '금액순']] as [SortKey, string][]).map(([key, label]) => (
             <button key={key} onClick={() => setSort(key)}
@@ -120,7 +133,6 @@ export default function AdminOrdersPage() {
 
         <div className="flex-1" />
 
-        {/* Export buttons */}
         <div className="flex items-center gap-2">
           {selected.length > 0 && (
             <span className="text-xs text-gray-500 font-medium">{selected.length}건 선택</span>
@@ -153,10 +165,12 @@ export default function AdminOrdersPage() {
                   <input type="checkbox" checked={sorted.length > 0 && selected.length === sorted.length}
                     onChange={toggleAll} className="rounded cursor-pointer" />
                 </th>
-                <th className="text-left px-3 py-3.5 font-medium">주문번호</th>
                 <th className="text-left px-3 py-3.5 font-medium">주문자</th>
+                <th className="text-center px-3 py-3.5 font-medium">등급</th>
                 <th className="text-center px-3 py-3.5 font-medium">상품수</th>
-                <th className="text-right px-3 py-3.5 font-medium">금액</th>
+                <th className="text-right px-3 py-3.5 font-medium">총금액</th>
+                <th className="text-right px-3 py-3.5 font-medium text-blue-600">계약금(카드)</th>
+                <th className="text-right px-3 py-3.5 font-medium text-green-700">잔금(계좌)</th>
                 <th className="text-center px-3 py-3.5 font-medium">상태</th>
                 <th className="text-center px-3 py-3.5 font-medium">주문일</th>
                 <th className="text-center px-3 py-3.5 font-medium">상태 변경</th>
@@ -166,15 +180,21 @@ export default function AdminOrdersPage() {
               {sorted.map(order => {
                 const s = statusMap[order.status];
                 const isSelected = selected.includes(order.id);
+                const deposit = order.depositAmount ?? order.finalAmount;
+                const balance = order.finalAmount - deposit;
                 return (
                   <tr key={order.id} className={`transition-colors ${isSelected ? 'bg-blue-50/30' : 'hover:bg-gray-50/50'}`}>
                     <td className="px-4 py-3.5 text-center">
                       <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(order.id)} className="rounded cursor-pointer" />
                     </td>
-                    <td className="px-3 py-3.5 text-xs font-mono text-gray-400 max-w-[140px] truncate">{order.id}</td>
                     <td className="px-3 py-3.5 font-medium text-gray-800">{order.userName}</td>
+                    <td className="text-center px-3 py-3.5">
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">{order.userGrade || '-'}</span>
+                    </td>
                     <td className="text-center px-3 py-3.5 text-gray-600">{order.items.length}개</td>
                     <td className="text-right px-3 py-3.5 font-semibold text-gray-900">{order.finalAmount.toLocaleString()}원</td>
+                    <td className="text-right px-3 py-3.5 font-semibold text-blue-600">{deposit.toLocaleString()}원</td>
+                    <td className="text-right px-3 py-3.5 font-semibold text-green-700">{balance > 0 ? `${balance.toLocaleString()}원` : '-'}</td>
                     <td className="text-center px-3 py-3.5">
                       <span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium border ${s?.color || ''}`}>{s?.label}</span>
                     </td>

@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 import { User, Product, CartItem, Order, Notice, Inquiry, Category } from '@/types';
 import {
   MOCK_USERS, MOCK_PRODUCTS, MOCK_NOTICES, MOCK_INQUIRIES, MOCK_ORDERS,
-  MAIN_CATEGORIES, SUB_CATEGORIES, GRADE_DISCOUNTS
+  MAIN_CATEGORIES, SUB_CATEGORIES, GRADE_DISCOUNTS, DEPOSIT_RATES
 } from '@/data/mockData';
 
 interface AppState {
@@ -33,6 +33,10 @@ interface AppState {
   // Grade discounts
   gradeDiscounts: Record<string, number>;
   updateGradeDiscount: (grade: string, rate: number) => void;
+
+  // Deposit rates
+  depositRates: Record<string, number>;
+  updateDepositRate: (grade: string, rate: number) => void;
 
   // Products
   products: Product[];
@@ -135,6 +139,12 @@ export const useStore = create<AppState>()(
         gradeDiscounts: { ...state.gradeDiscounts, [grade]: rate }
       })),
 
+      // Deposit rates
+      depositRates: { ...DEPOSIT_RATES },
+      updateDepositRate: (grade, rate) => set(state => ({
+        depositRates: { ...state.depositRates, [grade]: rate }
+      })),
+
       // Products
       products: MOCK_PRODUCTS,
       addProduct: (product) => set(state => ({ products: [...state.products, product] })),
@@ -189,14 +199,18 @@ export const useStore = create<AppState>()(
           };
         });
         const totalAmount = items.reduce((sum, i) => sum + i.totalPrice, 0);
+        const depositRate = state.depositRates[user.grade] ?? 1;
+        const depositAmount = Math.round(totalAmount * depositRate);
         const order: Order = {
           id: `order-${Date.now()}`,
           userId: user.id,
           userName: user.name,
+          userGrade: user.grade,
           items,
           totalAmount,
           discountRate,
           finalAmount: totalAmount,
+          depositAmount,
           status: 'pending',
           createdAt: new Date().toISOString().split('T')[0],
           paidAmount: 0,
@@ -227,7 +241,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'figureflex-store',
-      version: 2,
+      version: 3,
     }
   )
 );

@@ -8,6 +8,7 @@ const GRADES: { key: UserGrade; label: string; color: string }[] = [
   { key: 'VIP',    label: 'VIP',    color: 'text-blue-600 bg-blue-50' },
   { key: 'GOLD',   label: 'GOLD',   color: 'text-yellow-600 bg-yellow-50' },
   { key: 'SILVER', label: 'SILVER', color: 'text-gray-600 bg-gray-100' },
+  { key: '일반',   label: '일반',   color: 'text-slate-600 bg-slate-100' },
 ];
 
 const fmt = (n: number) => n > 0 ? n.toLocaleString('ko-KR') : '';
@@ -92,7 +93,7 @@ export default function AdminProductsPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState('');
   const [subImages, setSubImages] = useState<string[]>([]);
-  const [gradePrices, setGradePrices] = useState<Record<UserGrade, number>>({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0 });
+  const [gradePrices, setGradePrices] = useState<Record<UserGrade, number>>({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 });
   const [catFilter, setCatFilter] = useState<string>('all');
   const [selected, setSelected] = useState<string[]>([]);
   const [form, setForm] = useState({
@@ -109,22 +110,23 @@ export default function AdminProductsPage() {
 
   const autoCalcPrices = (base: number) => {
     setGradePrices({
-      VVIP: Math.round(base * (1 - gradeDiscounts.VVIP)),
-      VIP: Math.round(base * (1 - gradeDiscounts.VIP)),
-      GOLD: Math.round(base * (1 - gradeDiscounts.GOLD)),
-      SILVER: Math.round(base * (1 - gradeDiscounts.SILVER)),
+      VVIP: Math.round(base * (1 - (gradeDiscounts.VVIP || 0))),
+      VIP: Math.round(base * (1 - (gradeDiscounts.VIP || 0))),
+      GOLD: Math.round(base * (1 - (gradeDiscounts.GOLD || 0))),
+      SILVER: Math.round(base * (1 - (gradeDiscounts.SILVER || 0))),
+      '일반': Math.round(base * (1 - (gradeDiscounts['일반'] || 0))),
     });
   };
 
   const resetForm = () => {
     setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
-    setGradePrices({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0 });
+    setGradePrices({ VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 });
     setMainImage(''); setSubImages([]); setEditId(null); setShowForm(false);
   };
 
   const handleEdit = (p: Product) => {
     setForm({ name: p.name, description: p.description, detailContent: p.detailContent || '', categoryId: p.categoryId, subCategoryId: p.subCategoryId, basePrice: p.basePrice, minQuantity: p.minQuantity, maxQuantity: p.maxQuantity, quantityStep: p.quantityStep || 1, stock: p.stock, saleStartDate: p.saleStartDate, saleEndDate: p.saleEndDate, origin: p.origin || '', manufacturer: p.manufacturer || '' });
-    setGradePrices(p.prices || { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0 });
+    setGradePrices(p.prices || { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 });
     setMainImage(p.imageUrl || ''); setSubImages(p.images || []); setEditId(p.id); setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
