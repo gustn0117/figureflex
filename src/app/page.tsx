@@ -26,8 +26,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-white px-5">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <img src="/logo.jpg" alt="피규어플렉스" className="w-28 mx-auto mb-3" style={{ mixBlendMode: 'multiply' }} />
-          <p className="text-[13px] text-gray-400">도매 전용 주문 플랫폼</p>
+          <img src="/logo.jpg" alt="피규어플렉스" className="w-44 mx-auto mb-3" style={{ mixBlendMode: 'multiply' }} />
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
