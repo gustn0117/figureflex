@@ -28,11 +28,17 @@ interface AppState {
   updateSubCategory: (id: string, data: Partial<Category>) => void;
   deleteSubCategory: (id: string) => void;
 
+  // Grade discounts
+  gradeDiscounts: Record<string, number>;
+  updateGradeDiscount: (grade: string, rate: number) => void;
+
   // Products
   products: Product[];
   addProduct: (product: Product) => void;
   updateProduct: (id: string, data: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
+  deleteProducts: (ids: string[]) => void;
+  toggleSoldout: (id: string) => void;
 
   // Cart
   cart: CartItem[];
@@ -115,6 +121,12 @@ export const useStore = create<AppState>()(
         subCategories: state.subCategories.filter(c => c.id !== id)
       })),
 
+      // Grade discounts
+      gradeDiscounts: { ...GRADE_DISCOUNTS },
+      updateGradeDiscount: (grade, rate) => set(state => ({
+        gradeDiscounts: { ...state.gradeDiscounts, [grade]: rate }
+      })),
+
       // Products
       products: MOCK_PRODUCTS,
       addProduct: (product) => set(state => ({ products: [...state.products, product] })),
@@ -123,6 +135,14 @@ export const useStore = create<AppState>()(
       })),
       deleteProduct: (id) => set(state => ({
         products: state.products.filter(p => p.id !== id)
+      })),
+      deleteProducts: (ids) => set(state => ({
+        products: state.products.filter(p => !ids.includes(p.id))
+      })),
+      toggleSoldout: (id) => set(state => ({
+        products: state.products.map(p =>
+          p.id === id ? { ...p, status: p.status === 'soldout' ? 'sale' : 'soldout' } : p
+        )
       })),
 
       // Cart

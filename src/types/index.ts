@@ -28,7 +28,7 @@ export interface Category {
   order: number;
 }
 
-export type ProductStatus = 'sale' | 'expired' | 'upcoming';
+export type ProductStatus = 'sale' | 'soldout' | 'expired' | 'upcoming';
 
 export interface Product {
   id: string;

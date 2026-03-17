@@ -32,6 +32,10 @@ const menuItems = [
     name: '문의사항', href: '/admin/inquiries', badge: 'pending_inquiries',
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
   },
+  {
+    name: '등급 설정', href: '/admin/settings',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" /></svg>
+  },
 ];
 
 export default function AdminSidebar() {
@@ -46,7 +50,7 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-56 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
+    <aside className="w-80 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
       {/* Brand */}
       <div className="px-5 py-5 border-b border-gray-100">
         <Link href="/admin" className="flex items-center gap-2.5">
