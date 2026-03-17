@@ -8,6 +8,8 @@ const navItems = [
   { label: '피규어', href: '/dashboard/figures' },
   { label: '가챠', href: '/dashboard/gacha' },
   { label: '굿즈', href: '/dashboard/goods' },
+  { label: '공지사항', href: '/dashboard/notices' },
+  { label: '문의사항', href: '/dashboard/inquiry' },
 ];
 
 export default function Header() {
@@ -24,10 +26,6 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-5">
         {/* Top utility */}
         <div className="flex items-center justify-end gap-5 h-10 text-[12px] text-gray-400 border-b border-gray-100">
-          <button onClick={() => router.push('/dashboard/notices')} className="hover:text-gray-700 transition-colors">공지사항</button>
-          <span className="text-gray-200">|</span>
-          <button onClick={() => router.push('/dashboard/inquiry')} className="hover:text-gray-700 transition-colors">문의사항</button>
-          <span className="text-gray-200">|</span>
           <button onClick={() => router.push('/dashboard/orders')} className="hover:text-gray-700 transition-colors">주문내역</button>
           <span className="text-gray-200">|</span>
           <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-700 transition-colors font-medium text-gray-500">내정보</button>
