@@ -29,6 +29,13 @@ export default function NoticesPage() {
               {openId === n.id && (
                 <div className="pb-4 pl-2">
                   <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{n.content}</div>
+                  {n.images?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {n.images.map((img, idx) => (
+                        <img key={idx} src={img} alt="" className="max-h-60 rounded-lg border border-gray-100 object-contain" />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
