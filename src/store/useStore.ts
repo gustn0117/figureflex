@@ -17,6 +17,8 @@ interface AppState {
   approveUser: (userId: string) => void;
   rejectUser: (userId: string) => void;
   updateUserGrade: (userId: string, grade: User['grade']) => void;
+  updateUser: (userId: string, data: Partial<User>) => void;
+  deleteUser: (userId: string) => void;
 
   // Categories
   categories: Category[];
@@ -100,6 +102,12 @@ export const useStore = create<AppState>()(
       })),
       updateUserGrade: (userId, grade) => set(state => ({
         users: state.users.map(u => u.id === userId ? { ...u, grade } : u)
+      })),
+      updateUser: (userId, data) => set(state => ({
+        users: state.users.map(u => u.id === userId ? { ...u, ...data } : u)
+      })),
+      deleteUser: (userId) => set(state => ({
+        users: state.users.filter(u => u.id !== userId)
       })),
 
       // Categories
