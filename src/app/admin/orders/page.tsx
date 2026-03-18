@@ -133,9 +133,11 @@ async function exportExcel(orders: Order[], products: any[]) {
       // 상품수, 등급, 상태 가운데 정렬
       [4, 6, 10].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'center' }; });
 
+      console.log(`[Excel] item="${item.productName}" img=${img ? img.substring(0, 30) + '...' : 'EMPTY'} products=${products.length}`);
       if (img) {
         try {
           const buf = await toBuffer(img);
+          console.log(`[Excel] buffer result: ${buf ? buf.byteLength + ' bytes' : 'NULL'}`);
           if (buf) {
             const ext = img.includes('image/png') ? 'png' as const : 'jpeg' as const;
             const imageId = workbook.addImage({ buffer: buf, extension: ext });
@@ -143,6 +145,7 @@ async function exportExcel(orders: Order[], products: any[]) {
               tl: { col: 1.1, row: rowNum - 0.9 },
               ext: { width: 70, height: 70 },
             });
+            console.log(`[Excel] image added successfully, id=${imageId}`);
           }
         } catch (e) { console.error('Excel image error:', e); }
       }
