@@ -62,16 +62,19 @@ function flattenOrders(orders: Order[], products: any[]): FlatRow[] {
   return rows;
 }
 
-async function fetchImageAsBase64(url: string): Promise<string | null> {
+async function toBuffer(dataOrUrl: string): Promise<ArrayBuffer | null> {
   try {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
-    });
+    if (dataOrUrl.startsWith('data:')) {
+      // data URI → buffer
+      const base64 = dataOrUrl.split(',')[1];
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    } else {
+      const res = await fetch(dataOrUrl);
+      return await res.arrayBuffer();
+    }
   } catch { return null; }
 }
 
@@ -132,24 +135,16 @@ async function exportExcel(orders: Order[], products: any[]) {
 
       if (img) {
         try {
-          let base64Str = img;
-          // URL이면 fetch해서 data URI로 변환
-          if (!img.startsWith('data:')) {
-            const fetched = await fetchImageAsBase64(img);
-            if (fetched) base64Str = fetched;
-            else base64Str = '';
-          }
-          if (base64Str) {
-            const ext = base64Str.includes('image/png') ? 'png' as const : 'jpeg' as const;
-            // data:image/...;base64, 프리픽스 제거 (ExcelJS는 순수 base64만 받음)
-            const pureBase64 = base64Str.replace(/^data:image\/[a-zA-Z]+;base64,/, '');
-            const imageId = workbook.addImage({ base64: pureBase64, extension: ext });
+          const buf = await toBuffer(img);
+          if (buf) {
+            const ext = img.includes('image/png') ? 'png' as const : 'jpeg' as const;
+            const imageId = workbook.addImage({ buffer: buf, extension: ext });
             ws.addImage(imageId, {
               tl: { col: 1.1, row: rowNum - 0.9 },
               ext: { width: 70, height: 70 },
             });
           }
-        } catch { /* skip image */ }
+        } catch (e) { console.error('Excel image error:', e); }
       }
     }
   }
