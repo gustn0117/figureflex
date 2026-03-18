@@ -39,7 +39,7 @@ export default function DashboardHome() {
       {/* Quick categories */}
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
-          { label: '일번상', href: '/dashboard/ichiban', desc: '이치방쿠지 / 기타' },
+          { label: '제일복권', href: '/dashboard/ichiban', desc: '이치방쿠지 / 기타' },
           { label: '피규어', href: '/dashboard/figures', desc: '반다이 / 후류 / 세가' },
           { label: '가챠', href: '/dashboard/gacha', desc: '반다이 / 일반' },
           { label: '굿즈', href: '/dashboard/goods', desc: '아크릴 / 기타' },
