@@ -82,23 +82,26 @@ async function exportExcel(orders: Order[], products: any[]) {
 
   const headers = ['주문번호', '상품사진', '주문자', '등급', '상품이름', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
   const headerRow = ws.addRow(headers);
-  headerRow.font = { bold: true, size: 11 };
-  headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
+  headerRow.font = { bold: true, size: 12, color: { argb: 'FF333333' } };
+  headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8E8E8' } };
   headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
-  headerRow.height = 24;
+  headerRow.height = 32;
+  const borderStyle: any = { style: 'thin', color: { argb: 'FFD0D0D0' } };
+  const cellBorder: any = { top: borderStyle, left: borderStyle, bottom: borderStyle, right: borderStyle };
+  headerRow.eachCell(cell => { cell.border = cellBorder; });
 
   ws.columns = [
-    { width: 28 }, // 주문번호
-    { width: 12 }, // 사진
-    { width: 14 }, // 주문자
-    { width: 10 }, // 등급
-    { width: 20 }, // 상품이름
-    { width: 10 }, // 상품수
-    { width: 16 }, // 총금액
-    { width: 16 }, // 계약금
-    { width: 16 }, // 잔금
-    { width: 10 }, // 상태
-    { width: 14 }, // 주문일
+    { width: 30 }, // 주문번호
+    { width: 16 }, // 사진
+    { width: 16 }, // 주문자
+    { width: 12 }, // 등급
+    { width: 24 }, // 상품이름
+    { width: 12 }, // 상품수
+    { width: 18 }, // 총금액
+    { width: 18 }, // 계약금
+    { width: 18 }, // 잔금
+    { width: 12 }, // 상태
+    { width: 16 }, // 주문일
   ];
 
   for (const o of orders) {
@@ -118,8 +121,14 @@ async function exportExcel(orders: Order[], products: any[]) {
         deposit, balance > 0 ? balance : 0,
         statusMap[o.status]?.label || o.status, o.createdAt,
       ]);
-      row.height = 50;
+      row.height = 75;
       row.alignment = { vertical: 'middle' };
+      row.font = { size: 11 };
+      row.eachCell(cell => { cell.border = cellBorder; });
+      // 금액 셀 우측정렬
+      [7, 8, 9].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'right' }; });
+      // 상품수, 등급, 상태 가운데 정렬
+      [4, 6, 10].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'center' }; });
 
       if (img) {
         try {
@@ -128,8 +137,8 @@ async function exportExcel(orders: Order[], products: any[]) {
             const ext = base64.includes('image/png') ? 'png' : 'jpeg';
             const imageId = workbook.addImage({ base64, extension: ext });
             ws.addImage(imageId, {
-              tl: { col: 1, row: rowNum - 1 },
-              ext: { width: 45, height: 45 },
+              tl: { col: 1.1, row: rowNum - 0.9 },
+              ext: { width: 70, height: 70 },
             });
           }
         } catch { /* skip image */ }
@@ -137,7 +146,7 @@ async function exportExcel(orders: Order[], products: any[]) {
     }
   }
 
-  // 금액 포맷
+  // 금액 포맷 (콤마)
   ws.eachRow((row, rowNumber) => {
     if (rowNumber === 1) return;
     [7, 8, 9].forEach(col => {
