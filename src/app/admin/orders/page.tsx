@@ -62,26 +62,95 @@ function flattenOrders(orders: Order[], products: any[]): FlatRow[] {
   return rows;
 }
 
-function exportCSV(orders: Order[], products: any[]) {
-  const header = ['주문번호', '주문자', '등급', '상품이름', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
-  const rows: string[][] = [];
+async function fetchImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch { return null; }
+}
+
+async function exportExcel(orders: Order[], products: any[]) {
+  const ExcelJS = (await import('exceljs')).default;
+  const workbook = new ExcelJS.Workbook();
+  const ws = workbook.addWorksheet('주문목록');
+
+  const headers = ['주문번호', '상품사진', '주문자', '등급', '상품이름', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
+  const headerRow = ws.addRow(headers);
+  headerRow.font = { bold: true, size: 11 };
+  headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
+  headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+  headerRow.height = 24;
+
+  ws.columns = [
+    { width: 28 }, // 주문번호
+    { width: 12 }, // 사진
+    { width: 14 }, // 주문자
+    { width: 10 }, // 등급
+    { width: 20 }, // 상품이름
+    { width: 10 }, // 상품수
+    { width: 16 }, // 총금액
+    { width: 16 }, // 계약금
+    { width: 16 }, // 잔금
+    { width: 10 }, // 상태
+    { width: 14 }, // 주문일
+  ];
+
   for (const o of orders) {
     const deposit = o.depositAmount ?? o.finalAmount;
     const balance = o.finalAmount - deposit;
     for (const item of o.items) {
-      rows.push([
-        o.id, o.userName, o.userGrade || '-', item.productName,
-        String(item.quantity), String(o.finalAmount),
-        String(deposit), String(balance),
+      let img = item.productImage || '';
+      if (!img) {
+        const p = products.find((pr: any) => pr.id === item.productId);
+        if (p) img = p.imageUrl || p.image_url || '';
+      }
+
+      const rowNum = ws.rowCount + 1;
+      const row = ws.addRow([
+        o.id, '', o.userName, o.userGrade || '-', item.productName,
+        item.quantity, o.finalAmount,
+        deposit, balance > 0 ? balance : 0,
         statusMap[o.status]?.label || o.status, o.createdAt,
       ]);
+      row.height = 50;
+      row.alignment = { vertical: 'middle' };
+
+      if (img) {
+        try {
+          const base64 = await fetchImageAsBase64(img);
+          if (base64) {
+            const ext = base64.includes('image/png') ? 'png' : 'jpeg';
+            const imageId = workbook.addImage({ base64, extension: ext });
+            ws.addImage(imageId, {
+              tl: { col: 1, row: rowNum - 1 },
+              ext: { width: 45, height: 45 },
+            });
+          }
+        } catch { /* skip image */ }
+      }
     }
   }
-  const csv = [header, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+
+  // 금액 포맷
+  ws.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    [7, 8, 9].forEach(col => {
+      const cell = row.getCell(col);
+      cell.numFmt = '#,##0';
+    });
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `주문목록_${new Date().toISOString().split('T')[0]}.csv`;
+  a.href = url; a.download = `주문목록_${new Date().toISOString().split('T')[0]}.xlsx`;
   a.click(); URL.revokeObjectURL(url);
 }
 
@@ -179,7 +248,7 @@ export default function AdminOrdersPage() {
         <div className="flex-1" />
         <div className="flex items-center gap-2">
           {selected.length > 0 && <span className="text-xs text-gray-500 font-medium">{selected.length}건 선택</span>}
-          <button onClick={() => exportCSV(exportTarget, products)}
+          <button onClick={() => exportExcel(exportTarget, products)}
             className="flex items-center gap-1.5 text-xs border border-gray-200 bg-white text-gray-600 px-3 py-2 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-all font-medium">
             엑셀 {selected.length > 0 ? `(${selected.length})` : '전체'}
           </button>
