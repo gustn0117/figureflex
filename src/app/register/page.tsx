@@ -77,30 +77,30 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white p-6">
+    <div className="min-h-screen flex items-center justify-center bg-white p-4 sm:p-6">
       <div className="w-full max-w-md">
-        <button onClick={() => router.push('/')} className="text-sm text-gray-400 hover:text-gray-900 mb-6 inline-block">&larr; 돌아가기</button>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">회원가입</h1>
-        <p className="text-sm text-gray-400 mb-8">관리자 승인 후 이용 가능합니다</p>
+        <button onClick={() => router.push('/')} className="text-sm text-gray-400 hover:text-gray-900 mb-4 sm:mb-6 inline-block">&larr; 돌아가기</button>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">회원가입</h1>
+        <p className="text-sm text-gray-400 mb-6 sm:mb-8">관리자 승인 후 이용 가능합니다</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs text-gray-500 mb-1.5 font-medium">이메일</label>
             <input type="email" name="email" value={form.email} onChange={handleChange} className={inputCls} required />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div><label className="block text-xs text-gray-500 mb-1.5 font-medium">비밀번호</label>
               <input type="password" name="password" value={form.password} onChange={handleChange} className={inputCls} placeholder="6자 이상" required /></div>
             <div><label className="block text-xs text-gray-500 mb-1.5 font-medium">비밀번호 확인</label>
               <input type="password" name="passwordConfirm" value={form.passwordConfirm} onChange={handleChange} className={inputCls} required /></div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div><label className="block text-xs text-gray-500 mb-1.5 font-medium">담당자명</label>
               <input type="text" name="name" value={form.name} onChange={handleChange} className={inputCls} required /></div>
             <div><label className="block text-xs text-gray-500 mb-1.5 font-medium">업체명</label>
               <input type="text" name="company" value={form.company} onChange={handleChange} className={inputCls} required /></div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div><label className="block text-xs text-gray-500 mb-1.5 font-medium">연락처</label>
               <input type="tel" name="phone" value={form.phone} onChange={handleChange} className={inputCls} placeholder="010-0000-0000" required /></div>
             <div><label className="block text-xs text-gray-500 mb-1.5 font-medium">업체 유형</label>

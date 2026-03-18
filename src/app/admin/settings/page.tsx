@@ -50,7 +50,7 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* 할인율 */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6">
         <p className="text-sm font-semibold text-gray-700 mb-1">등급별 할인율</p>
         <p className="text-xs text-gray-400 mb-5">상품 등록 시 자동계산에 적용됩니다.</p>
         <div className="space-y-4">
@@ -58,20 +58,20 @@ export default function AdminSettingsPage() {
             const rate = localRates[g.key] ?? 0;
             const discountedPrice = Math.round(exampleBase * (1 - rate));
             return (
-              <div key={g.key} className={`rounded-xl border p-4 ${g.bg}`}>
-                <div className="flex items-center justify-between mb-3">
+              <div key={g.key} className={`rounded-xl border p-3 md:p-4 ${g.bg}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 md:mb-3 gap-1">
                   <span className={`text-sm font-bold ${g.color}`}>{g.label}</span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-[11px] md:text-xs text-gray-500">
                     예시: {exampleBase.toLocaleString()}원 → <span className="font-semibold text-gray-800">{discountedPrice.toLocaleString()}원</span>
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <input type="range" min={0} max={500} step={1}
                     value={Math.round(rate * 1000)}
                     onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Number(e.target.value) / 1000 }))}
                     className="flex-1 h-2 accent-gray-900 cursor-pointer"
                   />
-                  <div className="flex items-center gap-1 w-28">
+                  <div className="flex items-center gap-1 w-24 md:w-28">
                     <input type="number" min={0} max={50} step={0.1}
                       value={parseFloat((rate * 100).toFixed(1))}
                       onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Math.min(50, Math.max(0, Number(e.target.value))) / 100 }))}
@@ -84,7 +84,7 @@ export default function AdminSettingsPage() {
             );
           })}
         </div>
-        <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-3">
+        <div className="mt-5 md:mt-6 pt-4 md:pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-2 md:gap-3">
           <button onClick={handleSaveDiscount}
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${savedDiscount ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>
             {savedDiscount ? '저장됨 ✓' : '저장하기'}
@@ -94,7 +94,7 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* 계약금 비율 */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6">
         <p className="text-sm font-semibold text-gray-700 mb-1">등급별 계약금 비율</p>
         <p className="text-xs text-gray-400 mb-5">주문 시 카드결제 계약금 비율입니다. 잔금은 계좌이체로 진행됩니다.</p>
         <div className="space-y-4">
@@ -103,21 +103,21 @@ export default function AdminSettingsPage() {
             const depositAmt = Math.round(exampleBase * rate);
             const balanceAmt = exampleBase - depositAmt;
             return (
-              <div key={g.key} className={`rounded-xl border p-4 ${g.bg}`}>
-                <div className="flex items-center justify-between mb-3">
+              <div key={g.key} className={`rounded-xl border p-3 md:p-4 ${g.bg}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 md:mb-3 gap-1">
                   <span className={`text-sm font-bold ${g.color}`}>{g.label}</span>
-                  <div className="text-xs text-gray-500 text-right">
+                  <div className="text-[11px] md:text-xs text-gray-500 text-right">
                     <span>계약금 <span className="font-semibold text-gray-800">{depositAmt.toLocaleString()}원</span></span>
                     {balanceAmt > 0 && <span className="ml-2">잔금 <span className="font-semibold text-gray-800">{balanceAmt.toLocaleString()}원</span></span>}
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <input type="range" min={10} max={1000} step={1}
                     value={Math.round(rate * 1000)}
                     onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Number(e.target.value) / 1000 }))}
                     className="flex-1 h-2 accent-gray-900 cursor-pointer"
                   />
-                  <div className="flex items-center gap-1 w-28">
+                  <div className="flex items-center gap-1 w-24 md:w-28">
                     <input type="number" min={1} max={100} step={0.1}
                       value={parseFloat((rate * 100).toFixed(1))}
                       onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Math.min(100, Math.max(1, Number(e.target.value))) / 100 }))}
@@ -133,7 +133,7 @@ export default function AdminSettingsPage() {
             );
           })}
         </div>
-        <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-3">
+        <div className="mt-5 md:mt-6 pt-4 md:pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-2 md:gap-3">
           <button onClick={handleSaveDeposit}
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${savedDeposit ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>
             {savedDeposit ? '저장됨 ✓' : '저장하기'}

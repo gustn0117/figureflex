@@ -61,14 +61,14 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
         {statCards.map(card => (
-          <div key={card.key} className="bg-white rounded-2xl border border-gray-100 p-5">
-            <div className={`w-10 h-10 ${card.bg} rounded-xl flex items-center justify-center mb-3`}>
+          <div key={card.key} className="bg-white rounded-2xl border border-gray-100 p-3 md:p-5">
+            <div className={`w-8 h-8 md:w-10 md:h-10 ${card.bg} rounded-xl flex items-center justify-center mb-2 md:mb-3`}>
               <span className={card.color}>{card.icon}</span>
             </div>
-            <p className="text-xs text-gray-400 mb-1">{card.label}</p>
-            <p className="text-2xl font-bold text-gray-900">{stats[card.key].value}</p>
+            <p className="text-[10px] md:text-xs text-gray-400 mb-0.5 md:mb-1">{card.label}</p>
+            <p className="text-lg md:text-2xl font-bold text-gray-900">{stats[card.key].value}</p>
             {stats[card.key].sub && (
               <p className="text-[11px] text-accent mt-1 font-medium">{stats[card.key].sub}</p>
             )}
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
       <div className="space-y-4">
         {pendingUsers.length > 0 && (
           <div className="bg-white rounded-2xl border border-amber-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 bg-amber-50 border-b border-amber-100">
+            <div className="flex items-center justify-between px-3 md:px-5 py-3 md:py-3.5 bg-amber-50 border-b border-amber-100">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                 <h3 className="font-semibold text-amber-800 text-sm">승인 대기 회원</h3>
@@ -92,15 +92,15 @@ export default function AdminDashboard() {
             </div>
             <div className="divide-y divide-gray-50">
               {pendingUsers.map(u => (
-                <div key={u.id} className="flex items-center gap-4 px-5 py-3">
+                <div key={u.id} className="flex items-center gap-3 md:gap-4 px-3 md:px-5 py-3">
                   <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-bold text-gray-600">{u.name[0]}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">{u.name} <span className="text-gray-400 font-normal">({u.company})</span></p>
-                    <p className="text-xs text-gray-400">{u.email}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-800 truncate">{u.name} <span className="text-gray-400 font-normal">({u.company})</span></p>
+                    <p className="text-[10px] md:text-xs text-gray-400 truncate">{u.email}</p>
                   </div>
-                  <span className="text-[11px] text-gray-400">{u.createdAt}</span>
+                  <span className="text-[10px] md:text-[11px] text-gray-400 hidden sm:inline">{u.createdAt}</span>
                 </div>
               ))}
             </div>
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
 
         {pendingInquiries.length > 0 && (
           <div className="bg-white rounded-2xl border border-blue-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 bg-blue-50 border-b border-blue-100">
+            <div className="flex items-center justify-between px-3 md:px-5 py-3 md:py-3.5 bg-blue-50 border-b border-blue-100">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                 <h3 className="font-semibold text-blue-800 text-sm">미답변 문의</h3>
@@ -121,12 +121,12 @@ export default function AdminDashboard() {
             </div>
             <div className="divide-y divide-gray-50">
               {pendingInquiries.slice(0, 3).map(inq => (
-                <div key={inq.id} className="flex items-center gap-4 px-5 py-3">
+                <div key={inq.id} className="flex items-center gap-3 md:gap-4 px-3 md:px-5 py-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{inq.title}</p>
-                    <p className="text-xs text-gray-400">{inq.userName}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-800 truncate">{inq.title}</p>
+                    <p className="text-[10px] md:text-xs text-gray-400">{inq.userName}</p>
                   </div>
-                  <span className="text-[11px] text-gray-400">{inq.createdAt}</span>
+                  <span className="text-[10px] md:text-[11px] text-gray-400 hidden sm:inline">{inq.createdAt}</span>
                 </div>
               ))}
             </div>

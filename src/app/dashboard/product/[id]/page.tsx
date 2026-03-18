@@ -45,9 +45,9 @@ export default function ProductDetailPage() {
 
   return (
     <div>
-      <button onClick={() => router.back()} className="text-sm text-gray-400 hover:text-gray-900 transition-colors mb-6 inline-block">&larr; {category?.name}{subCategory ? ` / ${subCategory.name}` : ''}</button>
+      <button onClick={() => router.back()} className="text-xs sm:text-sm text-gray-400 hover:text-gray-900 transition-colors mb-4 sm:mb-6 inline-block">&larr; {category?.name}{subCategory ? ` / ${subCategory.name}` : ''}</button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 max-w-5xl mx-auto">
           {/* Images */}
           <div>
             <div className="aspect-square relative overflow-hidden bg-gray-100 rounded-lg">
@@ -78,7 +78,7 @@ export default function ProductDetailPage() {
           {/* Info */}
           <div className="flex flex-col">
             <p className="text-xs text-gray-400 mb-2">{category?.name}{subCategory ? ` / ${subCategory.name}` : ''}</p>
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{product.name}</h1>
             {product.description && <p className="text-sm text-gray-500 mb-4 leading-relaxed">{product.description}</p>}
 
             {/* Origin / Manufacturer */}
@@ -90,10 +90,10 @@ export default function ProductDetailPage() {
             )}
 
             {/* Price */}
-            <div className="border border-gray-200 rounded-lg p-5 mb-5">
-              <div className="flex items-end gap-3 mb-1">
-                {discountPercent > 0 && <span className="text-red-500 text-lg font-bold">{discountPercent}%</span>}
-                <span className="text-2xl font-extrabold text-gray-900">{myPrice.toLocaleString()}원</span>
+            <div className="border border-gray-200 rounded-lg p-4 sm:p-5 mb-4 sm:mb-5">
+              <div className="flex items-end gap-2 sm:gap-3 mb-1">
+                {discountPercent > 0 && <span className="text-red-500 text-base sm:text-lg font-bold">{discountPercent}%</span>}
+                <span className="text-xl sm:text-2xl font-extrabold text-gray-900">{myPrice.toLocaleString()}원</span>
               </div>
               <p className="text-sm text-gray-400 line-through">{product.basePrice.toLocaleString()}원</p>
               <p className="text-xs text-gray-500 mt-1">{grade} 등급 적용가</p>
@@ -118,27 +118,27 @@ export default function ProductDetailPage() {
             {/* Order */}
             {!isExpired && (
               <div className="mt-auto border-t border-gray-100 pt-5">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
                   <label className="text-sm text-gray-600 font-semibold">수량</label>
                   <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                    <button onClick={() => setQuantity(Math.max(product.minQuantity, quantity - (product.quantityStep || 1)))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
+                    <button onClick={() => setQuantity(Math.max(product.minQuantity, quantity - (product.quantityStep || 1)))} className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     </button>
                     <input type="number" value={quantity} onChange={e => setQuantity(Number(e.target.value))} min={product.minQuantity} max={product.maxQuantity} step={product.quantityStep || 1}
-                      className="w-14 h-10 text-center text-sm border-x border-gray-200 focus:outline-none font-semibold" />
-                    <button onClick={() => setQuantity(Math.min(product.maxQuantity, quantity + (product.quantityStep || 1)))} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
+                      className="w-12 sm:w-14 h-9 sm:h-10 text-center text-sm border-x border-gray-200 focus:outline-none font-semibold" />
+                    <button onClick={() => setQuantity(Math.min(product.maxQuantity, quantity + (product.quantityStep || 1)))} className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     </button>
                   </div>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-[10px] sm:text-xs text-gray-400">
                     ({product.minQuantity}~{product.maxQuantity}
                     {(product.quantityStep || 1) > 1 ? ` · ${product.quantityStep}개 단위` : ''})
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-lg px-4 py-3">
-                  <span className="text-sm text-gray-500 font-medium">총 상품금액</span>
-                  <span className="text-xl font-extrabold text-gray-900">{(myPrice * quantity).toLocaleString()}원</span>
+                <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-lg px-3 sm:px-4 py-3">
+                  <span className="text-xs sm:text-sm text-gray-500 font-medium">총 상품금액</span>
+                  <span className="text-lg sm:text-xl font-extrabold text-gray-900">{(myPrice * quantity).toLocaleString()}원</span>
                 </div>
 
                 <button onClick={handleAddToCart}
@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
       {product.images && product.images.length > 0 && product.images.some(img => img && !img.startsWith('/images/')) && (
         <div className="mt-10 pt-10 border-t border-gray-100">
           <h2 className="text-sm font-semibold text-gray-900 mb-4">상품 이미지</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {product.images.filter(img => img && !img.startsWith('/images/')).map((img, idx) => (
               <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                 <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-contain" />

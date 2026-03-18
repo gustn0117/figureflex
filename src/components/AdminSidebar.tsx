@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
+import { useState } from 'react';
 
 const menuItems = [
   {
@@ -42,6 +43,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { logout, currentUser, users, orders, inquiries } = useStore();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const badges: Record<string, number> = {
     pending_users: users.filter(u => u.status === 'pending').length,
@@ -49,11 +51,11 @@ export default function AdminSidebar() {
     pending_inquiries: inquiries.filter(i => !i.reply).length,
   };
 
-  return (
-    <aside className="w-[300px] bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0">
+  const sidebarContent = (
+    <>
       {/* Brand */}
       <div className="px-5 py-4 border-b border-gray-100">
-        <Link href="/admin" className="flex items-center gap-2.5">
+        <Link href="/admin" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
           <img src="/logo2.jpg" alt="피규어플렉스" className="h-10 w-auto object-contain" style={{ mixBlendMode: 'multiply' }} />
           <div>
             <p className="text-[18px] font-bold text-gray-900 leading-none">피규어플렉스</p>
@@ -88,6 +90,7 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] transition-all ${
                 isActive
                   ? 'bg-gray-900 text-white font-medium'
@@ -120,6 +123,53 @@ export default function AdminSidebar() {
           로그아웃
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile hamburger toggle button */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="md:hidden fixed top-3 left-3 z-[60] bg-white border border-gray-200 rounded-lg p-2 shadow-sm"
+        aria-label="메뉴 열기"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="3" y1="7" x2="21" y2="7" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="17" x2="21" y2="17" />
+        </svg>
+      </button>
+
+      {/* Mobile overlay backdrop */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/40 z-[70]"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar (slide-over) */}
+      <aside
+        className={`md:hidden fixed inset-y-0 left-0 z-[80] w-[280px] bg-white border-r border-gray-100 flex flex-col h-screen transform transition-transform duration-300 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Close button */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-700"
+          aria-label="메뉴 닫기"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+        {sidebarContent}
+      </aside>
+
+      {/* Desktop sidebar (always visible) */}
+      <aside className="hidden md:flex w-[300px] bg-white border-r border-gray-100 flex-col h-screen sticky top-0">
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

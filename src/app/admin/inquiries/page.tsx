@@ -77,23 +77,23 @@ export default function AdminInquiriesPage() {
         <div className="space-y-3">
           {filtered.map(inq => (
             <div key={inq.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-50">
-                <span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium flex-shrink-0 ${inq.reply ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+              <div className="flex items-center gap-2 md:gap-3 px-3 md:px-5 py-3 md:py-4 border-b border-gray-50 flex-wrap md:flex-nowrap">
+                <span className={`text-[10px] md:text-[11px] px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg font-medium flex-shrink-0 ${inq.reply ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
                   {inq.reply ? '답변완료' : '미답변'}
                 </span>
-                <p className="text-sm font-semibold text-gray-800 flex-1 min-w-0">{inq.title}</p>
+                <p className="text-xs md:text-sm font-semibold text-gray-800 flex-1 min-w-0 truncate">{inq.title}</p>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xs text-gray-500">{inq.userName}</p>
-                  <p className="text-[11px] text-gray-400">{inq.createdAt}</p>
+                  <p className="text-[11px] md:text-xs text-gray-500">{inq.userName}</p>
+                  <p className="text-[10px] md:text-[11px] text-gray-400">{inq.createdAt}</p>
                 </div>
               </div>
-              <div className="px-5 py-4">
-                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{inq.content}</p>
+              <div className="px-3 md:px-5 py-3 md:py-4">
+                <p className="text-xs md:text-sm text-gray-600 leading-relaxed whitespace-pre-line">{inq.content}</p>
                 {inq.imageUrl && (
                   <img src={inq.imageUrl} alt="첨부" className="max-h-48 rounded-xl border border-gray-100 mt-3 object-contain" />
                 )}
               </div>
-              <div className="px-5 pb-4">
+              <div className="px-3 md:px-5 pb-3 md:pb-4">
                 {inq.reply ? (
                   <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
                     <div className="flex items-center gap-2 mb-2">

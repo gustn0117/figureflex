@@ -46,7 +46,7 @@ function DateRangePicker({ startDate, endDate, onChangeStart, onChangeEnd }: {
           );
         })}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs text-gray-500 mb-1">시작일 *</label>
           <input type="date" value={startDate} onChange={e => onChangeStart(e.target.value)}
@@ -152,7 +152,7 @@ export default function AdminProductsPage() {
 
       {/* Product Form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 mb-6">
           <h3 className="font-bold text-gray-800 mb-5 text-lg">{editId ? '상품 수정' : '상품 등록'}</h3>
           <form onSubmit={handleSubmit} className="space-y-7">
             {/* Images */}
@@ -162,19 +162,19 @@ export default function AdminProductsPage() {
                 <label className="cursor-pointer group">
                   <input type="file" accept="image/*" onChange={handleMainImage} className="hidden" />
                   {hasImg(mainImage) ? (
-                    <div className="w-28 h-28 rounded-xl border-2 border-accent overflow-hidden relative">
+                    <div className="w-20 h-20 md:w-28 md:h-28 rounded-xl border-2 border-accent overflow-hidden relative">
                       <img src={mainImage} alt="" className="w-full h-full object-cover" />
                       <span className="absolute bottom-0 left-0 right-0 bg-accent text-white text-[10px] text-center py-0.5 font-semibold">대표</span>
                     </div>
                   ) : (
-                    <div className="w-28 h-28 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1.5 group-hover:border-accent transition-colors bg-gray-50">
+                    <div className="w-20 h-20 md:w-28 md:h-28 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1.5 group-hover:border-accent transition-colors bg-gray-50">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
                       <span className="text-[10px] text-gray-400 font-medium">대표 이미지</span>
                     </div>
                   )}
                 </label>
                 {subImages.map((img, idx) => (
-                  <div key={idx} className="w-28 h-28 rounded-xl border border-gray-200 overflow-hidden relative group">
+                  <div key={idx} className="w-20 h-20 md:w-28 md:h-28 rounded-xl border border-gray-200 overflow-hidden relative group">
                     <img src={img} alt="" className="w-full h-full object-cover" />
                     <button type="button" onClick={() => setSubImages(prev => prev.filter((_, i) => i !== idx))}
                       className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -185,7 +185,7 @@ export default function AdminProductsPage() {
                 {subImages.length < 5 && (
                   <label className="cursor-pointer">
                     <input type="file" accept="image/*" multiple onChange={handleSubImages} className="hidden" />
-                    <div className="w-28 h-28 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1.5 hover:border-gray-400 transition-colors bg-gray-50">
+                    <div className="w-20 h-20 md:w-28 md:h-28 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1.5 hover:border-gray-400 transition-colors bg-gray-50">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                       <span className="text-[10px] text-gray-400">추가 ({subImages.length}/5)</span>
                     </div>
@@ -197,9 +197,9 @@ export default function AdminProductsPage() {
             {/* Basic Info */}
             <div>
               <p className="text-sm font-semibold text-gray-700 mb-3">기본 정보</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2"><label className="block text-xs text-gray-500 mb-1">상품명 *</label><input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className={inputCls} required placeholder="상품명을 입력하세요" /></div>
-                <div className="col-span-2"><label className="block text-xs text-gray-500 mb-1">간단 설명</label><input type="text" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className={inputCls} placeholder="상품 리스트에 표시되는 한 줄 설명" /></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="md:col-span-2"><label className="block text-xs text-gray-500 mb-1">상품명 *</label><input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className={inputCls} required placeholder="상품명을 입력하세요" /></div>
+                <div className="md:col-span-2"><label className="block text-xs text-gray-500 mb-1">간단 설명</label><input type="text" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className={inputCls} placeholder="상품 리스트에 표시되는 한 줄 설명" /></div>
                 <div><label className="block text-xs text-gray-500 mb-1">대분류 *</label><select value={form.categoryId} onChange={e => setForm({...form, categoryId: e.target.value, subCategoryId: ''})} className={inputCls} required><option value="">선택</option>{productCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                 <div><label className="block text-xs text-gray-500 mb-1">중분류</label><select value={form.subCategoryId} onChange={e => setForm({...form, subCategoryId: e.target.value})} className={inputCls}><option value="">없음</option>{filteredSubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                 <div><label className="block text-xs text-gray-500 mb-1">원산지</label><input type="text" value={form.origin} onChange={e => setForm({...form, origin: e.target.value})} className={inputCls} placeholder="예: 일본" /></div>
@@ -222,7 +222,7 @@ export default function AdminProductsPage() {
               {form.basePrice > 0 && (
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                   <p className="text-xs text-gray-500 mb-3 font-medium">등급별 적용가 <span className="text-gray-400 font-normal">(등급설정 할인율 기준 미리보기)</span></p>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {GRADES.map(g => (
                       <div key={g.key} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-gray-100">
                         <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded ${g.color}`}>{g.label}</span>
@@ -240,7 +240,7 @@ export default function AdminProductsPage() {
             {/* Quantity */}
             <div>
               <p className="text-sm font-semibold text-gray-700 mb-3">수량 / 재고</p>
-              <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div><label className="block text-xs text-gray-500 mb-1">재고</label><input type="number" value={form.stock||''} onChange={e => setForm({...form, stock: Number(e.target.value)})} className={inputCls} min={0} /></div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">주문 단위 <span className="text-gray-400">(스텝)</span></label>
@@ -248,7 +248,7 @@ export default function AdminProductsPage() {
                   {form.quantityStep > 1 && <p className="text-[11px] text-blue-500 mt-1">{form.quantityStep}개 단위로 주문 가능</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><label className="block text-xs text-gray-500 mb-1">최소 주문</label><input type="number" value={form.minQuantity||''} onChange={e => setForm({...form, minQuantity: Number(e.target.value)})} className={inputCls} min={1} /></div>
                 <div><label className="block text-xs text-gray-500 mb-1">최대 주문</label><input type="number" value={form.maxQuantity||''} onChange={e => setForm({...form, maxQuantity: Number(e.target.value)})} className={inputCls} min={1} /></div>
               </div>
@@ -298,7 +298,8 @@ export default function AdminProductsPage() {
 
       {/* Product List */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr className="bg-gray-50 text-xs text-gray-500 border-b border-gray-100">
               <th className="px-4 py-3 w-10">
@@ -370,6 +371,7 @@ export default function AdminProductsPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

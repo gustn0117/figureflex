@@ -73,7 +73,7 @@ export default function AdminNoticesPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-5">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 mb-5">
           <h3 className="font-semibold text-gray-800 mb-4">{editId ? '공지 수정' : '공지 등록'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -91,7 +91,7 @@ export default function AdminNoticesPage() {
               <div className="flex gap-3 flex-wrap">
                 {images.map((img, idx) => (
                   <div key={idx} className="relative group">
-                    <img src={img} alt="" className="w-24 h-24 object-cover rounded-xl border border-gray-200" />
+                    <img src={img} alt="" className="w-16 h-16 md:w-24 md:h-24 object-cover rounded-xl border border-gray-200" />
                     <button type="button" onClick={() => setImages(prev => prev.filter((_, i) => i !== idx))}
                       className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -101,7 +101,7 @@ export default function AdminNoticesPage() {
                 {images.length < 10 && (
                   <label className="cursor-pointer">
                     <input type="file" accept="image/*" multiple onChange={handleImages} className="hidden" />
-                    <div className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1 hover:border-gray-400 transition-colors bg-gray-50">
+                    <div className="w-16 h-16 md:w-24 md:h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1 hover:border-gray-400 transition-colors bg-gray-50">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                       <span className="text-[10px] text-gray-400">사진 추가</span>
                     </div>
@@ -132,10 +132,10 @@ export default function AdminNoticesPage() {
         ) : (
           <div className="divide-y divide-gray-50">
             {notices.map(n => (
-              <div key={n.id} className="px-5 py-4 hover:bg-gray-50/50 transition-colors">
-                <div className="flex items-center gap-3">
+              <div key={n.id} className="px-3 md:px-5 py-3 md:py-4 hover:bg-gray-50/50 transition-colors">
+                <div className="flex items-center gap-2 md:gap-3 flex-wrap md:flex-nowrap">
                   {n.isImportant && <span className="text-[10px] bg-accent text-white px-2 py-0.5 rounded-full font-semibold flex-shrink-0">중요</span>}
-                  <span className="text-sm text-gray-800 flex-1 font-medium">{n.title}</span>
+                  <span className="text-xs md:text-sm text-gray-800 flex-1 font-medium min-w-0 truncate">{n.title}</span>
                   {(n.images?.length > 0) && (
                     <span className="text-[10px] text-gray-400 flex items-center gap-1 flex-shrink-0">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>

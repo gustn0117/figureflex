@@ -52,8 +52,8 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Add forms */}
-      <div className="grid grid-cols-2 gap-4 mb-7">
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-7">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">대분류 추가</h3>
           <div className="flex gap-2">
             <input
@@ -66,9 +66,9 @@ export default function AdminCategoriesPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">중분류 추가</h3>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <select value={newSub.parentId} onChange={e => setNewSub({...newSub, parentId: e.target.value})}
               className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/20">
               <option value="">대분류 선택</option>
@@ -92,7 +92,7 @@ export default function AdminCategoriesPage() {
           return (
             <div key={cat.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
               {/* Main category header */}
-              <div className="flex items-center justify-between px-5 py-3.5 bg-gray-50 border-b border-gray-100">
+              <div className="flex items-center justify-between px-3 md:px-5 py-3 md:py-3.5 bg-gray-50 border-b border-gray-100">
                 <div className="flex items-center gap-2.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
@@ -126,7 +126,7 @@ export default function AdminCategoriesPage() {
               {subs.length > 0 && (
                 <div className="divide-y divide-gray-50">
                   {subs.map(sub => (
-                    <div key={sub.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50/50">
+                    <div key={sub.id} className="flex items-center justify-between px-3 md:px-5 py-3 hover:bg-gray-50/50">
                       <div className="flex items-center gap-2 pl-4">
                         <span className="text-gray-300 text-xs">└</span>
                         {editId === sub.id ? (

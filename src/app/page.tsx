@@ -28,10 +28,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-5">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-5">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-10">
-          <img src="/logo2.jpg" alt="피규어플렉스" className="w-44 mx-auto mb-3" style={{ mixBlendMode: 'multiply' }} />
+        <div className="text-center mb-8 sm:mb-10">
+          <img src="/logo2.jpg" alt="피규어플렉스" className="w-36 sm:w-44 mx-auto mb-3" style={{ mixBlendMode: 'multiply' }} />
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">

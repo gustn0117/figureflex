@@ -30,20 +30,20 @@ export default function DashboardHome() {
   return (
     <div>
       {/* Welcome banner */}
-      <div className="bg-gray-900 rounded-xl p-6 mb-8 flex items-center justify-between">
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="text-gray-400 text-xs mb-1">{currentUser?.grade} 등급</p>
-          <h1 className="text-white text-xl font-bold">{currentUser?.company}님, 안녕하세요</h1>
+          <h1 className="text-white text-lg sm:text-xl font-bold">{currentUser?.company}님, 안녕하세요</h1>
         </div>
-        <div className="flex gap-8 text-white text-right">
-          <div><p className="text-gray-400 text-[11px]">주문</p><p className="text-lg font-bold">{myOrders.length}건</p></div>
-          <div><p className="text-gray-400 text-[11px]">총 주문액</p><p className="text-lg font-bold">{totalSpent.toLocaleString()}원</p></div>
-          <div><p className="text-gray-400 text-[11px]">장바구니</p><p className="text-lg font-bold">{cart.length}건</p></div>
+        <div className="flex gap-5 sm:gap-8 text-white text-right">
+          <div><p className="text-gray-400 text-[11px]">주문</p><p className="text-base sm:text-lg font-bold">{myOrders.length}건</p></div>
+          <div><p className="text-gray-400 text-[11px]">총 주문액</p><p className="text-base sm:text-lg font-bold">{totalSpent.toLocaleString()}원</p></div>
+          <div><p className="text-gray-400 text-[11px]">장바구니</p><p className="text-base sm:text-lg font-bold">{cart.length}건</p></div>
         </div>
       </div>
 
       {/* Quick categories */}
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 sm:mb-8">
         {[
           { label: '제일복권', href: '/dashboard/ichiban', desc: '이치방쿠지 / 기타' },
           { label: '피규어', href: '/dashboard/figures', desc: '반다이 / 후류 / 세가' },
@@ -51,7 +51,7 @@ export default function DashboardHome() {
           { label: '굿즈', href: '/dashboard/goods', desc: '아크릴 / 기타' },
         ].map(cat => (
           <Link key={cat.href} href={cat.href}
-            className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-400 transition-colors group">
+            className="bg-white border border-gray-200 rounded-xl p-3.5 sm:p-5 hover:border-gray-400 transition-colors group">
             <p className="text-sm font-semibold text-gray-900 mb-1">{cat.label}</p>
             <p className="text-[11px] text-gray-400">{cat.desc}</p>
           </Link>
@@ -80,11 +80,11 @@ export default function DashboardHome() {
       {/* Products */}
       {saleProducts.length > 0 ? (
         <div>
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-sm font-semibold text-gray-900">판매중 상품</h2>
             <span className="text-[11px] text-gray-400">{saleProducts.length}개</span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6">
             {saleProducts.map(p => {
               const myPrice = p.prices?.[grade] ?? Math.round(p.basePrice);
               return (

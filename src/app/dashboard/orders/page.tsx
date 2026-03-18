@@ -47,7 +47,7 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-xl font-bold text-gray-900 mb-6">주문내역</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">주문내역</h1>
 
       {myOrders.length === 0 ? (
         <div className="text-center py-20">
@@ -59,11 +59,11 @@ export default function OrdersPage() {
             const st = statusMap[order.status] || statusMap.pending;
             return (
               <div key={order.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3 bg-gray-50 text-sm">
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-400 font-mono text-xs">#{order.id}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 bg-gray-50 text-sm gap-1.5 sm:gap-0">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <span className="text-gray-400 font-mono text-[10px] sm:text-xs">#{order.id}</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${st.color}`}>{st.label}</span>
-                    <span className="text-xs text-gray-400">{order.createdAt}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-400">{order.createdAt}</span>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => exportToPDF(order)} className="text-[11px] text-gray-500 hover:text-gray-900">PDF</button>
@@ -76,8 +76,8 @@ export default function OrdersPage() {
                     const imgUrl = product?.imageUrl;
                     const hasImg = imgUrl && imgUrl.length > 0 && !imgUrl.startsWith('/images/');
                     return (
-                      <div key={idx} className="flex items-center gap-4 px-5 py-3 text-sm">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-100">
+                      <div key={idx} className="flex flex-wrap sm:flex-nowrap items-start sm:items-center gap-2.5 sm:gap-4 px-3 sm:px-5 py-3 text-sm">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-100">
                           {hasImg ? (
                             <img src={imgUrl} alt={item.productName} className="w-full h-full object-cover" />
                           ) : (
@@ -86,24 +86,26 @@ export default function OrdersPage() {
                             </div>
                           )}
                         </div>
-                        <span className="text-gray-700 flex-1">{item.productName}</span>
-                        <span className="text-gray-400 w-16 text-center">{item.quantity}개</span>
-                        <span className="text-gray-500 w-24 text-right">{item.unitPrice.toLocaleString()}원</span>
-                        <span className="font-medium text-gray-900 w-28 text-right">{item.totalPrice.toLocaleString()}원</span>
+                        <span className="text-gray-700 flex-1 text-xs sm:text-sm min-w-0 break-words">{item.productName}</span>
+                        <div className="flex items-center gap-2 sm:gap-0 w-full sm:w-auto ml-0 sm:ml-0">
+                          <span className="text-gray-400 text-xs sm:text-sm sm:w-16 text-left sm:text-center">{item.quantity}개</span>
+                          <span className="text-gray-500 text-xs sm:text-sm sm:w-24 text-left sm:text-right">{item.unitPrice.toLocaleString()}원</span>
+                          <span className="font-medium text-gray-900 text-xs sm:text-sm sm:w-28 text-right ml-auto sm:ml-0">{item.totalPrice.toLocaleString()}원</span>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
-                <div className="px-5 py-3 bg-gray-50 border-t border-gray-100">
+                <div className="px-3 sm:px-5 py-3 bg-gray-50 border-t border-gray-100">
                   <div className="flex items-center justify-end gap-3 mb-2">
-                    <span className="text-sm text-gray-400">합계</span>
-                    <span className="text-base font-bold text-gray-900">{order.finalAmount.toLocaleString()}원</span>
+                    <span className="text-xs sm:text-sm text-gray-400">합계</span>
+                    <span className="text-sm sm:text-base font-bold text-gray-900">{order.finalAmount.toLocaleString()}원</span>
                   </div>
                   {(() => {
                     const deposit = order.depositAmount ?? order.finalAmount;
                     const balance = order.finalAmount - deposit;
                     return (
-                      <div className="flex items-center justify-end gap-4 text-xs">
+                      <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-4 text-[10px] sm:text-xs">
                         <span className="flex items-center gap-1.5">
                           <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">카드</span>
                           <span className="text-gray-500">계약금</span>

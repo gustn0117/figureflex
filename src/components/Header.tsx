@@ -23,21 +23,21 @@ export default function Header() {
 
   return (
     <header className="bg-white sticky top-0 z-50 shadow-[0_1px_0_0_#e5e7eb]">
-      <div className="max-w-6xl mx-auto px-5">
+      <div className="max-w-6xl mx-auto px-3 md:px-5">
         {/* Top utility */}
-        <div className="flex items-center justify-end gap-5 h-10 text-[12px] text-gray-400 border-b border-gray-100">
-          <button onClick={() => router.push('/dashboard/orders')} className="hover:text-gray-700 transition-colors">주문내역</button>
-          <span className="text-gray-200">|</span>
-          <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-700 transition-colors font-medium text-gray-500">내정보</button>
-          <span className="text-gray-200">|</span>
-          <button onClick={() => { logout(); router.push('/'); }} className="hover:text-gray-700 transition-colors">로그아웃</button>
+        <div className="flex items-center justify-end gap-3 md:gap-5 h-8 md:h-10 text-[10px] md:text-[12px] text-gray-400 border-b border-gray-100">
+          <button onClick={() => router.push('/dashboard/orders')} className="hover:text-gray-700 transition-colors"><span className="hidden sm:inline">주문내역</span><span className="sm:hidden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span></button>
+          <span className="text-gray-200 hidden sm:inline">|</span>
+          <button onClick={() => router.push('/dashboard/mypage')} className="hover:text-gray-700 transition-colors font-medium text-gray-500"><span className="hidden sm:inline">내정보</span><span className="sm:hidden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></button>
+          <span className="text-gray-200 hidden sm:inline">|</span>
+          <button onClick={() => { logout(); router.push('/'); }} className="hover:text-gray-700 transition-colors"><span className="hidden sm:inline">로그아웃</span><span className="sm:hidden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span></button>
         </div>
 
         {/* Main bar */}
-        <div className="flex items-center justify-between h-28">
-          <button onClick={() => router.push('/dashboard')} className="flex items-center gap-4">
-            <img src="/logo2.jpg" alt="" className="h-20 w-auto" style={{ mixBlendMode: 'multiply' }} />
-            <span className="text-[36px] font-bold text-gray-900 tracking-tight">피규어플렉스</span>
+        <div className="flex items-center justify-between h-16 md:h-28">
+          <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2 md:gap-4">
+            <img src="/logo2.jpg" alt="" className="h-10 md:h-20 w-auto" style={{ mixBlendMode: 'multiply' }} />
+            <span className="text-[20px] md:text-[36px] font-bold text-gray-900 tracking-tight">피규어플렉스</span>
           </button>
 
           <div className="flex items-center gap-4">
@@ -56,11 +56,21 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Category nav - desktop */}
+        {/* Category nav - horizontal scroll on mobile, flex on desktop */}
         <nav className="hidden md:flex items-center gap-0 -mb-px">
           {navItems.map(item => (
             <button key={item.href} onClick={() => router.push(item.href)}
               className={`px-5 py-4 text-[14px] font-medium border-b-2 transition-colors ${
+                pathname === item.href ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-700'
+              }`}>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <nav className="md:hidden flex items-center gap-0 -mb-px overflow-x-auto scrollbar-hide">
+          {navItems.map(item => (
+            <button key={item.href} onClick={() => router.push(item.href)}
+              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 pathname === item.href ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-700'
               }`}>
               {item.label}

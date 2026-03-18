@@ -48,12 +48,12 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-end justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h2>
           <p className="text-xs text-gray-400 mt-1">등록 제품 : {filtered.length}개</p>
         </div>
-        <div className="flex gap-3 text-[12px] text-gray-400">
+        <div className="flex gap-2 sm:gap-3 text-[11px] sm:text-[12px] text-gray-400 flex-wrap">
           {([['newest', '신상품'], ['name', '상품명'], ['low', '낮은가격'], ['high', '높은가격']] as [SortKey, string][]).map(([key, label]) => (
             <button key={key} onClick={() => setSort(key)}
               className={`transition-colors ${sort === key ? 'text-gray-900 font-semibold' : 'hover:text-gray-600'}`}>
@@ -65,7 +65,7 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
 
       {/* Sub-category tabs */}
       {subCategories && subCategories.length > 0 && (
-        <div className="flex gap-2 mb-6 flex-wrap">
+        <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 flex-wrap">
           <button onClick={() => setActiveSubCat(null)}
             className={`text-[13px] px-3.5 py-1.5 rounded-lg border transition-colors ${!activeSubCat ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'}`}>
             전체 ({products.length})
@@ -87,7 +87,7 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
           <p className="text-gray-400 text-sm">등록된 상품이 없습니다.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-6">
           {filtered.map(p => {
             const status = getStatus(p);
             const isExpired = status === 'expired';

@@ -277,18 +277,18 @@ export default function AdminOrdersPage() {
         <p className="text-sm text-gray-400 mt-1">주문 현황 및 상태 변경</p>
       </div>
 
-      <div className="flex gap-2 mb-5 flex-wrap">
+      <div className="flex gap-1.5 md:gap-2 mb-4 md:mb-5 flex-wrap">
         {statusFlow.map(s => {
           const cnt = orders.filter(o => o.status === s.value).length;
           return (
-            <div key={s.value} className={`text-xs px-3 py-2 rounded-xl font-medium border ${s.color}`}>
-              {s.label} <span className="font-bold ml-1">{cnt}</span>
+            <div key={s.value} className={`text-[10px] md:text-xs px-2 md:px-3 py-1.5 md:py-2 rounded-xl font-medium border ${s.color}`}>
+              {s.label} <span className="font-bold ml-0.5 md:ml-1">{cnt}</span>
             </div>
           );
         })}
       </div>
 
-      <div className="flex items-center gap-3 mb-4 flex-wrap">
+      <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4 flex-wrap">
         <div className="flex gap-1.5 bg-gray-100 rounded-xl p-1">
           {([['date', '날짜순'], ['company', '업체순'], ['amount', '금액순']] as [SortKey, string][]).map(([key, label]) => (
             <button key={key} onClick={() => setSort(key)}
@@ -316,7 +316,7 @@ export default function AdminOrdersPage() {
           <div className="text-center py-16 text-gray-400 text-sm">주문 내역이 없습니다.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-xs md:text-sm min-w-[900px]">
               <thead>
                 <tr className="bg-gray-50 text-xs text-gray-500 border-b border-gray-100">
                   <th className="px-3 py-3.5 w-10"><input type="checkbox" checked={sorted.length > 0 && selected.length === sorted.length} onChange={toggleAll} className="rounded cursor-pointer" /></th>

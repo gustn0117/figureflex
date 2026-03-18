@@ -58,12 +58,12 @@ export default function AdminMembersPage() {
 
       {/* Approval confirmation modal */}
       {approvalUser && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 md:p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg mx-3 md:mx-0 p-4 md:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-gray-900 text-lg mb-1">회원 승인 확인</h3>
             <p className="text-sm text-gray-400 mb-5">아래 업체 정보를 확인 후 승인 여부를 결정해주세요.</p>
             <div className="space-y-3 mb-5">
-              <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div className="bg-gray-50 rounded-xl p-3">
                   <p className="text-xs text-gray-400 mb-1">업체명</p>
                   <p className="font-semibold text-gray-800">{approvalUser.company}</p>
@@ -121,8 +121,8 @@ export default function AdminMembersPage() {
 
       {/* Edit modal */}
       {editUser && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-2 md:p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md mx-3 md:mx-0 p-4 md:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-gray-900 mb-5">회원 정보 수정</h3>
             <div className="mb-4">
               <p className="text-xs text-gray-500 mb-2">사업자등록증</p>
@@ -200,27 +200,28 @@ export default function AdminMembersPage() {
             {tab === 'pending' ? '승인 대기 중인 회원이 없습니다.' : '등록된 회원이 없습니다.'}
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-500 border-b border-gray-100">
-                <th className="text-left px-5 py-3.5 font-medium">업체 / 담당자</th>
-                <th className="text-left px-3 py-3.5 font-medium">이메일</th>
-                <th className="text-center px-3 py-3.5 font-medium">유형</th>
-                <th className="text-center px-3 py-3.5 font-medium">등급</th>
-                <th className="text-center px-3 py-3.5 font-medium">상태</th>
-                <th className="text-center px-3 py-3.5 font-medium">추천인</th>
-                <th className="text-center px-3 py-3.5 font-medium">가입일</th>
-                <th className="text-center px-3 py-3.5 font-medium">관리</th>
+                <th className="text-left px-3 md:px-5 py-3 md:py-3.5 font-medium">업체 / 담당자</th>
+                <th className="text-left px-3 py-3 md:py-3.5 font-medium hidden md:table-cell">이메일</th>
+                <th className="text-center px-3 py-3 md:py-3.5 font-medium">유형</th>
+                <th className="text-center px-3 py-3 md:py-3.5 font-medium">등급</th>
+                <th className="text-center px-3 py-3 md:py-3.5 font-medium">상태</th>
+                <th className="text-center px-3 py-3 md:py-3.5 font-medium hidden lg:table-cell">추천인</th>
+                <th className="text-center px-3 py-3 md:py-3.5 font-medium hidden md:table-cell">가입일</th>
+                <th className="text-center px-3 py-3 md:py-3.5 font-medium">관리</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filtered.map(u => (
                 <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-5 py-3.5">
+                  <td className="px-3 md:px-5 py-3 md:py-3.5">
                     <p className="font-semibold text-gray-800">{u.company}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{u.name} · {u.phone}</p>
                   </td>
-                  <td className="px-3 py-3.5 text-xs text-gray-500">{u.email}</td>
+                  <td className="px-3 py-3.5 text-xs text-gray-500 hidden md:table-cell">{u.email}</td>
                   <td className="text-center px-3 py-3.5">
                     <span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium ${u.memberType === 'chain' ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-100 text-gray-600'}`}>
                       {u.memberType === 'chain' ? '체인점' : '외부업체'}
@@ -243,8 +244,8 @@ export default function AdminMembersPage() {
                       {u.status === 'approved' ? '승인됨' : u.status === 'pending' ? '대기중' : '거부됨'}
                     </span>
                   </td>
-                  <td className="text-center px-3 py-3.5 text-xs text-gray-400">{u.referredBy || '-'}</td>
-                  <td className="text-center px-3 py-3.5 text-xs text-gray-400">{u.createdAt}</td>
+                  <td className="text-center px-3 py-3.5 text-xs text-gray-400 hidden lg:table-cell">{u.referredBy || '-'}</td>
+                  <td className="text-center px-3 py-3.5 text-xs text-gray-400 hidden md:table-cell">{u.createdAt}</td>
                   <td className="text-center px-3 py-3.5">
                     <div className="flex items-center justify-center gap-1">
                       {u.status === 'pending' && (
@@ -261,6 +262,7 @@ export default function AdminMembersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

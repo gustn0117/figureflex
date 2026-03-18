@@ -47,16 +47,16 @@ export default function InquiryPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-gray-900">문의사항</h1>
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h1 className="text-lg sm:text-xl font-bold text-gray-900">문의사항</h1>
         <button onClick={() => setShowForm(!showForm)}
-          className={`text-sm px-4 py-2 rounded-lg transition-colors ${showForm ? 'bg-gray-100 text-gray-600' : 'bg-gray-900 text-white hover:bg-black'}`}>
+          className={`text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors ${showForm ? 'bg-gray-100 text-gray-600' : 'bg-gray-900 text-white hover:bg-black'}`}>
           {showForm ? '취소' : '문의 등록'}
         </button>
       </div>
 
       {showForm && (
-        <div className="border border-gray-200 rounded-lg p-5 mb-8">
+        <div className="border border-gray-200 rounded-lg p-3.5 sm:p-5 mb-6 sm:mb-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs text-gray-500 mb-1.5 font-medium">제목</label>
@@ -92,12 +92,12 @@ export default function InquiryPage() {
         <div className="divide-y divide-gray-100">
           {myInquiries.map(inq => (
             <div key={inq.id} className="py-5">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2">
                 <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${inq.reply ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                   {inq.reply ? '답변완료' : '대기중'}
                 </span>
-                <span className="text-sm font-medium text-gray-900">{inq.title}</span>
-                <span className="text-[11px] text-gray-400 ml-auto">{inq.createdAt}</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-900">{inq.title}</span>
+                <span className="text-[10px] sm:text-[11px] text-gray-400 ml-auto">{inq.createdAt}</span>
               </div>
               <p className="text-sm text-gray-600 mb-2 leading-relaxed">{inq.content}</p>
               {inq.imageUrl && <img src={inq.imageUrl} alt="" className="max-h-32 rounded-lg mb-2" />}

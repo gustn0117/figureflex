@@ -52,7 +52,7 @@ export default function MyPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold text-gray-900 mb-8">마이페이지</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-gray-900 mb-6 sm:mb-8">마이페이지</h1>
 
       {/* Profile */}
       <div className="mb-8 pb-8 border-b border-gray-100">
@@ -64,7 +64,7 @@ export default function MyPage() {
           <span className={`text-xs font-semibold px-3 py-1 rounded badge-${currentUser.grade.toLowerCase()}`}>{currentUser.grade}</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-8 text-sm">
           {[
             { l: '이메일', v: currentUser.email },
             { l: '연락처', v: currentUser.phone },
@@ -82,7 +82,7 @@ export default function MyPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8 pb-8 border-b border-gray-100">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-100">
         {[
           { l: '총 주문', v: `${myOrders.length}건` },
           { l: '총 주문액', v: `${totalSpent.toLocaleString()}원` },
@@ -90,7 +90,7 @@ export default function MyPage() {
         ].map((s, i) => (
           <div key={i} className="text-center">
             <p className="text-xs text-gray-400 mb-1">{s.l}</p>
-            <p className="text-lg font-bold text-gray-900">{s.v}</p>
+            <p className="text-base sm:text-lg font-bold text-gray-900">{s.v}</p>
           </div>
         ))}
       </div>
