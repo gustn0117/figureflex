@@ -66,16 +66,16 @@ export default function AdminSettingsPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <input type="range" min={0} max={50} step={1}
-                    value={Math.round(rate * 100)}
-                    onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Number(e.target.value) / 100 }))}
+                  <input type="range" min={0} max={500} step={1}
+                    value={Math.round(rate * 1000)}
+                    onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Number(e.target.value) / 1000 }))}
                     className="flex-1 h-2 accent-gray-900 cursor-pointer"
                   />
-                  <div className="flex items-center gap-1 w-24">
-                    <input type="number" min={0} max={50} step={1}
-                      value={Math.round(rate * 100)}
+                  <div className="flex items-center gap-1 w-28">
+                    <input type="number" min={0} max={50} step={0.1}
+                      value={parseFloat((rate * 100).toFixed(1))}
                       onChange={e => setLocalRates(prev => ({ ...prev, [g.key]: Math.min(50, Math.max(0, Number(e.target.value))) / 100 }))}
-                      className="w-16 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-gray-900/20 bg-white"
+                      className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-gray-900/20 bg-white"
                     />
                     <span className="text-sm font-medium text-gray-600">%</span>
                   </div>
@@ -112,22 +112,22 @@ export default function AdminSettingsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <input type="range" min={1} max={100} step={1}
-                    value={Math.round(rate * 100)}
-                    onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Number(e.target.value) / 100 }))}
+                  <input type="range" min={10} max={1000} step={1}
+                    value={Math.round(rate * 1000)}
+                    onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Number(e.target.value) / 1000 }))}
                     className="flex-1 h-2 accent-gray-900 cursor-pointer"
                   />
-                  <div className="flex items-center gap-1 w-24">
-                    <input type="number" min={1} max={100} step={1}
-                      value={Math.round(rate * 100)}
+                  <div className="flex items-center gap-1 w-28">
+                    <input type="number" min={1} max={100} step={0.1}
+                      value={parseFloat((rate * 100).toFixed(1))}
                       onChange={e => setLocalDeposit(prev => ({ ...prev, [g.key]: Math.min(100, Math.max(1, Number(e.target.value))) / 100 }))}
-                      className="w-16 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-gray-900/20 bg-white"
+                      className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-gray-900/20 bg-white"
                     />
                     <span className="text-sm font-medium text-gray-600">%</span>
                   </div>
                 </div>
                 <p className="text-[11px] text-gray-400 mt-2">
-                  {rate >= 1 ? '전액 카드결제 (계좌이체 없음)' : `카드 ${Math.round(rate * 100)}% + 계좌이체 ${Math.round((1 - rate) * 100)}%`}
+                  {rate >= 1 ? '전액 카드결제 (계좌이체 없음)' : `카드 ${parseFloat((rate * 100).toFixed(1))}% + 계좌이체 ${parseFloat(((1 - rate) * 100).toFixed(1))}%`}
                 </p>
               </div>
             );
