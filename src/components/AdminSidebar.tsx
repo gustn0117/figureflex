@@ -54,7 +54,7 @@ export default function AdminSidebar() {
       {/* Brand */}
       <div className="px-5 py-4 border-b border-gray-100">
         <Link href="/admin" className="flex items-center gap-2.5">
-          <img src="/logo.jpg" alt="피규어플렉스" className="h-10 w-auto object-contain" style={{ mixBlendMode: 'multiply' }} />
+          <img src="/logo2.jpg" alt="피규어플렉스" className="h-10 w-auto object-contain" style={{ mixBlendMode: 'multiply' }} />
           <div>
             <p className="text-[18px] font-bold text-gray-900 leading-none">피규어플렉스</p>
             <p className="text-[12px] text-gray-400 mt-1 tracking-wider font-medium">ADMIN</p>

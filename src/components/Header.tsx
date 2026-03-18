@@ -36,7 +36,7 @@ export default function Header() {
         {/* Main bar */}
         <div className="flex items-center justify-between h-28">
           <button onClick={() => router.push('/dashboard')} className="flex items-center gap-4">
-            <img src="/logo.jpg" alt="" className="h-20 w-auto" style={{ mixBlendMode: 'multiply' }} />
+            <img src="/logo2.jpg" alt="" className="h-20 w-auto" style={{ mixBlendMode: 'multiply' }} />
             <span className="text-[36px] font-bold text-gray-900 tracking-tight">피규어플렉스</span>
           </button>
 
