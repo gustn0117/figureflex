@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import ProductImage from '@/components/ProductImage';
@@ -8,7 +8,9 @@ import type { UserGrade } from '@/types';
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { products, currentUser, addToCart, categories, subCategories, gradeDiscounts } = useStore();
+  const { products, currentUser, addToCart, categories, subCategories, gradeDiscounts, fetchProducts } = useStore();
+
+  useEffect(() => { fetchProducts(); }, []);
   const product = products.find(p => p.id === id);
   const [quantity, setQuantity] = useState(product?.minQuantity || 1);
   const [added, setAdded] = useState(false);

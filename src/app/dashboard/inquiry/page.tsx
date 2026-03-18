@@ -1,25 +1,48 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 
 export default function InquiryPage() {
-  const { inquiries, addInquiry, currentUser } = useStore();
+  const { inquiries, addInquiry, fetchInquiries, currentUser } = useStore();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', content: '', imageFile: null as File | null });
   const [imagePreview, setImagePreview] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchInquiries();
+  }, []);
 
   const myInquiries = inquiries.filter(i => i.userId === currentUser?.id);
 
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) { setForm({ ...form, imageFile: file }); const r = new FileReader(); r.onloadend = () => setImagePreview(r.result as string); r.readAsDataURL(file); }
+    if (file) {
+      setForm({ ...form, imageFile: file });
+      const r = new FileReader();
+      r.onloadend = () => setImagePreview(r.result as string);
+      r.readAsDataURL(file);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
-    addInquiry({ id: `inq-${Date.now()}`, userId: currentUser.id, userName: currentUser.name, title: form.title, content: form.content, imageUrl: imagePreview, reply: '', createdAt: new Date().toISOString().split('T')[0], repliedAt: '' });
-    setForm({ title: '', content: '', imageFile: null }); setImagePreview(''); setShowForm(false);
+    setSubmitting(true);
+    try {
+      await addInquiry({
+        userId: currentUser.id,
+        userName: currentUser.name,
+        title: form.title,
+        content: form.content,
+        imageUrl: imagePreview,
+      });
+      setForm({ title: '', content: '', imageFile: null });
+      setImagePreview('');
+      setShowForm(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -53,7 +76,10 @@ export default function InquiryPage() {
               </label>
               {imagePreview && <img src={imagePreview} alt="" className="mt-2 max-h-32 rounded-lg" />}
             </div>
-            <button type="submit" className="bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm hover:bg-black">등록</button>
+            <button type="submit" disabled={submitting}
+              className="bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm hover:bg-black disabled:opacity-50">
+              {submitting ? '등록 중...' : '등록'}
+            </button>
           </form>
         </div>
       )}

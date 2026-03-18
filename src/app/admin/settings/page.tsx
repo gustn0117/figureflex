@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import type { UserGrade } from '@/types';
 
@@ -12,20 +12,30 @@ const GRADES: { key: UserGrade; label: string; color: string; bg: string }[] = [
 ];
 
 export default function AdminSettingsPage() {
-  const { gradeDiscounts, updateGradeDiscount, depositRates, updateDepositRate } = useStore();
+  const { gradeDiscounts, updateGradeDiscount, depositRates, updateDepositRate, fetchSettings, saveSettings } = useStore();
   const [savedDiscount, setSavedDiscount] = useState(false);
   const [savedDeposit, setSavedDeposit] = useState(false);
   const [localRates, setLocalRates] = useState<Record<string, number>>({ ...gradeDiscounts });
   const [localDeposit, setLocalDeposit] = useState<Record<string, number>>({ ...depositRates });
 
-  const handleSaveDiscount = () => {
+  useEffect(() => {
+    fetchSettings().then(() => {
+      const { gradeDiscounts: gd, depositRates: dr } = useStore.getState();
+      setLocalRates({ ...gd });
+      setLocalDeposit({ ...dr });
+    });
+  }, []);
+
+  const handleSaveDiscount = async () => {
     Object.entries(localRates).forEach(([grade, rate]) => updateGradeDiscount(grade, rate));
+    await saveSettings();
     setSavedDiscount(true);
     setTimeout(() => setSavedDiscount(false), 2000);
   };
 
-  const handleSaveDeposit = () => {
+  const handleSaveDeposit = async () => {
     Object.entries(localDeposit).forEach(([grade, rate]) => updateDepositRate(grade, rate));
+    await saveSettings();
     setSavedDeposit(true);
     setTimeout(() => setSavedDeposit(false), 2000);
   };
@@ -43,7 +53,6 @@ export default function AdminSettingsPage() {
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <p className="text-sm font-semibold text-gray-700 mb-1">등급별 할인율</p>
         <p className="text-xs text-gray-400 mb-5">상품 등록 시 자동계산에 적용됩니다.</p>
-
         <div className="space-y-4">
           {GRADES.map(g => {
             const rate = localRates[g.key] ?? 0;
@@ -75,7 +84,6 @@ export default function AdminSettingsPage() {
             );
           })}
         </div>
-
         <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-3">
           <button onClick={handleSaveDiscount}
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${savedDiscount ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>
@@ -89,7 +97,6 @@ export default function AdminSettingsPage() {
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <p className="text-sm font-semibold text-gray-700 mb-1">등급별 계약금 비율</p>
         <p className="text-xs text-gray-400 mb-5">주문 시 카드결제 계약금 비율입니다. 잔금은 계좌이체로 진행됩니다.</p>
-
         <div className="space-y-4">
           {GRADES.map(g => {
             const rate = localDeposit[g.key] ?? 1;
@@ -126,7 +133,6 @@ export default function AdminSettingsPage() {
             );
           })}
         </div>
-
         <div className="mt-6 pt-5 border-t border-gray-100 flex items-center gap-3">
           <button onClick={handleSaveDeposit}
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${savedDeposit ? 'bg-green-500 text-white' : 'bg-gray-900 text-white hover:bg-black'}`}>

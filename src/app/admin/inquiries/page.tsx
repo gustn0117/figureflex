@@ -1,24 +1,29 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 
 export default function AdminInquiriesPage() {
-  const { inquiries, replyInquiry } = useStore();
+  const { inquiries, fetchInquiries, replyInquiry } = useStore();
   const [replyId, setReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [filter, setFilter] = useState<'all' | 'unanswered'>('all');
   const [userFilter, setUserFilter] = useState<string>('all');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleReply = (id: string) => {
+  useEffect(() => {
+    fetchInquiries();
+  }, []);
+
+  const handleReply = async (id: string) => {
     if (!replyText.trim()) return;
-    replyInquiry(id, replyText.trim());
+    setSubmitting(true);
+    await replyInquiry(id, replyText.trim());
+    setSubmitting(false);
     setReplyId(null);
     setReplyText('');
   };
 
-  // Unique users who submitted inquiries
   const uniqueUsers = Array.from(new Map(inquiries.map(i => [i.userId, { id: i.userId, name: i.userName }])).values());
-
   const unansweredCount = inquiries.filter(i => !i.reply).length;
   const filtered = inquiries
     .filter(i => filter === 'unanswered' ? !i.reply : true)
@@ -31,7 +36,6 @@ export default function AdminInquiriesPage() {
         <p className="text-sm text-gray-400 mt-1">회원 문의 답변 관리</p>
       </div>
 
-      {/* Filter */}
       <div className="flex flex-wrap gap-2 mb-5">
         <button onClick={() => setFilter('all')}
           className={`text-sm px-4 py-2 rounded-xl font-medium transition-all ${filter === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}>
@@ -47,10 +51,8 @@ export default function AdminInquiriesPage() {
           )}
         </button>
 
-        {/* Divider */}
         {uniqueUsers.length > 0 && <div className="w-px bg-gray-200 mx-1 self-stretch" />}
 
-        {/* User filter */}
         {uniqueUsers.length > 0 && (
           <>
             <button onClick={() => setUserFilter('all')}
@@ -75,7 +77,6 @@ export default function AdminInquiriesPage() {
         <div className="space-y-3">
           {filtered.map(inq => (
             <div key={inq.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              {/* Header */}
               <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-50">
                 <span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium flex-shrink-0 ${inq.reply ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
                   {inq.reply ? '답변완료' : '미답변'}
@@ -86,16 +87,12 @@ export default function AdminInquiriesPage() {
                   <p className="text-[11px] text-gray-400">{inq.createdAt}</p>
                 </div>
               </div>
-
-              {/* Content */}
               <div className="px-5 py-4">
                 <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{inq.content}</p>
                 {inq.imageUrl && (
                   <img src={inq.imageUrl} alt="첨부" className="max-h-48 rounded-xl border border-gray-100 mt-3 object-contain" />
                 )}
               </div>
-
-              {/* Reply */}
               <div className="px-5 pb-4">
                 {inq.reply ? (
                   <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
@@ -119,9 +116,9 @@ export default function AdminInquiriesPage() {
                         autoFocus
                       />
                       <div className="flex gap-2">
-                        <button onClick={() => handleReply(inq.id)}
-                          className="bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-black transition-colors">
-                          답변 등록
+                        <button onClick={() => handleReply(inq.id)} disabled={submitting}
+                          className="bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-black transition-colors disabled:opacity-50">
+                          {submitting ? '등록 중...' : '답변 등록'}
                         </button>
                         <button onClick={() => { setReplyId(null); setReplyText(''); }}
                           className="text-sm text-gray-400 hover:text-gray-600 px-3">

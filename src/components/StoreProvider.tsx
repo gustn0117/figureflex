@@ -1,11 +1,22 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useStore } from '@/store/useStore';
 
 export default function StoreProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
+  const { initSession, fetchCategories, fetchSettings } = useStore();
 
   useEffect(() => {
-    setHydrated(true);
+    const init = async () => {
+      // 병렬로 세션 + 공통 데이터 초기화
+      await Promise.all([
+        initSession(),
+        fetchCategories(),
+        fetchSettings(),
+      ]);
+      setHydrated(true);
+    };
+    init();
   }, []);
 
   if (!hydrated) {

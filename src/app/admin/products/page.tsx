@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import type { Product, UserGrade } from '@/types';
 
@@ -65,23 +65,27 @@ function DateRangePicker({ startDate, endDate, onChangeStart, onChangeEnd }: {
 }
 
 export default function AdminProductsPage() {
-  const { products, categories, subCategories, gradeDiscounts, addProduct, updateProduct, deleteProduct, deleteProducts, toggleSoldout } = useStore();
+  const { products, categories, subCategories, gradeDiscounts, fetchProducts, addProduct, updateProduct, deleteProduct, deleteProducts, toggleSoldout } = useStore();
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState('');
   const [subImages, setSubImages] = useState<string[]>([]);
   const [catFilter, setCatFilter] = useState<string>('all');
   const [selected, setSelected] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '',
     basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100,
     saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '',
   });
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const productCategories = categories.filter(c => !['cat-notice', 'cat-inquiry'].includes(c.id));
   const inputCls = "w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent bg-white";
 
-  // Filtered products
   const filteredProducts = catFilter === 'all' ? products : products.filter(p => p.categoryId === catFilter);
 
   const calcPrice = (base: number, grade: UserGrade) =>
@@ -107,20 +111,30 @@ export default function AdminProductsPage() {
     setSubImages(prev => [...prev, ...newImgs]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const prices = { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 } as Record<UserGrade, number>;
-    const productData = { ...form, prices, imageUrl: mainImage, images: subImages, status: 'sale' as const };
-    if (editId) { updateProduct(editId, productData); } else { addProduct({ id: `prod-${Date.now()}`, ...productData, createdAt: new Date().toISOString().split('T')[0] }); }
-    resetForm();
+    setSubmitting(true);
+    try {
+      const productData = { ...form, imageUrl: mainImage, images: subImages, status: 'sale' as const };
+      if (editId) {
+        await updateProduct(editId, productData);
+      } else {
+        await addProduct(productData);
+      }
+      resetForm();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  // Select logic
   const toggleSelect = (id: string) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   const toggleSelectAll = () => setSelected(selected.length === filteredProducts.length ? [] : filteredProducts.map(p => p.id));
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
     if (!selected.length) return;
-    if (confirm(`${selected.length}개 상품을 삭제하시겠습니까?`)) { deleteProducts(selected); setSelected([]); }
+    if (confirm(`${selected.length}개 상품을 삭제하시겠습니까?`)) {
+      await deleteProducts(selected);
+      setSelected([]);
+    }
   };
 
   const filteredSubs = subCategories.filter(sc => sc.parentId === form.categoryId);
@@ -248,7 +262,9 @@ export default function AdminProductsPage() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button type="submit" className="bg-gray-900 text-white px-8 py-3 rounded-xl text-sm font-semibold hover:bg-black">{editId ? '수정 완료' : '상품 등록'}</button>
+              <button type="submit" disabled={submitting} className="bg-gray-900 text-white px-8 py-3 rounded-xl text-sm font-semibold hover:bg-black disabled:opacity-50">
+                {submitting ? '처리 중...' : editId ? '수정 완료' : '상품 등록'}
+              </button>
               <button type="button" onClick={resetForm} className="text-sm text-gray-400 hover:text-gray-600 px-4">취소</button>
             </div>
           </form>
@@ -271,7 +287,6 @@ export default function AdminProductsPage() {
           );
         })}
 
-        {/* Bulk delete */}
         {selected.length > 0 && (
           <button onClick={handleBulkDelete}
             className="ml-auto flex items-center gap-1.5 text-sm bg-red-500 text-white px-4 py-2 rounded-xl font-medium hover:bg-red-600 transition-colors">
@@ -347,7 +362,7 @@ export default function AdminProductsPage() {
                   <td className="text-center px-3 py-3">
                     <div className="flex items-center justify-center gap-1">
                       <button onClick={() => handleEdit(p)} className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-100 font-medium">수정</button>
-                      <button onClick={() => { if(confirm('삭제하시겠습니까?')) deleteProduct(p.id) }} className="text-[10px] bg-red-50 text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-100 font-medium">삭제</button>
+                      <button onClick={async () => { if(confirm('삭제하시겠습니까?')) await deleteProduct(p.id) }} className="text-[10px] bg-red-50 text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-100 font-medium">삭제</button>
                     </div>
                   </td>
                 </tr>

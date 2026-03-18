@@ -6,7 +6,7 @@ export type MemberType = 'chain' | 'external';
 export interface User {
   id: string;
   email: string;
-  password: string;
+  // password는 서버에서만 처리, 클라이언트에 노출하지 않음
   name: string;
   company: string;
   phone: string;

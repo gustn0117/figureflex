@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import type { User, UserGrade, MemberType } from '@/types';
 
@@ -14,11 +14,16 @@ const gradeBadge: Record<UserGrade, string> = {
 };
 
 export default function AdminMembersPage() {
-  const { users, approveUser, rejectUser, updateUserGrade, updateUser, deleteUser } = useStore();
+  const { users, fetchUsers, approveUser, rejectUser, updateUserGrade, updateUser, deleteUser } = useStore();
   const [tab, setTab] = useState<'all' | 'pending'>('all');
   const [editUser, setEditUser] = useState<User | null>(null);
   const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', address: '', memberType: 'chain' as MemberType, referralCode: '' });
   const [approvalUser, setApprovalUser] = useState<User | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const members = users.filter(u => u.role === 'member');
   const pendingCount = members.filter(u => u.status === 'pending').length;
@@ -29,15 +34,17 @@ export default function AdminMembersPage() {
     setEditUser(u);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editUser) return;
-    updateUser(editUser.id, editForm);
+    setSaving(true);
+    await updateUser(editUser.id, editForm);
+    setSaving(false);
     setEditUser(null);
   };
 
-  const handleDelete = (u: User) => {
+  const handleDelete = async (u: User) => {
     if (!confirm(`'${u.company}' 회원을 삭제하시겠습니까?\n삭제 후 복구가 불가능합니다.`)) return;
-    deleteUser(u.id);
+    await deleteUser(u.id);
   };
 
   const inputCls = "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20";
@@ -86,7 +93,6 @@ export default function AdminMembersPage() {
                   <p className="font-semibold text-gray-800">{approvalUser.referredBy}</p>
                 </div>
               )}
-              {/* Business registration photo */}
               {approvalUser.photoUrl && (
                 <div>
                   <p className="text-xs text-gray-400 mb-2">사업자등록증</p>
@@ -102,9 +108,9 @@ export default function AdminMembersPage() {
               )}
             </div>
             <div className="flex gap-2">
-              <button onClick={() => { approveUser(approvalUser.id); setApprovalUser(null); }}
+              <button onClick={async () => { await approveUser(approvalUser.id); setApprovalUser(null); }}
                 className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-black">승인</button>
-              <button onClick={() => { rejectUser(approvalUser.id); setApprovalUser(null); }}
+              <button onClick={async () => { await rejectUser(approvalUser.id); setApprovalUser(null); }}
                 className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600">거부</button>
               <button onClick={() => setApprovalUser(null)}
                 className="px-4 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm hover:bg-gray-50">닫기</button>
@@ -118,7 +124,6 @@ export default function AdminMembersPage() {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-gray-900 mb-5">회원 정보 수정</h3>
-            {/* Business registration photo */}
             <div className="mb-4">
               <p className="text-xs text-gray-500 mb-2">사업자등록증</p>
               {editUser.photoUrl ? (
@@ -165,7 +170,9 @@ export default function AdminMembersPage() {
               </div>
             </div>
             <div className="flex gap-2 mt-5">
-              <button onClick={handleSave} className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-black">저장</button>
+              <button onClick={handleSave} disabled={saving} className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-black disabled:opacity-50">
+                {saving ? '저장 중...' : '저장'}
+              </button>
               <button onClick={() => setEditUser(null)} className="flex-1 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm hover:bg-gray-50">취소</button>
             </div>
           </div>

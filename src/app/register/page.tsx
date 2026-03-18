@@ -2,31 +2,61 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
-import type { MemberType, UserGrade } from '@/types';
+import type { MemberType } from '@/types';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, users } = useStore();
-  const [form, setForm] = useState({ email: '', password: '', passwordConfirm: '', name: '', company: '', phone: '', address: '', memberType: 'external' as MemberType, referredBy: '', photoFile: null as File | null });
+  const { register } = useStore();
+  const [form, setForm] = useState({
+    email: '', password: '', passwordConfirm: '', name: '', company: '',
+    phone: '', address: '', memberType: 'external' as MemberType,
+    referredBy: '', photoFile: null as File | null
+  });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [photoPreview, setPhotoPreview] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) { setForm({ ...form, photoFile: file }); const r = new FileReader(); r.onloadend = () => setPhotoPreview(r.result as string); r.readAsDataURL(file); }
+    if (file) {
+      setForm({ ...form, photoFile: file });
+      const r = new FileReader();
+      r.onloadend = () => setPhotoPreview(r.result as string);
+      r.readAsDataURL(file);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); setError('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
     if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
     if (form.password.length < 6) { setError('비밀번호는 6자 이상이어야 합니다.'); return; }
-    if (form.referredBy.trim() && !users.find(u => u.referralCode === form.referredBy.trim())) {
-      setError('유효하지 않은 추천인 코드입니다.'); return;
+
+    setLoading(true);
+    try {
+      const result = await register({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        company: form.company,
+        phone: form.phone,
+        address: form.address,
+        memberType: form.memberType,
+        referredBy: form.referredBy,
+        photoUrl: photoPreview,
+      });
+      if (result.ok) {
+        setSuccess(true);
+      } else {
+        setError(result.error ?? '회원가입에 실패했습니다.');
+      }
+    } finally {
+      setLoading(false);
     }
-    const ok = register({ email: form.email, password: form.password, name: form.name, company: form.company, phone: form.phone, address: form.address, role: 'member', grade: '일반' as UserGrade, memberType: form.memberType, referredBy: form.referredBy, photoUrl: photoPreview });
-    if (ok) setSuccess(true); else setError('이미 등록된 이메일입니다.');
   };
 
   const inputCls = "w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm placeholder:text-gray-400";
@@ -97,7 +127,10 @@ export default function RegisterPage() {
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <button type="submit" className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-black">가입 신청</button>
+          <button type="submit" disabled={loading}
+            className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-black disabled:opacity-50">
+            {loading ? '처리 중...' : '가입 신청'}
+          </button>
         </form>
       </div>
     </div>

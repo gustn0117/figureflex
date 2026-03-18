@@ -1,10 +1,14 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 
 export default function NoticesPage() {
-  const { notices } = useStore();
+  const { notices, fetchNotices } = useStore();
   const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchNotices();
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto">

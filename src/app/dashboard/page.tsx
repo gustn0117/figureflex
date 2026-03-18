@@ -1,12 +1,18 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
 
 export default function DashboardHome() {
-  const { currentUser, notices, products, orders, cart, addToCart } = useStore();
+  const { currentUser, notices, products, orders, cart, addToCart, fetchProducts, fetchNotices, fetchOrders } = useStore();
   const [addedId, setAddedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchNotices();
+    fetchOrders();
+  }, []);
 
   const recentNotices = notices.slice(0, 3);
   const saleProducts = products.filter(p => p.status === 'sale');
@@ -80,7 +86,7 @@ export default function DashboardHome() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6">
             {saleProducts.map(p => {
-              const myPrice = p.prices[grade];
+              const myPrice = p.prices?.[grade] ?? Math.round(p.basePrice);
               return (
                 <Link key={p.id} href={`/dashboard/product/${p.id}`}
                   className="group bg-white border border-gray-100 rounded-lg overflow-hidden hover:border-gray-300 transition-all">

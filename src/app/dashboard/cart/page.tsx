@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import ProductImage from '@/components/ProductImage';
@@ -6,17 +7,29 @@ import type { UserGrade } from '@/types';
 
 export default function CartPage() {
   const router = useRouter();
-  const { cart, products, currentUser, updateCartQuantity, removeFromCart, placeOrder } = useStore();
+  const { cart, products, currentUser, gradeDiscounts, updateCartQuantity, removeFromCart, placeOrder } = useStore();
   const grade: UserGrade = currentUser?.grade || 'SILVER';
+  const [ordering, setOrdering] = useState(false);
 
   const cartProducts = cart.map(ci => {
-    const product = products.find(p => p.id === ci.productId)!;
-    const unitPrice = product.prices[grade];
+    const product = products.find(p => p.id === ci.productId);
+    if (!product) return null;
+    const discountRate = gradeDiscounts[grade] ?? 0;
+    const unitPrice = product.prices?.[grade] ?? Math.round(product.basePrice * (1 - discountRate));
     return { ...ci, product, unitPrice, total: unitPrice * ci.quantity };
-  });
+  }).filter(Boolean) as any[];
+
   const totalAmount = cartProducts.reduce((sum, cp) => sum + cp.total, 0);
 
-  const handleOrder = () => { const id = placeOrder(); if (id) router.push('/dashboard/orders'); };
+  const handleOrder = async () => {
+    setOrdering(true);
+    try {
+      const id = await placeOrder();
+      if (id) router.push('/dashboard/orders');
+    } finally {
+      setOrdering(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -63,9 +76,9 @@ export default function CartPage() {
               <p className="text-xs text-gray-400">{grade} 등급 적용</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">{totalAmount.toLocaleString()}원</p>
             </div>
-            <button onClick={handleOrder}
-              className="bg-gray-900 text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-black transition-colors">
-              주문하기
+            <button onClick={handleOrder} disabled={ordering}
+              className="bg-gray-900 text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-black transition-colors disabled:opacity-50">
+              {ordering ? '주문 중...' : '주문하기'}
             </button>
           </div>
         </>

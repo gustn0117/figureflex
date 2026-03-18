@@ -1,13 +1,18 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 
 export default function AdminNoticesPage() {
-  const { notices, addNotice, updateNotice, deleteNotice } = useStore();
+  const { notices, fetchNotices, addNotice, updateNotice, deleteNotice } = useStore();
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [form, setForm] = useState({ title: '', content: '', isImportant: false });
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchNotices();
+  }, []);
 
   const inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent bg-white";
 
@@ -39,19 +44,19 @@ export default function AdminNoticesPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editId) {
-      updateNotice(editId, { ...form, images });
-    } else {
-      addNotice({
-        id: `notice-${Date.now()}`,
-        ...form,
-        images,
-        createdAt: new Date().toISOString().split('T')[0],
-      });
+    setSubmitting(true);
+    try {
+      if (editId) {
+        await updateNotice(editId, { ...form, images });
+      } else {
+        await addNotice({ ...form, images });
+      }
+      resetForm();
+    } finally {
+      setSubmitting(false);
     }
-    resetForm();
   };
 
   return (
@@ -81,8 +86,6 @@ export default function AdminNoticesPage() {
               <textarea value={form.content} onChange={e => setForm({...form, content: e.target.value})}
                 rows={5} className={`${inputCls} resize-none`} required placeholder="공지 내용을 입력하세요" />
             </div>
-
-            {/* Image upload */}
             <div>
               <label className="block text-xs text-gray-500 mb-2">이미지 첨부 ({images.length}/10)</label>
               <div className="flex gap-3 flex-wrap">
@@ -106,7 +109,6 @@ export default function AdminNoticesPage() {
                 )}
               </div>
             </div>
-
             <label className="flex items-center gap-2.5 cursor-pointer w-fit">
               <div onClick={() => setForm({...form, isImportant: !form.isImportant})}
                 className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${form.isImportant ? 'bg-accent border-accent' : 'border-gray-300 bg-white'}`}>
@@ -114,10 +116,9 @@ export default function AdminNoticesPage() {
               </div>
               <span className="text-sm text-gray-600">중요 공지로 설정</span>
             </label>
-
             <div className="flex gap-3 pt-1">
-              <button type="submit" className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-black transition-colors">
-                {editId ? '수정 완료' : '등록하기'}
+              <button type="submit" disabled={submitting} className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-black transition-colors disabled:opacity-50">
+                {submitting ? '처리 중...' : editId ? '수정 완료' : '등록하기'}
               </button>
               <button type="button" onClick={resetForm} className="text-sm text-gray-400 hover:text-gray-600 px-4">취소</button>
             </div>
@@ -144,10 +145,9 @@ export default function AdminNoticesPage() {
                   <span className="text-xs text-gray-400 flex-shrink-0">{n.createdAt}</span>
                   <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => handleEdit(n)} className="text-xs text-blue-600 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 font-medium">수정</button>
-                    <button onClick={() => { if(confirm('삭제하시겠습니까?')) deleteNotice(n.id) }} className="text-xs text-red-500 px-2.5 py-1.5 rounded-lg hover:bg-red-50 font-medium">삭제</button>
+                    <button onClick={async () => { if(confirm('삭제하시겠습니까?')) await deleteNotice(n.id) }} className="text-xs text-red-500 px-2.5 py-1.5 rounded-lg hover:bg-red-50 font-medium">삭제</button>
                   </div>
                 </div>
-                {/* Preview images */}
                 {n.images?.length > 0 && (
                   <div className="flex gap-2 mt-3 flex-wrap">
                     {n.images.map((img, idx) => (

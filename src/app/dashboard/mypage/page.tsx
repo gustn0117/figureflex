@@ -1,34 +1,53 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
-import { GRADE_DISCOUNTS } from '@/data/mockData';
 
 export default function MyPage() {
   const router = useRouter();
-  const { currentUser, orders, inquiries, cart } = useStore();
+  const { currentUser, orders, inquiries, cart, fetchOrders, fetchInquiries, gradeDiscounts } = useStore();
   const [showPw, setShowPw] = useState(false);
   const [pw, setPw] = useState({ current: '', newPw: '', confirm: '' });
   const [pwMsg, setPwMsg] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+
+  useEffect(() => {
+    fetchOrders();
+    fetchInquiries();
+  }, []);
 
   if (!currentUser) return null;
 
   const myOrders = orders.filter(o => o.userId === currentUser.id);
   const myInquiries = inquiries.filter(i => i.userId === currentUser.id);
   const totalSpent = myOrders.reduce((s, o) => s + o.finalAmount, 0);
-  const discount = GRADE_DISCOUNTS[currentUser.grade] || 0;
+  const discount = gradeDiscounts[currentUser.grade] ?? 0;
 
-  const handlePw = (e: React.FormEvent) => {
+  const handlePw = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pw.current !== currentUser.password) { setPwMsg('현재 비밀번호가 일치하지 않습니다.'); return; }
     if (pw.newPw.length < 6) { setPwMsg('새 비밀번호는 6자 이상이어야 합니다.'); return; }
     if (pw.newPw !== pw.confirm) { setPwMsg('새 비밀번호가 일치하지 않습니다.'); return; }
-    useStore.setState({
-      users: useStore.getState().users.map(u => u.id === currentUser.id ? { ...u, password: pw.newPw } : u),
-      currentUser: { ...currentUser, password: pw.newPw },
-    });
-    setPwMsg('변경되었습니다.'); setPw({ current: '', newPw: '', confirm: '' });
-    setTimeout(() => { setPwMsg(''); setShowPw(false); }, 1500);
+
+    setPwLoading(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: pw.current, newPassword: pw.newPw }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPwMsg(data.error ?? '비밀번호 변경에 실패했습니다.');
+      } else {
+        setPwMsg('변경되었습니다.');
+        setPw({ current: '', newPw: '', confirm: '' });
+        setTimeout(() => { setPwMsg(''); setShowPw(false); }, 1500);
+      }
+    } catch {
+      setPwMsg('서버 오류가 발생했습니다.');
+    } finally {
+      setPwLoading(false);
+    }
   };
 
   return (
@@ -110,7 +129,10 @@ export default function MyPage() {
             <input type="password" placeholder="새 비밀번호 확인" value={pw.confirm} onChange={e => setPw({...pw, confirm: e.target.value})}
               className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm" required />
             {pwMsg && <p className={`text-xs ${pwMsg.includes('변경') ? 'text-green-600' : 'text-red-500'}`}>{pwMsg}</p>}
-            <button type="submit" className="bg-gray-900 text-white px-5 py-2 rounded-lg text-sm hover:bg-black">변경</button>
+            <button type="submit" disabled={pwLoading}
+              className="bg-gray-900 text-white px-5 py-2 rounded-lg text-sm hover:bg-black disabled:opacity-50">
+              {pwLoading ? '변경 중...' : '변경'}
+            </button>
           </form>
         )}
       </div>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 
 export default function AdminCategoriesPage() {
-  const { categories, subCategories, addCategory, updateCategory, deleteCategory, addSubCategory, updateSubCategory, deleteSubCategory } = useStore();
+  const { categories, subCategories, addCategory, updateCategory, deleteCategory, addSubCategory, updateSubCategory, deleteSubCategory, fetchCategories } = useStore();
   const [newCat, setNewCat] = useState('');
   const [newSub, setNewSub] = useState({ name: '', parentId: '' });
   const [editId, setEditId] = useState<string | null>(null);
