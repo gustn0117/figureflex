@@ -132,16 +132,18 @@ async function exportExcel(orders: Order[], products: any[]) {
 
       if (img) {
         try {
-          let base64Data = img;
-          // 이미 data URI면 그대로, 아니면 fetch
+          let base64Str = img;
+          // URL이면 fetch해서 data URI로 변환
           if (!img.startsWith('data:')) {
             const fetched = await fetchImageAsBase64(img);
-            if (fetched) base64Data = fetched;
-            else base64Data = '';
+            if (fetched) base64Str = fetched;
+            else base64Str = '';
           }
-          if (base64Data) {
-            const ext = base64Data.includes('image/png') ? 'png' as const : 'jpeg' as const;
-            const imageId = workbook.addImage({ base64: base64Data, extension: ext });
+          if (base64Str) {
+            const ext = base64Str.includes('image/png') ? 'png' as const : 'jpeg' as const;
+            // data:image/...;base64, 프리픽스 제거 (ExcelJS는 순수 base64만 받음)
+            const pureBase64 = base64Str.replace(/^data:image\/[a-zA-Z]+;base64,/, '');
+            const imageId = workbook.addImage({ base64: pureBase64, extension: ext });
             ws.addImage(imageId, {
               tl: { col: 1.1, row: rowNum - 0.9 },
               ext: { width: 70, height: 70 },
