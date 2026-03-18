@@ -78,7 +78,16 @@ async function toBuffer(dataOrUrl: string): Promise<ArrayBuffer | null> {
   } catch { return null; }
 }
 
-async function exportExcel(orders: Order[], products: any[]) {
+async function exportExcel(orders: Order[]) {
+  // products를 직접 fetch해서 이미지 매핑
+  let products: any[] = [];
+  try {
+    const res = await fetch('/api/products');
+    const data = await res.json();
+    products = data.products ?? [];
+  } catch { /* ignore */ }
+  const productMap = new Map(products.map((p: any) => [p.id, p.imageUrl || p.image_url || '']));
+
   const ExcelJS = (await import('exceljs')).default;
   const workbook = new ExcelJS.Workbook();
   const ws = workbook.addWorksheet('주문목록');
@@ -111,11 +120,7 @@ async function exportExcel(orders: Order[], products: any[]) {
     const deposit = o.depositAmount ?? o.finalAmount;
     const balance = o.finalAmount - deposit;
     for (const item of o.items) {
-      let img = item.productImage || '';
-      if (!img) {
-        const p = products.find((pr: any) => pr.id === item.productId);
-        if (p) img = p.imageUrl || p.image_url || '';
-      }
+      const img = item.productImage || productMap.get(item.productId) || '';
 
       const rowNum = ws.rowCount + 1;
       const row = ws.addRow([
@@ -133,7 +138,7 @@ async function exportExcel(orders: Order[], products: any[]) {
       // 상품수, 등급, 상태 가운데 정렬
       [4, 6, 10].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'center' }; });
 
-      console.log(`[Excel] item="${item.productName}" img=${img ? img.substring(0, 30) + '...' : 'EMPTY'} products=${products.length}`);
+      console.log(`[Excel] item="${item.productName}" img=${img ? img.substring(0, 30) + '...' : 'EMPTY'} productMap=${productMap.size}`);
       if (img) {
         try {
           const buf = await toBuffer(img);
@@ -169,17 +174,21 @@ async function exportExcel(orders: Order[], products: any[]) {
   a.click(); URL.revokeObjectURL(url);
 }
 
-function exportPDF(orders: Order[], products: any[]) {
+async function exportPDF(orders: Order[]) {
+  let products: any[] = [];
+  try {
+    const res = await fetch('/api/products');
+    const data = await res.json();
+    products = data.products ?? [];
+  } catch { /* ignore */ }
+  const productMap = new Map(products.map((p: any) => [p.id, p.imageUrl || p.image_url || '']));
+
   const rowsHtml: string[] = [];
   for (const o of orders) {
     const deposit = o.depositAmount ?? o.finalAmount;
     const balance = o.finalAmount - deposit;
     for (const item of o.items) {
-      let img = item.productImage || '';
-      if (!img) {
-        const p = products.find((pr: any) => pr.id === item.productId);
-        if (p) img = p.imageUrl || p.image_url || '';
-      }
+      const img = item.productImage || productMap.get(item.productId) || '';
       rowsHtml.push(`<tr>
         <td style="font-size:10px;word-break:break-all;max-width:120px">${o.id.slice(0, 18)}...</td>
         <td>${img ? `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px">` : '-'}</td>
@@ -209,13 +218,21 @@ function exportPDF(orders: Order[], products: any[]) {
 }
 
 export default function AdminOrdersPage() {
-  const { orders, products, fetchOrders, fetchProducts, updateOrderStatus } = useStore();
+  const { orders, fetchOrders, updateOrderStatus } = useStore();
   const [selected, setSelected] = useState<string[]>([]);
   const [sort, setSort] = useState<SortKey>('date');
+  const [productImages, setProductImages] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     fetchOrders();
-    fetchProducts();
+    // 테이블 이미지용 products 직접 fetch
+    fetch('/api/products').then(r => r.json()).then(data => {
+      const map = new Map<string, string>();
+      for (const p of (data.products ?? [])) {
+        map.set(p.id, p.imageUrl || p.image_url || '');
+      }
+      setProductImages(map);
+    }).catch(() => {});
   }, []);
 
   const sorted = useMemo(() => {
@@ -226,7 +243,27 @@ export default function AdminOrdersPage() {
     });
   }, [orders, sort]);
 
-  const flatRows = useMemo(() => flattenOrders(sorted, products), [sorted, products]);
+  const flatRows = useMemo(() => {
+    return sorted.flatMap(o => {
+      const deposit = o.depositAmount ?? o.finalAmount;
+      const balance = o.finalAmount - deposit;
+      return o.items.map(item => ({
+        orderId: o.id,
+        userName: o.userName,
+        userGrade: o.userGrade || '-',
+        productName: item.productName,
+        productImage: item.productImage || productImages.get(item.productId) || '',
+        quantity: item.quantity,
+        totalAmount: o.finalAmount,
+        deposit,
+        balance,
+        status: o.status,
+        statusLabel: statusMap[o.status]?.label || o.status,
+        createdAt: o.createdAt,
+        order: o,
+      }));
+    });
+  }, [sorted, productImages]);
 
   const toggleSelect = (id: string) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   const toggleAll = () => setSelected(selected.length === sorted.length ? [] : sorted.map(o => o.id));
@@ -263,11 +300,11 @@ export default function AdminOrdersPage() {
         <div className="flex-1" />
         <div className="flex items-center gap-2">
           {selected.length > 0 && <span className="text-xs text-gray-500 font-medium">{selected.length}건 선택</span>}
-          <button onClick={() => exportExcel(exportTarget, products)}
+          <button onClick={() => exportExcel(exportTarget)}
             className="flex items-center gap-1.5 text-xs border border-gray-200 bg-white text-gray-600 px-3 py-2 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-all font-medium">
             엑셀 {selected.length > 0 ? `(${selected.length})` : '전체'}
           </button>
-          <button onClick={() => exportPDF(exportTarget, products)}
+          <button onClick={() => exportPDF(exportTarget)}
             className="flex items-center gap-1.5 text-xs border border-gray-200 bg-white text-gray-600 px-3 py-2 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-all font-medium">
             PDF {selected.length > 0 ? `(${selected.length})` : '전체'}
           </button>
