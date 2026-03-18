@@ -132,10 +132,16 @@ async function exportExcel(orders: Order[], products: any[]) {
 
       if (img) {
         try {
-          const base64 = await fetchImageAsBase64(img);
-          if (base64) {
-            const ext = base64.includes('image/png') ? 'png' : 'jpeg';
-            const imageId = workbook.addImage({ base64, extension: ext });
+          let base64Data = img;
+          // 이미 data URI면 그대로, 아니면 fetch
+          if (!img.startsWith('data:')) {
+            const fetched = await fetchImageAsBase64(img);
+            if (fetched) base64Data = fetched;
+            else base64Data = '';
+          }
+          if (base64Data) {
+            const ext = base64Data.includes('image/png') ? 'png' as const : 'jpeg' as const;
+            const imageId = workbook.addImage({ base64: base64Data, extension: ext });
             ws.addImage(imageId, {
               tl: { col: 1.1, row: rowNum - 0.9 },
               ext: { width: 70, height: 70 },
