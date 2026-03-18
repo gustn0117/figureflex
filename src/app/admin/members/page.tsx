@@ -119,14 +119,18 @@ export default function AdminMembersPage() {
           <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-gray-900 mb-5">회원 정보 수정</h3>
             {/* Business registration photo */}
-            {editUser.photoUrl && (
-              <div className="mb-4">
-                <p className="text-xs text-gray-500 mb-2">사업자등록증</p>
+            <div className="mb-4">
+              <p className="text-xs text-gray-500 mb-2">사업자등록증</p>
+              {editUser.photoUrl ? (
                 <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
                   <img src={editUser.photoUrl} alt="사업자등록증" className="w-full object-contain max-h-48" />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 py-6 text-center text-sm text-gray-400">
+                  미첨부
+                </div>
+              )}
+            </div>
             <div className="space-y-3">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">업체명</label>
