@@ -36,7 +36,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
 };
 
 export default function OrdersPage() {
-  const { orders, currentUser } = useStore();
+  const { orders, currentUser, products } = useStore();
   const myOrders = orders.filter(o => o.userId === currentUser?.id);
 
   return (
@@ -65,14 +65,28 @@ export default function OrdersPage() {
                   </div>
                 </div>
                 <div className="divide-y divide-gray-50">
-                  {order.items.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between px-5 py-3 text-sm">
+                  {order.items.map((item, idx) => {
+                    const product = products.find(p => p.id === item.productId);
+                    const imgUrl = product?.imageUrl;
+                    const hasImg = imgUrl && imgUrl.length > 0 && !imgUrl.startsWith('/images/');
+                    return (
+                    <div key={idx} className="flex items-center gap-4 px-5 py-3 text-sm">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-100">
+                        {hasImg ? (
+                          <img src={imgUrl} alt={item.productName} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                          </div>
+                        )}
+                      </div>
                       <span className="text-gray-700 flex-1">{item.productName}</span>
                       <span className="text-gray-400 w-16 text-center">{item.quantity}개</span>
                       <span className="text-gray-500 w-24 text-right">{item.unitPrice.toLocaleString()}원</span>
                       <span className="font-medium text-gray-900 w-28 text-right">{item.totalPrice.toLocaleString()}원</span>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="flex items-center justify-end px-5 py-3 bg-gray-50 gap-3">
                   <span className="text-sm text-gray-400">합계</span>
