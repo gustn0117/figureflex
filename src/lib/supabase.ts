@@ -3,13 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 // Lazy getters — clients are created on first call, not at module load time.
 // This prevents build-time failures when env vars aren't set.
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _supabase: any = null;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _supabaseAdmin: any = null;
+let _supabase: ReturnType<typeof createClient> | null = null;
+let _supabaseAdmin: ReturnType<typeof createClient> | null = null;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getSupabase(): any {
+export function getSupabase() {
   if (!_supabase) {
     _supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,8 +17,7 @@ export function getSupabase(): any {
   return _supabase;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getSupabaseAdmin(): any {
+export function getSupabaseAdmin() {
   if (!_supabaseAdmin) {
     _supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,16 +28,19 @@ export function getSupabaseAdmin(): any {
   return _supabaseAdmin;
 }
 
-// Proxy objects that forward .from() calls to the lazy clients.
-// Allows existing API routes to keep using `supabaseAdmin.from(...)` without changes.
+// Proxy objects so existing code using `supabaseAdmin.from(...)` keeps working.
 export const supabase = new Proxy({} as ReturnType<typeof getSupabase>, {
-  get(_target, prop) {
+  // eslint-disable-next-line
+  get(_target: any, prop: string) {
+    // eslint-disable-next-line
     return (getSupabase() as any)[prop];
   },
 });
 
 export const supabaseAdmin = new Proxy({} as ReturnType<typeof getSupabaseAdmin>, {
-  get(_target, prop) {
+  // eslint-disable-next-line
+  get(_target: any, prop: string) {
+    // eslint-disable-next-line
     return (getSupabaseAdmin() as any)[prop];
   },
 });
