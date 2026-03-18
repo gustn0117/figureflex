@@ -9,10 +9,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { currentUser } = useStore();
 
   const fetchSettings = useStore(s => s.fetchSettings);
+  const fetchCart = useStore(s => s.fetchCart);
 
   useEffect(() => {
     if (!currentUser) router.push('/');
-    else fetchSettings();
+    else {
+      fetchSettings();
+      fetchCart();
+    }
   }, [currentUser, router]);
 
   if (!currentUser) return null;

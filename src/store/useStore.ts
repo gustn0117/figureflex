@@ -1,6 +1,5 @@
 'use client';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { User, Product, CartItem, Order, Notice, Inquiry, Category, UserGrade } from '@/types';
 
 // camelCase ↔ snake_case 변환 없이 API가 이미 camelCase로 반환함
@@ -53,12 +52,13 @@ interface AppState {
   deleteProducts: (ids: string[]) => Promise<void>;
   toggleSoldout: (id: string) => Promise<void>;
 
-  // Cart (localStorage persist 유지)
+  // Cart (DB)
   cart: CartItem[];
-  addToCart: (productId: string, quantity: number) => void;
-  updateCartQuantity: (productId: string, quantity: number) => void;
-  removeFromCart: (productId: string) => void;
-  clearCart: () => void;
+  fetchCart: () => Promise<void>;
+  addToCart: (productId: string, quantity: number) => Promise<void>;
+  updateCartQuantity: (productId: string, quantity: number) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>;
+  clearCart: () => Promise<void>;
 
   // Orders
   orders: Order[];
@@ -89,9 +89,7 @@ function calcPrices(basePrice: number, gradeDiscounts: Record<string, number>): 
   return prices;
 }
 
-// cart만 persist
 export const useStore = create<AppState>()(
-  persist(
     (set, get) => ({
       // ─── Auth ───────────────────────────────────────────────────────────
       currentUser: null,
@@ -418,10 +416,19 @@ export const useStore = create<AppState>()(
         }));
       },
 
-      // ─── Cart (localStorage) ────────────────────────────────────────────
+      // ─── Cart (DB) ────────────────────────────────────────────────────
       cart: [],
 
-      addToCart: (productId, quantity) => {
+      fetchCart: async () => {
+        try {
+          const res = await fetch('/api/cart');
+          const data = await res.json();
+          if (res.ok) set({ cart: data.cart ?? [] });
+        } catch { /* ignore */ }
+      },
+
+      addToCart: async (productId, quantity) => {
+        // 낙관적 업데이트
         set(state => {
           const existing = state.cart.find(c => c.productId === productId);
           if (existing) {
@@ -429,19 +436,37 @@ export const useStore = create<AppState>()(
           }
           return { cart: [...state.cart, { productId, quantity }] };
         });
+        await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, quantity }),
+        });
       },
 
-      updateCartQuantity: (productId, quantity) => {
+      updateCartQuantity: async (productId, quantity) => {
         set(state => ({
           cart: state.cart.map(c => c.productId === productId ? { ...c, quantity } : c)
         }));
+        await fetch('/api/cart', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, quantity }),
+        });
       },
 
-      removeFromCart: (productId) => {
+      removeFromCart: async (productId) => {
         set(state => ({ cart: state.cart.filter(c => c.productId !== productId) }));
+        await fetch('/api/cart', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId }),
+        });
       },
 
-      clearCart: () => set({ cart: [] }),
+      clearCart: async () => {
+        set({ cart: [] });
+        await fetch('/api/cart', { method: 'DELETE' });
+      },
 
       // ─── Orders ─────────────────────────────────────────────────────────
       orders: [],
@@ -617,12 +642,5 @@ export const useStore = create<AppState>()(
           // 무시
         }
       },
-    }),
-    {
-      name: 'figureflex-cart',
-      version: 1,
-      // cart만 저장
-      partialize: (state) => ({ cart: state.cart }),
-    }
-  )
+    })
 );
