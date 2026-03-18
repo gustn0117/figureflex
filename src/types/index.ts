@@ -62,6 +62,7 @@ export interface CartItem {
 export interface OrderItem {
   productId: string;
   productName: string;
+  productImage?: string;
   quantity: number;
   unitPrice: number;
   totalPrice: number;

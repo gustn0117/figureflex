@@ -15,17 +15,68 @@ const statusMap = Object.fromEntries(statusFlow.map(s => [s.value, s]));
 
 type SortKey = 'date' | 'company' | 'amount';
 
-function exportCSV(orders: Order[]) {
-  const header = ['주문번호', '주문자', '등급', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
-  const rows = orders.map(o => {
+interface FlatRow {
+  orderId: string;
+  userName: string;
+  userGrade: string;
+  productName: string;
+  productImage: string;
+  quantity: number;
+  totalAmount: number;
+  deposit: number;
+  balance: number;
+  status: OrderStatus;
+  statusLabel: string;
+  createdAt: string;
+  order: Order;
+}
+
+function flattenOrders(orders: Order[], products: any[]): FlatRow[] {
+  const rows: FlatRow[] = [];
+  for (const o of orders) {
     const deposit = o.depositAmount ?? o.finalAmount;
     const balance = o.finalAmount - deposit;
-    return [
-      o.id, o.userName, o.userGrade || '-', String(o.items.length),
-      String(o.finalAmount), String(deposit), String(balance),
-      statusMap[o.status]?.label || o.status, o.createdAt,
-    ];
-  });
+    for (const item of o.items) {
+      let img = item.productImage || '';
+      if (!img) {
+        const p = products.find((pr: any) => pr.id === item.productId);
+        if (p) img = p.imageUrl || p.image_url || '';
+      }
+      rows.push({
+        orderId: o.id,
+        userName: o.userName,
+        userGrade: o.userGrade || '-',
+        productName: item.productName,
+        productImage: img,
+        quantity: item.quantity,
+        totalAmount: o.finalAmount,
+        deposit,
+        balance,
+        status: o.status,
+        statusLabel: statusMap[o.status]?.label || o.status,
+        createdAt: o.createdAt,
+        order: o,
+      });
+    }
+  }
+  return rows;
+}
+
+function exportCSV(orders: Order[], products: any[]) {
+  const header = ['주문번호', '주문자', '등급', '상품이름', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
+  const rows: string[][] = [];
+  for (const o of orders) {
+    const deposit = o.depositAmount ?? o.finalAmount;
+    const balance = o.finalAmount - deposit;
+    for (const item of o.items) {
+      rows.push([
+        o.id, o.userName, o.userGrade || '-', item.productName,
+        String(item.quantity), String(o.finalAmount),
+        String(deposit), String(balance),
+        statusMap[o.status]?.label || o.status, o.createdAt,
+      ]);
+    }
+  }
   const csv = [header, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -34,27 +85,38 @@ function exportCSV(orders: Order[]) {
   a.click(); URL.revokeObjectURL(url);
 }
 
-function exportPDF(orders: Order[]) {
-  const rows = orders.map(o => {
+function exportPDF(orders: Order[], products: any[]) {
+  const rowsHtml: string[] = [];
+  for (const o of orders) {
     const deposit = o.depositAmount ?? o.finalAmount;
     const balance = o.finalAmount - deposit;
-    return `<tr>
-      <td>${o.id}</td><td>${o.userName}</td>
-      <td style="text-align:center">${o.userGrade || '-'}</td>
-      <td style="text-align:center">${o.items.length}개</td>
-      <td style="text-align:right">${o.finalAmount.toLocaleString()}원</td>
-      <td style="text-align:right;color:#2563eb">${deposit.toLocaleString()}원</td>
-      <td style="text-align:right;color:#16a34a">${balance > 0 ? balance.toLocaleString() + '원' : '-'}</td>
-      <td style="text-align:center">${statusMap[o.status]?.label || o.status}</td>
-      <td style="text-align:center">${o.createdAt}</td>
-    </tr>`;
-  }).join('');
+    for (const item of o.items) {
+      let img = item.productImage || '';
+      if (!img) {
+        const p = products.find((pr: any) => pr.id === item.productId);
+        if (p) img = p.imageUrl || p.image_url || '';
+      }
+      rowsHtml.push(`<tr>
+        <td style="font-size:10px;word-break:break-all;max-width:120px">${o.id.slice(0, 18)}...</td>
+        <td>${img ? `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px">` : '-'}</td>
+        <td>${o.userName}</td>
+        <td style="text-align:center">${o.userGrade || '-'}</td>
+        <td>${item.productName}</td>
+        <td style="text-align:center">${item.quantity}개</td>
+        <td style="text-align:right">${o.finalAmount.toLocaleString()}원</td>
+        <td style="text-align:right;color:#2563eb">${deposit.toLocaleString()}원</td>
+        <td style="text-align:right;color:#16a34a">${balance > 0 ? balance.toLocaleString() + '원' : '-'}</td>
+        <td style="text-align:center">${statusMap[o.status]?.label || o.status}</td>
+        <td style="text-align:center">${o.createdAt}</td>
+      </tr>`);
+    }
+  }
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>주문목록</title>
-    <style>body{font-family:'Apple SD Gothic Neo',sans-serif;font-size:12px;margin:20px}h2{font-size:16px;margin-bottom:4px}p{font-size:11px;color:#666;margin-bottom:16px}table{width:100%;border-collapse:collapse}th{background:#f5f5f5;padding:8px 10px;text-align:left;border-bottom:2px solid #ddd;font-size:11px}td{padding:7px 10px;border-bottom:1px solid #eee}</style>
+    <style>body{font-family:'Apple SD Gothic Neo',sans-serif;font-size:12px;margin:20px}h2{font-size:16px;margin-bottom:4px}p{font-size:11px;color:#666;margin-bottom:16px}table{width:100%;border-collapse:collapse}th{background:#f5f5f5;padding:8px 6px;text-align:left;border-bottom:2px solid #ddd;font-size:10px}td{padding:6px;border-bottom:1px solid #eee;font-size:11px}</style>
     </head><body>
     <h2>피규어플렉스 주문목록</h2>
     <p>출력일: ${new Date().toLocaleDateString('ko-KR')} / 총 ${orders.length}건</p>
-    <table><thead><tr><th>주문번호</th><th>주문자</th><th>등급</th><th>상품수</th><th>총금액</th><th>계약금(카드)</th><th>잔금(계좌)</th><th>상태</th><th>주문일</th></tr></thead><tbody>${rows}</tbody></table>
+    <table><thead><tr><th>주문번호</th><th>사진</th><th>업체</th><th>등급</th><th>상품이름</th><th>상품수</th><th>총금액</th><th>계약금(카드)</th><th>잔금(계좌)</th><th>상태</th><th>주문일</th></tr></thead><tbody>${rowsHtml.join('')}</tbody></table>
     </body></html>`;
   const win = window.open('', '_blank');
   if (!win) return;
@@ -63,12 +125,13 @@ function exportPDF(orders: Order[]) {
 }
 
 export default function AdminOrdersPage() {
-  const { orders, fetchOrders, updateOrderStatus } = useStore();
+  const { orders, products, fetchOrders, fetchProducts, updateOrderStatus } = useStore();
   const [selected, setSelected] = useState<string[]>([]);
   const [sort, setSort] = useState<SortKey>('date');
 
   useEffect(() => {
     fetchOrders();
+    fetchProducts();
   }, []);
 
   const sorted = useMemo(() => {
@@ -79,13 +142,15 @@ export default function AdminOrdersPage() {
     });
   }, [orders, sort]);
 
+  const flatRows = useMemo(() => flattenOrders(sorted, products), [sorted, products]);
+
   const toggleSelect = (id: string) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   const toggleAll = () => setSelected(selected.length === sorted.length ? [] : sorted.map(o => o.id));
   const selectedOrders = sorted.filter(o => selected.includes(o.id));
   const exportTarget = selected.length > 0 ? selectedOrders : sorted;
 
   return (
-    <div className="max-w-6xl">
+    <div className="max-w-7xl">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900">주문 관리</h2>
         <p className="text-sm text-gray-400 mt-1">주문 현황 및 상태 변경</p>
@@ -114,11 +179,11 @@ export default function AdminOrdersPage() {
         <div className="flex-1" />
         <div className="flex items-center gap-2">
           {selected.length > 0 && <span className="text-xs text-gray-500 font-medium">{selected.length}건 선택</span>}
-          <button onClick={() => exportCSV(exportTarget)}
+          <button onClick={() => exportCSV(exportTarget, products)}
             className="flex items-center gap-1.5 text-xs border border-gray-200 bg-white text-gray-600 px-3 py-2 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-all font-medium">
             엑셀 {selected.length > 0 ? `(${selected.length})` : '전체'}
           </button>
-          <button onClick={() => exportPDF(exportTarget)}
+          <button onClick={() => exportPDF(exportTarget, products)}
             className="flex items-center gap-1.5 text-xs border border-gray-200 bg-white text-gray-600 px-3 py-2 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-all font-medium">
             PDF {selected.length > 0 ? `(${selected.length})` : '전체'}
           </button>
@@ -129,49 +194,63 @@ export default function AdminOrdersPage() {
         {orders.length === 0 ? (
           <div className="text-center py-16 text-gray-400 text-sm">주문 내역이 없습니다.</div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 text-xs text-gray-500 border-b border-gray-100">
-                <th className="px-4 py-3.5 w-10"><input type="checkbox" checked={sorted.length > 0 && selected.length === sorted.length} onChange={toggleAll} className="rounded cursor-pointer" /></th>
-                <th className="text-left px-3 py-3.5 font-medium">주문자</th>
-                <th className="text-center px-3 py-3.5 font-medium">등급</th>
-                <th className="text-center px-3 py-3.5 font-medium">상품수</th>
-                <th className="text-right px-3 py-3.5 font-medium">총금액</th>
-                <th className="text-right px-3 py-3.5 font-medium text-blue-600">계약금(카드)</th>
-                <th className="text-right px-3 py-3.5 font-medium text-green-700">잔금(계좌)</th>
-                <th className="text-center px-3 py-3.5 font-medium">상태</th>
-                <th className="text-center px-3 py-3.5 font-medium">주문일</th>
-                <th className="text-center px-3 py-3.5 font-medium">상태 변경</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {sorted.map(order => {
-                const s = statusMap[order.status];
-                const isSelected = selected.includes(order.id);
-                const deposit = order.depositAmount ?? order.finalAmount;
-                const balance = order.finalAmount - deposit;
-                return (
-                  <tr key={order.id} className={`transition-colors ${isSelected ? 'bg-blue-50/30' : 'hover:bg-gray-50/50'}`}>
-                    <td className="px-4 py-3.5 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelect(order.id)} className="rounded cursor-pointer" /></td>
-                    <td className="px-3 py-3.5 font-medium text-gray-800">{order.userName}</td>
-                    <td className="text-center px-3 py-3.5"><span className="text-[11px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">{order.userGrade || '-'}</span></td>
-                    <td className="text-center px-3 py-3.5 text-gray-600">{order.items.length}개</td>
-                    <td className="text-right px-3 py-3.5 font-semibold text-gray-900">{order.finalAmount.toLocaleString()}원</td>
-                    <td className="text-right px-3 py-3.5 font-semibold text-blue-600">{deposit.toLocaleString()}원</td>
-                    <td className="text-right px-3 py-3.5 font-semibold text-green-700">{balance > 0 ? `${balance.toLocaleString()}원` : '-'}</td>
-                    <td className="text-center px-3 py-3.5"><span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium border ${s?.color || ''}`}>{s?.label}</span></td>
-                    <td className="text-center px-3 py-3.5 text-xs text-gray-400">{order.createdAt}</td>
-                    <td className="text-center px-3 py-3.5">
-                      <select value={order.status} onChange={e => updateOrderStatus(order.id, e.target.value as OrderStatus)}
-                        className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/20 cursor-pointer">
-                        {statusFlow.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-                      </select>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 text-xs text-gray-500 border-b border-gray-100">
+                  <th className="px-3 py-3.5 w-10"><input type="checkbox" checked={sorted.length > 0 && selected.length === sorted.length} onChange={toggleAll} className="rounded cursor-pointer" /></th>
+                  <th className="text-left px-2 py-3.5 font-medium">주문번호</th>
+                  <th className="text-center px-2 py-3.5 font-medium">사진</th>
+                  <th className="text-left px-2 py-3.5 font-medium">업체</th>
+                  <th className="text-center px-2 py-3.5 font-medium">등급</th>
+                  <th className="text-left px-2 py-3.5 font-medium">상품이름</th>
+                  <th className="text-center px-2 py-3.5 font-medium">상품수</th>
+                  <th className="text-right px-2 py-3.5 font-medium">총금액</th>
+                  <th className="text-right px-2 py-3.5 font-medium text-blue-600">계약금(카드)</th>
+                  <th className="text-right px-2 py-3.5 font-medium text-green-700">잔금(계좌)</th>
+                  <th className="text-center px-2 py-3.5 font-medium">상태</th>
+                  <th className="text-center px-2 py-3.5 font-medium">주문일</th>
+                  <th className="text-center px-2 py-3.5 font-medium">상태 변경</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {flatRows.map((row, idx) => {
+                  const s = statusMap[row.status];
+                  const isSelected = selected.includes(row.orderId);
+                  return (
+                    <tr key={`${row.orderId}-${idx}`} className={`transition-colors ${isSelected ? 'bg-blue-50/30' : 'hover:bg-gray-50/50'}`}>
+                      <td className="px-3 py-3 text-center"><input type="checkbox" checked={isSelected} onChange={() => toggleSelect(row.orderId)} className="rounded cursor-pointer" /></td>
+                      <td className="px-2 py-3 text-[11px] text-gray-400 font-mono max-w-[100px] truncate">{row.orderId.slice(0, 12)}...</td>
+                      <td className="px-2 py-3 text-center">
+                        {row.productImage ? (
+                          <img src={row.productImage} alt="" className="w-10 h-10 rounded object-cover mx-auto" />
+                        ) : (
+                          <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center mx-auto">
+                            <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-2 py-3 font-medium text-gray-800">{row.userName}</td>
+                      <td className="text-center px-2 py-3"><span className="text-[11px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">{row.userGrade}</span></td>
+                      <td className="px-2 py-3 text-gray-700">{row.productName}</td>
+                      <td className="text-center px-2 py-3 text-gray-600">{row.quantity}개</td>
+                      <td className="text-right px-2 py-3 font-semibold text-gray-900">{row.totalAmount.toLocaleString()}원</td>
+                      <td className="text-right px-2 py-3 font-semibold text-blue-600">{row.deposit.toLocaleString()}원</td>
+                      <td className="text-right px-2 py-3 font-semibold text-green-700">{row.balance > 0 ? `${row.balance.toLocaleString()}원` : '-'}</td>
+                      <td className="text-center px-2 py-3"><span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium border ${s?.color || ''}`}>{s?.label}</span></td>
+                      <td className="text-center px-2 py-3 text-xs text-gray-400">{row.createdAt}</td>
+                      <td className="text-center px-2 py-3">
+                        <select value={row.status} onChange={e => updateOrderStatus(row.orderId, e.target.value as OrderStatus)}
+                          className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/20 cursor-pointer">
+                          {statusFlow.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                        </select>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

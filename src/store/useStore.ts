@@ -467,6 +467,7 @@ export const useStore = create<AppState>()(
           return {
             productId: ci.productId,
             productName: product.name,
+            productImage: product.imageUrl || '',
             quantity: ci.quantity,
             unitPrice,
             totalPrice: unitPrice * ci.quantity,
