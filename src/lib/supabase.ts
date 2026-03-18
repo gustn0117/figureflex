@@ -1,27 +1,29 @@
+// Lazy Supabase client creation — avoids env var access at module load time (build-time safe)
 import { createClient } from '@supabase/supabase-js';
 
-// Lazy getters — clients are created on first call, not at module load time.
-// This prevents build-time failures when env vars aren't set.
+// eslint-disable-next-line
+let _supabase: any = null;
+// eslint-disable-next-line
+let _supabaseAdmin: any = null;
 
-let _supabase: ReturnType<typeof createClient> | null = null;
-let _supabaseAdmin: ReturnType<typeof createClient> | null = null;
-
-export function getSupabase() {
+// eslint-disable-next-line
+export function getSupabase(): any {
   if (!_supabase) {
     _supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
       { db: { schema: 'figureflex' } }
     );
   }
   return _supabase;
 }
 
-export function getSupabaseAdmin() {
+// eslint-disable-next-line
+export function getSupabaseAdmin(): any {
   if (!_supabaseAdmin) {
     _supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.SUPABASE_SERVICE_ROLE_KEY as string,
       { db: { schema: 'figureflex' } }
     );
   }
@@ -29,18 +31,14 @@ export function getSupabaseAdmin() {
 }
 
 // Proxy objects so existing code using `supabaseAdmin.from(...)` keeps working.
-export const supabase = new Proxy({} as ReturnType<typeof getSupabase>, {
+// eslint-disable-next-line
+export const supabase: any = new Proxy({}, {
   // eslint-disable-next-line
-  get(_target: any, prop: string) {
-    // eslint-disable-next-line
-    return (getSupabase() as any)[prop];
-  },
+  get(_t: any, prop: string) { return getSupabase()[prop]; },
 });
 
-export const supabaseAdmin = new Proxy({} as ReturnType<typeof getSupabaseAdmin>, {
+// eslint-disable-next-line
+export const supabaseAdmin: any = new Proxy({}, {
   // eslint-disable-next-line
-  get(_target: any, prop: string) {
-    // eslint-disable-next-line
-    return (getSupabaseAdmin() as any)[prop];
-  },
+  get(_t: any, prop: string) { return getSupabaseAdmin()[prop]; },
 });
