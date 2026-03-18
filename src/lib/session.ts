@@ -1,8 +1,10 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
-const SESSION_SECRET = process.env.SESSION_SECRET!;
-const key = new TextEncoder().encode(SESSION_SECRET);
+function getKey() {
+  const secret = process.env.SESSION_SECRET ?? 'fallback-dev-secret-key-at-least-32-chars';
+  return new TextEncoder().encode(secret);
+}
 
 export interface SessionPayload {
   userId: string;
@@ -16,12 +18,12 @@ export async function createSession(payload: SessionPayload): Promise<string> {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
-    .sign(key);
+    .sign(getKey());
 }
 
 export async function verifySession(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, key);
+    const { payload } = await jwtVerify(token, getKey());
     return payload as unknown as SessionPayload;
   } catch {
     return null;
