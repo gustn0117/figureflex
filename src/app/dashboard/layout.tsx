@@ -8,8 +8,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { currentUser } = useStore();
 
+  const fetchSettings = useStore(s => s.fetchSettings);
+
   useEffect(() => {
     if (!currentUser) router.push('/');
+    else fetchSettings();
   }, [currentUser, router]);
 
   if (!currentUser) return null;

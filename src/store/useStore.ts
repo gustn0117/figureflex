@@ -299,15 +299,18 @@ export const useStore = create<AppState>()(
       },
 
       // ─── Grade Settings ──────────────────────────────────────────────────
-      gradeDiscounts: { VVIP: 0.30, VIP: 0.20, GOLD: 0.10, SILVER: 0.05, '일반': 0 },
-      depositRates: { VVIP: 0.10, VIP: 0.15, GOLD: 0.15, SILVER: 0.20, '일반': 1.00 },
+      gradeDiscounts: { VVIP: 0, VIP: 0, GOLD: 0, SILVER: 0, '일반': 0 },
+      depositRates: { VVIP: 1, VIP: 1, GOLD: 1, SILVER: 1, '일반': 1 },
 
       fetchSettings: async () => {
         try {
           const res = await fetch('/api/settings');
           const data = await res.json();
-          if (res.ok) {
-            set({ gradeDiscounts: data.gradeDiscounts, depositRates: data.depositRates });
+          if (res.ok && data.gradeDiscounts) {
+            set({
+              gradeDiscounts: data.gradeDiscounts,
+              depositRates: data.depositRates,
+            });
           }
         } catch {
           // 무시

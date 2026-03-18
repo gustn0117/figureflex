@@ -8,9 +8,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const { currentUser } = useStore();
 
+  const fetchSettings = useStore(s => s.fetchSettings);
+
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'admin') {
       router.push('/');
+    } else {
+      fetchSettings();
     }
   }, [currentUser, router]);
 
