@@ -325,11 +325,15 @@ export const useStore = create<AppState>()(
 
       saveSettings: async () => {
         const { gradeDiscounts, depositRates } = get();
-        await fetch('/api/settings', {
+        const res = await fetch('/api/settings', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ gradeDiscounts, depositRates }),
         });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || '저장 실패');
+        }
       },
 
       // ─── Products ───────────────────────────────────────────────────────

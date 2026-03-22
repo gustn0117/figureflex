@@ -36,17 +36,25 @@ export default function AdminSettingsPage() {
   }, [gradeDiscounts, depositRates]);
 
   const handleSaveDiscount = async () => {
-    Object.entries(localRates).forEach(([grade, rate]) => updateGradeDiscount(grade, rate));
-    await saveSettings();
-    setSavedDiscount(true);
-    setTimeout(() => setSavedDiscount(false), 2000);
+    try {
+      Object.entries(localRates).forEach(([grade, rate]) => updateGradeDiscount(grade, rate));
+      await saveSettings();
+      setSavedDiscount(true);
+      setTimeout(() => setSavedDiscount(false), 2000);
+    } catch (e: any) {
+      alert('저장 실패: ' + (e.message || '서버 오류'));
+    }
   };
 
   const handleSaveDeposit = async () => {
-    Object.entries(localDeposit).forEach(([grade, rate]) => updateDepositRate(grade, rate));
-    await saveSettings();
-    setSavedDeposit(true);
-    setTimeout(() => setSavedDeposit(false), 2000);
+    try {
+      Object.entries(localDeposit).forEach(([grade, rate]) => updateDepositRate(grade, rate));
+      await saveSettings();
+      setSavedDeposit(true);
+      setTimeout(() => setSavedDeposit(false), 2000);
+    } catch (e: any) {
+      alert('저장 실패: ' + (e.message || '서버 오류'));
+    }
   };
 
   const exampleBase = 50000;
