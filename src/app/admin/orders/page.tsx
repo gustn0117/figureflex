@@ -117,16 +117,18 @@ async function exportExcel(orders: Order[]) {
   ];
 
   for (const o of orders) {
-    const deposit = o.depositAmount ?? o.finalAmount;
-    const balance = o.finalAmount - deposit;
+    const orderDeposit = o.depositAmount ?? o.finalAmount;
+    const depositRate = o.finalAmount > 0 ? orderDeposit / o.finalAmount : 1;
     for (const item of o.items) {
       const img = item.productImage || productMap.get(item.productId) || '';
+      const itemDeposit = Math.round(item.totalPrice * depositRate);
+      const itemBalance = item.totalPrice - itemDeposit;
 
       const rowNum = ws.rowCount + 1;
       const row = ws.addRow([
         o.id, '', o.userName, o.userGrade || '-', item.productName,
         item.quantity, item.totalPrice,
-        deposit, balance > 0 ? balance : 0,
+        itemDeposit, itemBalance > 0 ? itemBalance : 0,
         statusMap[o.status]?.label || o.status, o.createdAt,
       ]);
       row.height = 75;
@@ -185,10 +187,12 @@ async function exportPDF(orders: Order[]) {
 
   const rowsHtml: string[] = [];
   for (const o of orders) {
-    const deposit = o.depositAmount ?? o.finalAmount;
-    const balance = o.finalAmount - deposit;
+    const orderDeposit = o.depositAmount ?? o.finalAmount;
+    const depositRate = o.finalAmount > 0 ? orderDeposit / o.finalAmount : 1;
     for (const item of o.items) {
       const img = item.productImage || productMap.get(item.productId) || '';
+      const itemDeposit = Math.round(item.totalPrice * depositRate);
+      const itemBalance = item.totalPrice - itemDeposit;
       rowsHtml.push(`<tr>
         <td style="font-size:10px;word-break:break-all;max-width:120px">${o.id.slice(0, 18)}...</td>
         <td>${img ? `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px">` : '-'}</td>
@@ -197,8 +201,8 @@ async function exportPDF(orders: Order[]) {
         <td>${item.productName}</td>
         <td style="text-align:center">${item.quantity}개</td>
         <td style="text-align:right">${item.totalPrice.toLocaleString()}원</td>
-        <td style="text-align:right;color:#2563eb">${deposit.toLocaleString()}원</td>
-        <td style="text-align:right;color:#16a34a">${balance > 0 ? balance.toLocaleString() + '원' : '-'}</td>
+        <td style="text-align:right;color:#2563eb">${itemDeposit.toLocaleString()}원</td>
+        <td style="text-align:right;color:#16a34a">${itemBalance > 0 ? itemBalance.toLocaleString() + '원' : '-'}</td>
         <td style="text-align:center">${statusMap[o.status]?.label || o.status}</td>
         <td style="text-align:center">${o.createdAt}</td>
       </tr>`);
@@ -252,24 +256,28 @@ export default function AdminOrdersPage() {
 
   const flatRows = useMemo(() => {
     return sorted.flatMap(o => {
-      const deposit = o.depositAmount ?? o.finalAmount;
-      const balance = o.finalAmount - deposit;
-      return o.items.map(item => ({
-        orderId: o.id,
-        userName: o.userName,
-        userGrade: o.userGrade || '-',
-        productName: item.productName,
-        productImage: item.productImage || productImages.get(item.productId) || '',
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        itemTotal: item.totalPrice,
-        deposit,
-        balance,
-        status: o.status,
-        statusLabel: statusMap[o.status]?.label || o.status,
-        createdAt: o.createdAt,
-        order: o,
-      }));
+      const orderDeposit = o.depositAmount ?? o.finalAmount;
+      const depositRate = o.finalAmount > 0 ? orderDeposit / o.finalAmount : 1;
+      return o.items.map(item => {
+        const itemDeposit = Math.round(item.totalPrice * depositRate);
+        const itemBalance = item.totalPrice - itemDeposit;
+        return {
+          orderId: o.id,
+          userName: o.userName,
+          userGrade: o.userGrade || '-',
+          productName: item.productName,
+          productImage: item.productImage || productImages.get(item.productId) || '',
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          itemTotal: item.totalPrice,
+          deposit: itemDeposit,
+          balance: itemBalance,
+          status: o.status,
+          statusLabel: statusMap[o.status]?.label || o.status,
+          createdAt: o.createdAt,
+          order: o,
+        };
+      });
     });
   }, [sorted, productImages]);
 
