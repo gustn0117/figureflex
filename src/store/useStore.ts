@@ -530,6 +530,8 @@ export const useStore = create<AppState>()(
             orders: [data.order, ...state.orders],
             cart: [],
           }));
+          // DB에서도 장바구니 비우기
+          fetch('/api/cart', { method: 'DELETE' }).catch(() => {});
           return data.order.id;
         } catch {
           return null;
