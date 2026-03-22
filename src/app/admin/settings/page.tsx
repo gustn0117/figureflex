@@ -17,14 +17,23 @@ export default function AdminSettingsPage() {
   const [savedDeposit, setSavedDeposit] = useState(false);
   const [localRates, setLocalRates] = useState<Record<string, number>>({ ...gradeDiscounts });
   const [localDeposit, setLocalDeposit] = useState<Record<string, number>>({ ...depositRates });
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetchSettings().then(() => {
       const { gradeDiscounts: gd, depositRates: dr } = useStore.getState();
       setLocalRates({ ...gd });
       setLocalDeposit({ ...dr });
+      setLoaded(true);
     });
   }, []);
+
+  // store 값이 바뀌면 (다른 곳에서 fetchSettings 호출 등) localRates도 동기화
+  useEffect(() => {
+    if (loaded) return; // 이미 fetch 완료 후에는 사용자 입력 우선
+    setLocalRates({ ...gradeDiscounts });
+    setLocalDeposit({ ...depositRates });
+  }, [gradeDiscounts, depositRates]);
 
   const handleSaveDiscount = async () => {
     Object.entries(localRates).forEach(([grade, rate]) => updateGradeDiscount(grade, rate));
