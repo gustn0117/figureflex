@@ -12,7 +12,10 @@ export function getSupabase(): any {
     _supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL as string,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
-      { db: { schema: 'figureflex' } }
+      {
+        db: { schema: 'figureflex' },
+        global: { fetch: (url: any, init: any) => fetch(url, { ...init, cache: 'no-store' }) },
+      }
     );
   }
   return _supabase;
@@ -24,7 +27,10 @@ export function getSupabaseAdmin(): any {
     _supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL as string,
       process.env.SUPABASE_SERVICE_ROLE_KEY as string,
-      { db: { schema: 'figureflex' } }
+      {
+        db: { schema: 'figureflex' },
+        global: { fetch: (url: any, init: any) => fetch(url, { ...init, cache: 'no-store' }) },
+      }
     );
   }
   return _supabaseAdmin;
