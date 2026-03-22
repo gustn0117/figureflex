@@ -125,7 +125,7 @@ async function exportExcel(orders: Order[]) {
       const rowNum = ws.rowCount + 1;
       const row = ws.addRow([
         o.id, '', o.userName, o.userGrade || '-', item.productName,
-        item.quantity, o.finalAmount,
+        item.quantity, item.totalPrice,
         deposit, balance > 0 ? balance : 0,
         statusMap[o.status]?.label || o.status, o.createdAt,
       ]);
@@ -196,7 +196,7 @@ async function exportPDF(orders: Order[]) {
         <td style="text-align:center">${o.userGrade || '-'}</td>
         <td>${item.productName}</td>
         <td style="text-align:center">${item.quantity}개</td>
-        <td style="text-align:right">${o.finalAmount.toLocaleString()}원</td>
+        <td style="text-align:right">${item.totalPrice.toLocaleString()}원</td>
         <td style="text-align:right;color:#2563eb">${deposit.toLocaleString()}원</td>
         <td style="text-align:right;color:#16a34a">${balance > 0 ? balance.toLocaleString() + '원' : '-'}</td>
         <td style="text-align:center">${statusMap[o.status]?.label || o.status}</td>
@@ -217,15 +217,17 @@ async function exportPDF(orders: Order[]) {
   setTimeout(() => { win.print(); win.close(); }, 300);
 }
 
+type ViewTab = 'active' | 'completed';
+
 export default function AdminOrdersPage() {
   const { orders, fetchOrders, updateOrderStatus } = useStore();
   const [selected, setSelected] = useState<string[]>([]);
   const [sort, setSort] = useState<SortKey>('date');
+  const [viewTab, setViewTab] = useState<ViewTab>('active');
   const [productImages, setProductImages] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     fetchOrders();
-    // 테이블 이미지용 products 직접 fetch
     fetch('/api/products').then(r => r.json()).then(data => {
       const map = new Map<string, string>();
       for (const p of (data.products ?? [])) {
@@ -235,13 +237,18 @@ export default function AdminOrdersPage() {
     }).catch(() => {});
   }, []);
 
+  // 진행중 vs 완료/취소 분리
+  const activeOrders = orders.filter(o => !['completed', 'cancelled'].includes(o.status));
+  const completedOrders = orders.filter(o => ['completed', 'cancelled'].includes(o.status));
+  const currentOrders = viewTab === 'active' ? activeOrders : completedOrders;
+
   const sorted = useMemo(() => {
-    return [...orders].sort((a, b) => {
+    return [...currentOrders].sort((a, b) => {
       if (sort === 'company') return a.userName.localeCompare(b.userName);
       if (sort === 'amount') return b.finalAmount - a.finalAmount;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
-  }, [orders, sort]);
+  }, [currentOrders, sort]);
 
   const flatRows = useMemo(() => {
     return sorted.flatMap(o => {
@@ -254,7 +261,8 @@ export default function AdminOrdersPage() {
         productName: item.productName,
         productImage: item.productImage || productImages.get(item.productId) || '',
         quantity: item.quantity,
-        totalAmount: o.finalAmount,
+        unitPrice: item.unitPrice,
+        itemTotal: item.totalPrice,
         deposit,
         balance,
         status: o.status,
@@ -277,9 +285,22 @@ export default function AdminOrdersPage() {
         <p className="text-sm text-gray-400 mt-1">주문 현황 및 상태 변경</p>
       </div>
 
+      {/* 진행중 / 완료내역 탭 */}
+      <div className="flex gap-2 mb-4">
+        <button onClick={() => { setViewTab('active'); setSelected([]); }}
+          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all ${viewTab === 'active' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}>
+          진행중 <span className="ml-1 text-xs opacity-70">{activeOrders.length}</span>
+        </button>
+        <button onClick={() => { setViewTab('completed'); setSelected([]); }}
+          className={`text-sm px-4 py-2 rounded-xl font-medium transition-all ${viewTab === 'completed' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400'}`}>
+          완료내역 <span className="ml-1 text-xs opacity-70">{completedOrders.length}</span>
+        </button>
+      </div>
+
       <div className="flex gap-1.5 md:gap-2 mb-4 md:mb-5 flex-wrap">
         {statusFlow.map(s => {
-          const cnt = orders.filter(o => o.status === s.value).length;
+          const cnt = currentOrders.filter(o => o.status === s.value).length;
+          if (cnt === 0) return null;
           return (
             <div key={s.value} className={`text-[10px] md:text-xs px-2 md:px-3 py-1.5 md:py-2 rounded-xl font-medium border ${s.color}`}>
               {s.label} <span className="font-bold ml-0.5 md:ml-1">{cnt}</span>
@@ -312,8 +333,10 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        {orders.length === 0 ? (
-          <div className="text-center py-16 text-gray-400 text-sm">주문 내역이 없습니다.</div>
+        {currentOrders.length === 0 ? (
+          <div className="text-center py-16 text-gray-400 text-sm">
+            {viewTab === 'active' ? '진행중인 주문이 없습니다.' : '완료된 주문이 없습니다.'}
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs md:text-sm min-w-[900px]">
@@ -355,7 +378,7 @@ export default function AdminOrdersPage() {
                       <td className="text-center px-2 py-3"><span className="text-[11px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">{row.userGrade}</span></td>
                       <td className="px-2 py-3 text-gray-700">{row.productName}</td>
                       <td className="text-center px-2 py-3 text-gray-600">{row.quantity}개</td>
-                      <td className="text-right px-2 py-3 font-semibold text-gray-900">{row.totalAmount.toLocaleString()}원</td>
+                      <td className="text-right px-2 py-3 font-semibold text-gray-900">{row.itemTotal.toLocaleString()}원</td>
                       <td className="text-right px-2 py-3 font-semibold text-blue-600">{row.deposit.toLocaleString()}원</td>
                       <td className="text-right px-2 py-3 font-semibold text-green-700">{row.balance > 0 ? `${row.balance.toLocaleString()}원` : '-'}</td>
                       <td className="text-center px-2 py-3"><span className={`text-[11px] px-2.5 py-1 rounded-lg font-medium border ${s?.color || ''}`}>{s?.label}</span></td>
