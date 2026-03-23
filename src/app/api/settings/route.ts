@@ -21,7 +21,9 @@ export async function GET() {
       depositRates[row.grade] = parseFloat(row.deposit_rate);
     });
 
-    return NextResponse.json({ gradeDiscounts, depositRates });
+    return NextResponse.json({ gradeDiscounts, depositRates }, {
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'Pragma': 'no-cache' },
+    });
   } catch (err) {
     console.error('Settings GET error:', err);
     return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 });

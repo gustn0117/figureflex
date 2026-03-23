@@ -92,7 +92,7 @@ async function exportExcel(orders: Order[]) {
   const workbook = new ExcelJS.Workbook();
   const ws = workbook.addWorksheet('주문목록');
 
-  const headers = ['주문번호', '상품사진', '주문자', '등급', '상품이름', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
+  const headers = ['주문번호', '상품사진', '주문자', '등급', '상품이름', '단가', '상품수', '총금액', '계약금(카드)', '잔금(계좌)', '상태', '주문일'];
   const headerRow = ws.addRow(headers);
   headerRow.font = { bold: true, size: 12, color: { argb: 'FF333333' } };
   headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8E8E8' } };
@@ -108,6 +108,7 @@ async function exportExcel(orders: Order[]) {
     { width: 16 }, // 주문자
     { width: 12 }, // 등급
     { width: 24 }, // 상품이름
+    { width: 16 }, // 단가
     { width: 12 }, // 상품수
     { width: 18 }, // 총금액
     { width: 18 }, // 계약금
@@ -127,7 +128,7 @@ async function exportExcel(orders: Order[]) {
       const rowNum = ws.rowCount + 1;
       const row = ws.addRow([
         o.id, '', o.userName, o.userGrade || '-', item.productName,
-        item.quantity, item.totalPrice,
+        item.unitPrice, item.quantity, item.totalPrice,
         itemDeposit, itemBalance > 0 ? itemBalance : 0,
         statusMap[o.status]?.label || o.status, o.createdAt,
       ]);
@@ -136,9 +137,9 @@ async function exportExcel(orders: Order[]) {
       row.font = { size: 11 };
       row.eachCell(cell => { cell.border = cellBorder; });
       // 금액 셀 우측정렬
-      [7, 8, 9].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'right' }; });
+      [6, 8, 9, 10].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'right' }; });
       // 상품수, 등급, 상태 가운데 정렬
-      [4, 6, 10].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'center' }; });
+      [4, 7, 11].forEach(c => { row.getCell(c).alignment = { vertical: 'middle', horizontal: 'center' }; });
 
       console.log(`[Excel] item="${item.productName}" img=${img ? img.substring(0, 30) + '...' : 'EMPTY'} productMap=${productMap.size}`);
       if (img) {
@@ -159,10 +160,10 @@ async function exportExcel(orders: Order[]) {
     }
   }
 
-  // 금액 포맷 (콤마)
+  // 금액 포맷 (콤마) - 단가(6), 총금액(8), 계약금(9), 잔금(10)
   ws.eachRow((row, rowNumber) => {
     if (rowNumber === 1) return;
-    [7, 8, 9].forEach(col => {
+    [6, 8, 9, 10].forEach(col => {
       const cell = row.getCell(col);
       cell.numFmt = '#,##0';
     });
@@ -199,6 +200,7 @@ async function exportPDF(orders: Order[]) {
         <td>${o.userName}</td>
         <td style="text-align:center">${o.userGrade || '-'}</td>
         <td>${item.productName}</td>
+        <td style="text-align:right">${item.unitPrice.toLocaleString()}원</td>
         <td style="text-align:center">${item.quantity}개</td>
         <td style="text-align:right">${item.totalPrice.toLocaleString()}원</td>
         <td style="text-align:right;color:#2563eb">${itemDeposit.toLocaleString()}원</td>
@@ -213,7 +215,7 @@ async function exportPDF(orders: Order[]) {
     </head><body>
     <h2>피규어플렉스 주문목록</h2>
     <p>출력일: ${new Date().toLocaleDateString('ko-KR')} / 총 ${orders.length}건</p>
-    <table><thead><tr><th>주문번호</th><th>사진</th><th>업체</th><th>등급</th><th>상품이름</th><th>상품수</th><th>총금액</th><th>계약금(카드)</th><th>잔금(계좌)</th><th>상태</th><th>주문일</th></tr></thead><tbody>${rowsHtml.join('')}</tbody></table>
+    <table><thead><tr><th>주문번호</th><th>사진</th><th>업체</th><th>등급</th><th>상품이름</th><th>단가</th><th>상품수</th><th>총금액</th><th>계약금(카드)</th><th>잔금(계좌)</th><th>상태</th><th>주문일</th></tr></thead><tbody>${rowsHtml.join('')}</tbody></table>
     </body></html>`;
   const win = window.open('', '_blank');
   if (!win) return;
@@ -356,6 +358,7 @@ export default function AdminOrdersPage() {
                   <th className="text-left px-2 py-3.5 font-medium">업체</th>
                   <th className="text-center px-2 py-3.5 font-medium">등급</th>
                   <th className="text-left px-2 py-3.5 font-medium">상품이름</th>
+                  <th className="text-right px-2 py-3.5 font-medium">단가</th>
                   <th className="text-center px-2 py-3.5 font-medium">상품수</th>
                   <th className="text-right px-2 py-3.5 font-medium">총금액</th>
                   <th className="text-right px-2 py-3.5 font-medium text-blue-600">계약금(카드)</th>
@@ -385,6 +388,7 @@ export default function AdminOrdersPage() {
                       <td className="px-2 py-3 font-medium text-gray-800">{row.userName}</td>
                       <td className="text-center px-2 py-3"><span className="text-[11px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">{row.userGrade}</span></td>
                       <td className="px-2 py-3 text-gray-700">{row.productName}</td>
+                      <td className="text-right px-2 py-3 text-gray-500">{row.unitPrice.toLocaleString()}원</td>
                       <td className="text-center px-2 py-3 text-gray-600">{row.quantity}개</td>
                       <td className="text-right px-2 py-3 font-semibold text-gray-900">{row.itemTotal.toLocaleString()}원</td>
                       <td className="text-right px-2 py-3 font-semibold text-blue-600">{row.deposit.toLocaleString()}원</td>

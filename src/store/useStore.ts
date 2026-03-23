@@ -302,7 +302,7 @@ export const useStore = create<AppState>()(
 
       fetchSettings: async () => {
         try {
-          const res = await fetch('/api/settings');
+          const res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
           const data = await res.json();
           if (res.ok && data.gradeDiscounts) {
             set({
