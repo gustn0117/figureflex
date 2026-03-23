@@ -15,7 +15,7 @@ export default function DashboardHome() {
   }, []);
 
   const recentNotices = notices.slice(0, 3);
-  const saleProducts = products.filter(p => p.status === 'sale');
+  const saleProducts = products.filter(p => p.status === 'sale' && (!p.visibleGrades || p.visibleGrades.length === 0 || p.visibleGrades.includes(grade)));
   const myOrders = orders.filter(o => o.userId === currentUser?.id);
   const grade = currentUser?.grade || 'SILVER';
   const totalSpent = myOrders.reduce((s, o) => s + o.finalAmount, 0);

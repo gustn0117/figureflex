@@ -24,6 +24,7 @@ function dbToProduct(p: any) {
     status: p.status,
     origin: p.origin,
     manufacturer: p.manufacturer,
+    visibleGrades: p.visible_grades ?? [],
     createdAt: p.created_at,
   };
 }
@@ -81,6 +82,7 @@ export async function POST(req: NextRequest) {
         status: status ?? 'sale',
         origin: origin ?? '',
         manufacturer: manufacturer ?? '',
+        visible_grades: body.visibleGrades ?? [],
       })
       .select()
       .single();

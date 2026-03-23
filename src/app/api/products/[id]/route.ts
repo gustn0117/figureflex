@@ -30,6 +30,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (body.status !== undefined) updateData.status = body.status;
     if (body.origin !== undefined) updateData.origin = body.origin;
     if (body.manufacturer !== undefined) updateData.manufacturer = body.manufacturer;
+    if (body.visibleGrades !== undefined) updateData.visible_grades = body.visibleGrades;
 
     const { error } = await supabaseAdmin
       .from('products')

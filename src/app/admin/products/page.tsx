@@ -77,6 +77,7 @@ export default function AdminProductsPage() {
     name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '',
     basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100,
     saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '',
+    visibleGrades: [] as string[],
   });
 
   useEffect(() => {
@@ -92,12 +93,12 @@ export default function AdminProductsPage() {
     base > 0 ? Math.round(base * (1 - (gradeDiscounts[grade] || 0))) : 0;
 
   const resetForm = () => {
-    setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '' });
+    setForm({ name: '', description: '', detailContent: '', categoryId: '', subCategoryId: '', basePrice: 0, minQuantity: 1, maxQuantity: 100, quantityStep: 1, stock: 100, saleStartDate: '', saleEndDate: '', origin: '', manufacturer: '', visibleGrades: [] });
     setMainImage(''); setSubImages([]); setEditId(null); setShowForm(false);
   };
 
   const handleEdit = (p: Product) => {
-    setForm({ name: p.name, description: p.description, detailContent: p.detailContent || '', categoryId: p.categoryId, subCategoryId: p.subCategoryId, basePrice: p.basePrice, minQuantity: p.minQuantity, maxQuantity: p.maxQuantity, quantityStep: p.quantityStep || 1, stock: p.stock, saleStartDate: p.saleStartDate, saleEndDate: p.saleEndDate, origin: p.origin || '', manufacturer: p.manufacturer || '' });
+    setForm({ name: p.name, description: p.description, detailContent: p.detailContent || '', categoryId: p.categoryId, subCategoryId: p.subCategoryId, basePrice: p.basePrice, minQuantity: p.minQuantity, maxQuantity: p.maxQuantity, quantityStep: p.quantityStep || 1, stock: p.stock, saleStartDate: p.saleStartDate, saleEndDate: p.saleEndDate, origin: p.origin || '', manufacturer: p.manufacturer || '', visibleGrades: p.visibleGrades || [] });
     setMainImage(p.imageUrl || ''); setSubImages(p.images || []); setEditId(p.id); setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -254,6 +255,37 @@ export default function AdminProductsPage() {
               </div>
             </div>
 
+            {/* 등급별 공개 설정 */}
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">등급별 공개 설정</p>
+              <p className="text-xs text-gray-400 mb-3">체크한 등급만 이 상품을 볼 수 있습니다. 아무것도 체크하지 않으면 전체 공개입니다.</p>
+              <div className="flex flex-wrap gap-2">
+                {GRADES.map(g => {
+                  const checked = form.visibleGrades.includes(g.key);
+                  return (
+                    <label key={g.key} className={`flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer transition-colors ${checked ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'}`}>
+                      <input type="checkbox" checked={checked} className="sr-only"
+                        onChange={() => setForm(prev => ({
+                          ...prev,
+                          visibleGrades: checked
+                            ? prev.visibleGrades.filter(v => v !== g.key)
+                            : [...prev.visibleGrades, g.key],
+                        }))}
+                      />
+                      <span className="text-sm font-medium">{g.label}</span>
+                    </label>
+                  );
+                })}
+                {form.visibleGrades.length > 0 && (
+                  <button type="button" onClick={() => setForm(prev => ({ ...prev, visibleGrades: [] }))}
+                    className="text-xs text-gray-400 hover:text-gray-600 px-2">전체 공개로 변경</button>
+                )}
+              </div>
+              {form.visibleGrades.length > 0 && (
+                <p className="text-[11px] text-amber-600 mt-2">⚠ {form.visibleGrades.join(', ')} 등급만 이 상품을 볼 수 있습니다.</p>
+              )}
+            </div>
+
             <DateRangePicker startDate={form.saleStartDate} endDate={form.saleEndDate} onChangeStart={d => setForm({...form, saleStartDate: d})} onChangeEnd={d => setForm({...form, saleEndDate: d})} />
 
             <div>
@@ -338,6 +370,9 @@ export default function AdminProductsPage() {
                   <td className="px-3 py-3">
                     <p className="font-medium text-gray-800">{p.name}</p>
                     <p className="text-[11px] text-gray-400 mt-0.5">{p.manufacturer || ''}{p.origin ? ` / ${p.origin}` : ''}</p>
+                    {p.visibleGrades && p.visibleGrades.length > 0 && (
+                      <p className="text-[10px] text-amber-600 mt-0.5">🔒 {p.visibleGrades.join(', ')} 전용</p>
+                    )}
                   </td>
                   <td className="text-center px-3 py-3 text-xs text-gray-500">
                     {cat?.name}{subCat ? <><br/><span className="text-gray-400">{subCat.name}</span></> : ''}

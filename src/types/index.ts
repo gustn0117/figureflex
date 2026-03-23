@@ -51,6 +51,7 @@ export interface Product {
   status: ProductStatus;
   origin: string;
   manufacturer: string;
+  visibleGrades: string[];
   createdAt: string;
 }
 

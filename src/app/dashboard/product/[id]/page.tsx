@@ -16,10 +16,13 @@ export default function ProductDetailPage() {
   const [added, setAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
 
-  if (!product || !currentUser) {
+  // 등급별 공개 제한: 볼 수 없는 등급이면 접근 차단
+  const gradeBlocked = product && currentUser && product.visibleGrades && product.visibleGrades.length > 0 && !product.visibleGrades.includes(currentUser.grade);
+
+  if (!product || !currentUser || gradeBlocked) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-400">상품을 찾을 수 없습니다.</p>
+        <p className="text-gray-400">{gradeBlocked ? '접근 권한이 없는 상품입니다.' : '상품을 찾을 수 없습니다.'}</p>
         <button onClick={() => router.back()} className="text-sm text-gray-900 mt-4 hover:underline font-medium">돌아가기</button>
       </div>
     );
