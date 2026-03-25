@@ -31,6 +31,7 @@ export default function ProductDetailPage() {
   const grade: UserGrade = currentUser.grade;
   const myPrice = Math.round(product.basePrice * (1 - (gradeDiscounts[grade] || 0)));
   const today = new Date().toISOString().split('T')[0];
+  const isSoldout = product.status === 'soldout';
   const isExpired = product.saleEndDate < today;
   const category = categories.find(c => c.id === product.categoryId);
   const subCategory = subCategories.find(c => c.id === product.subCategoryId);
@@ -40,6 +41,7 @@ export default function ProductDetailPage() {
   const allImages = [product.imageUrl, ...(product.images || [])].filter(img => hasImg(img));
 
   const handleAddToCart = () => {
+    if (isSoldout || isExpired) return;
     if (quantity < product.minQuantity || quantity > product.maxQuantity) return;
     addToCart(product.id, quantity);
     setAdded(true);
@@ -59,9 +61,9 @@ export default function ProductDetailPage() {
               ) : (
                 <ProductImage imageUrl={product.imageUrl} categoryId={product.categoryId} alt={product.name} size="lg" />
               )}
-              {isExpired && (
+              {(isExpired || isSoldout) && (
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <span className="bg-red-500 text-white px-6 py-2 rounded-full font-semibold">판매종료</span>
+                  <span className="bg-red-500 text-white px-6 py-2 rounded-full font-semibold">{isSoldout ? '품절' : '판매종료'}</span>
                 </div>
               )}
             </div>

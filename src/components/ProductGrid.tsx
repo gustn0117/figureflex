@@ -27,9 +27,10 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
     return 'sale';
   };
 
-  // 등급별 공개 필터링: visibleGrades가 비어있으면 전체 공개, 있으면 해당 등급만
+  // 품절/숨김 필터링 + 등급별 공개 필터링
   const gradeFiltered = products.filter(p =>
-    !p.visibleGrades || p.visibleGrades.length === 0 || p.visibleGrades.includes(grade)
+    p.status !== 'soldout' && p.status !== 'hidden' &&
+    (!p.visibleGrades || p.visibleGrades.length === 0 || p.visibleGrades.includes(grade))
   );
 
   let filtered = activeSubCat ? gradeFiltered.filter(p => p.subCategoryId === activeSubCat) : [...gradeFiltered];
