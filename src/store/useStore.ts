@@ -65,6 +65,7 @@ interface AppState {
   fetchOrders: () => Promise<void>;
   placeOrder: () => Promise<string | null>;
   updateOrderStatus: (orderId: string, status: Order['status']) => Promise<void>;
+  deleteOrders: (orderIds: string[]) => Promise<void>;
 
   // Notices
   notices: Notice[];
@@ -550,6 +551,15 @@ export const useStore = create<AppState>()(
         });
         set(state => ({
           orders: state.orders.map(o => o.id === orderId ? { ...o, status } : o)
+        }));
+      },
+
+      deleteOrders: async (orderIds) => {
+        await Promise.all(orderIds.map(id =>
+          fetch(`/api/orders/${id}`, { method: 'DELETE' })
+        ));
+        set(state => ({
+          orders: state.orders.filter(o => !orderIds.includes(o.id))
         }));
       },
 

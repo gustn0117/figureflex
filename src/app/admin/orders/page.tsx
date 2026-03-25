@@ -226,7 +226,7 @@ async function exportPDF(orders: Order[]) {
 type ViewTab = 'active' | 'completed';
 
 export default function AdminOrdersPage() {
-  const { orders, fetchOrders, updateOrderStatus } = useStore();
+  const { orders, fetchOrders, updateOrderStatus, deleteOrders } = useStore();
   const [selected, setSelected] = useState<string[]>([]);
   const [sort, setSort] = useState<SortKey>('date');
   const [viewTab, setViewTab] = useState<ViewTab>('active');
@@ -331,6 +331,16 @@ export default function AdminOrdersPage() {
         <div className="flex-1" />
         <div className="flex items-center gap-2">
           {selected.length > 0 && <span className="text-xs text-gray-500 font-medium">{selected.length}건 선택</span>}
+          {viewTab === 'completed' && selected.length > 0 && (
+            <button onClick={async () => {
+              if (!confirm(`선택한 ${selected.length}건의 주문을 삭제하시겠습니까?\n삭제 후 복구가 불가능합니다.`)) return;
+              await deleteOrders(selected);
+              setSelected([]);
+            }}
+              className="flex items-center gap-1.5 text-xs border border-red-200 bg-red-50 text-red-600 px-3 py-2 rounded-xl hover:bg-red-100 transition-all font-medium">
+              삭제 ({selected.length})
+            </button>
+          )}
           <button onClick={() => exportExcel(exportTarget)}
             className="flex items-center gap-1.5 text-xs border border-gray-200 bg-white text-gray-600 px-3 py-2 rounded-xl hover:border-gray-400 hover:text-gray-900 transition-all font-medium">
             엑셀 {selected.length > 0 ? `(${selected.length})` : '전체'}
