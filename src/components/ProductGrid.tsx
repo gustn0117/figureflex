@@ -29,7 +29,7 @@ export default function ProductGrid({ products, title, subCategories }: Props) {
 
   // 품절/숨김 필터링 + 등급별 공개 필터링
   const gradeFiltered = products.filter(p =>
-    p.status !== 'soldout' && p.status !== 'hidden' &&
+    p.status !== 'soldout' &&
     (!p.visibleGrades || p.visibleGrades.length === 0 || p.visibleGrades.includes(grade))
   );
 
